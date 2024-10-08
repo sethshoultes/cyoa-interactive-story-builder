@@ -1,4 +1,3 @@
-CYOA Interactive Adventure Story Builder
 # CYOA Interactive Story Builder
 
 A WordPress plugin that allows you to create interactive, choose-your-own-adventure style stories directly on your WordPress site. Engage your readers by letting them decide the course of the story, making for a unique and personalized reading experience.

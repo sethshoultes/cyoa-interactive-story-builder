@@ -1,68 +1,133 @@
-=== Interactive Adventure Story Builder ===
-Contributors: sethshoultes
-Donate link: https://adventurebuildr.com/
-Tags: interactive, adventure, story, choose-your-own-adventure, stories
+=== CYOA Interactive Adventure Story Builder ===
+Contributors: Seth Shoultes
+Tags: storytelling, adventure, cyoa, choose-your-own-adventure, interactive, stories, game
 Requires at least: 5.0
-Tested up to: 6.2
-Stable tag: 1.0
+Tested up to: 6.3
 Requires PHP: 7.0
-License: GPLv2 or later
+Stable tag: 1.0
+License: GPL2
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A storytelling platform for creating choose-your-own-adventure style stories. Users can choose their own path through the story, exploring different branches and alternate endings.
+A storytelling platform for choose-your-own-adventure style stories. Users can choose their own path through the story.
 
 == Description ==
 
-The Interactive Adventure Story Builder is a WordPress plugin that provides a storytelling platform for creating choose-your-own-adventure style stories. Users can choose their own path through the story, exploring different branches and alternate endings.
+The **CYOA Interactive Adventure Story Builder** is a WordPress plugin that allows you to create interactive, choose-your-own-adventure style stories directly on your WordPress site. Engage your readers by letting them decide the course of the story, making for a unique and personalized reading experience.
 
-Features:
+**Features:**
 
-* Custom post type for Stories with a hierarchical structure for parent-child relationships
-* Custom taxonomies for organizing stories: Parallel Universes, Storylines, Story Branches, Alternate Endings
-* Custom post types for story elements: Characters, Locations, Vehicles, Weapons
-* Custom taxonomies for story element types
-* Meta boxes for linking story elements to stories
-* Season and Episode tracking for stories
-* Story Manager page with a visual tree representation of the story structure
-* Shortcode for displaying a "Resume Reading" button
-* User progress tracking per universe
-* Breadcrumb navigation for stories
-* Template overrides for single story pages
+- **Custom Post Types:**
+  - **Stories:** Create stories with hierarchical parent-child relationships to define different paths.
+  - **Characters, Locations, Vehicles, Weapons:** Manage these entities and link them to your stories.
+- **Taxonomies:**
+  - **Parallel Universes:** Create alternate versions of stories.
+  - **Storylines:** Organize stories into different narratives.
+  - **Character Types, Location Types, etc.:** Categorize your entities for better organization.
+- **Meta Boxes:**
+  - **Season and Episode:** Assign seasons and episodes to your stories.
+  - **Entity Linking:** Easily link characters, locations, vehicles, and weapons to stories.
+- **User Interaction:**
+  - **Choices:** Display choices to readers, allowing them to decide the next path.
+  - **Next Episode Links:** Automatically generate links to the next episode or season.
+  - **Parallel Universe Switching:** Let users explore alternate versions of episodes.
+- **User Progress Tracking:**
+  - **Save Progress:** Users can save their progress per universe.
+  - **Resume Reading Shortcode:** `[iasb_resume_reading]` allows users to resume where they left off.
+- **Story Manager:**
+  - **D3.js Visualization:** Visualize your story structure in the admin area using D3.js.
+- **Breadcrumb Navigation:**
+  - **Enhanced Navigation:** Display breadcrumbs to help users navigate through the story.
 
 == Installation ==
 
-1. Upload the `story-builder` directory to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
+1. **Upload Plugin Files:**
+   - Upload the `cyoa-interactive-adventure-story-builder` folder to the `/wp-content/plugins/` directory.
+   - Alternatively, install the plugin through the WordPress plugins screen directly.
+2. **Activate Plugin:**
+   - Activate the plugin through the 'Plugins' screen in WordPress.
+3. **Configure Plugin:**
+   - Navigate to the 'Stories' section in the WordPress admin to start creating your interactive stories.
+   - Use the 'Characters', 'Locations', 'Vehicles', and 'Weapons' custom post types to create entities and link them to stories.
+   - Use the 'Story Manager' under the 'Stories' menu to visualize and manage your story structure.
 
 == Usage ==
 
-1. Create Parallel Universes, Storylines, Story Branches, and Alternate Endings as needed using the respective taxonomies.
-2. Create Characters, Locations, Vehicles, and Weapons using the respective custom post types and assign them to appropriate types using the taxonomies.
-3. Create Stories using the Story custom post type. Assign them to Universes, Storylines, Branches, and Endings as applicable. 
-4. Use the meta boxes to link the story elements (Characters, Locations, etc.) to the Stories.
-5. Set the Season and Episode numbers for each Story using the meta boxes.
-6. Use the Story Manager page to visualize the structure of your stories.
-7. Use the `[iasb_resume_reading]` shortcode to display a "Resume Reading" button for logged-in users.
+**Creating Stories:**
 
-== Template Overrides ==
+- **Add New Story:**
+  - Go to 'Stories' > 'Add New' to create a new story segment.
+  - Use the 'Parent' attribute to create hierarchical relationships between story segments.
+- **Assign Taxonomies:**
+  - Categorize your stories using 'Storyline', 'Parallel Universe', 'Season', and 'Episode' taxonomies.
+- **Link Entities:**
+  - In the story editor, link characters, locations, vehicles, and weapons using the provided meta boxes.
+- **Set Season and Episode:**
+  - Use the 'Season' and 'Episode' meta boxes to organize your story segments chronologically.
 
-The plugin includes a template override for the single story pages. To customize the look and feel of these pages, create a `single-sb_story.php` file in your theme directory.
+**Managing Entities:**
+
+- **Create Entities:**
+  - Use the 'Characters', 'Locations', 'Vehicles', and 'Weapons' custom post types to create and manage entities.
+- **Assign Types:**
+  - Categorize entities using 'Character Type', 'Location Type', 'Vehicle Type', and 'Weapon Type' taxonomies.
+
+**Visualizing Story Structure:**
+
+- **Story Manager:**
+  - Navigate to 'Stories' > 'Story Manager' to view a visual representation of your story structure using D3.js.
+
+**User Interaction:**
+
+- **Reading Stories:**
+  - Users can read stories and make choices that lead them through different paths.
+- **Switching Universes:**
+  - If alternate versions exist, users can switch between parallel universes to explore different outcomes.
+- **Resume Reading:**
+  - Logged-in users can resume their progress using the `[iasb_resume_reading]` shortcode.
+
+**Shortcodes:**
+
+- `[iasb_resume_reading]`: Displays a 'Resume Reading' button for logged-in users to continue where they left off.
+
+**Displaying Breadcrumbs and Navigation:**
+
+- The plugin automatically displays breadcrumb navigation and 'Next Episode' links in the story templates.
+
+== Frequently Asked Questions ==
+
+= Can I customize the look and feel of the stories? =
+
+Yes, you can customize the templates by copying the template files from the plugin's `templates` directory into your theme and modifying them as needed.
+
+= Do users need to be logged in to track their progress? =
+
+Yes, user progress tracking is available for logged-in users. This allows users to resume their reading across sessions.
+
+= How do I create alternate universes or storylines? =
+
+Use the 'Parallel Universe' and 'Storyline' taxonomies to categorize your story segments. Create alternate versions by assigning different universes or storylines to similar episodes.
+
+== Screenshots ==
+
+1. **Story Editor:** Meta boxes for linking characters, locations, vehicles, and weapons.
+2. **Story Manager:** Visual representation of the story structure using D3.js.
+3. **Front-end Story Display:** Users making choices in the story.
+4. **Resume Reading Button:** Shortcode output for resuming reading.
 
 == Changelog ==
 
 = 1.0 =
-* Initial release
+* Initial release of the CYOA Interactive Adventure Story Builder plugin.
 
-== Frequently Asked Questions ==
+== Upgrade Notice ==
 
-= How can I customize the look of the single story pages? =
+= 1.0 =
+* First stable release.
 
-You can create a `single-sb_story.php` file in your theme directory to override the default template provided by the plugin.
+== Notes ==
 
-= Can users save their progress in the stories? =
+This plugin requires that you have basic knowledge of WordPress custom post types and taxonomies. For advanced customization, you may need to modify template files or write custom code.
 
-Yes, the plugin tracks user progress per universe for logged-in users. They can resume reading from where they left off.
+== License ==
 
-== Credits ==
-
-This plugin was developed by Seth Shoultes. If you have any questions, suggestions, or feedback, please contact me at [Your Email].
+This plugin is licensed under the GPL2 license. See the [License URI](https://www.gnu.org/licenses/gpl-2.0.html) for details.

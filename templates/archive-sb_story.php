@@ -1,5 +1,5 @@
 <?php
-// templates/archive-story_builder.php
+// templates/archive-sb_story.php
 get_header();
 ?>
 

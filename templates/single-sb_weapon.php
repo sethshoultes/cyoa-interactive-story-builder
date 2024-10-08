@@ -1,5 +1,5 @@
 <?php
-// templates/single-iasb_weapon.php
+// templates/single-sb_weapon.php
 get_header();
 
 if (have_posts()) :

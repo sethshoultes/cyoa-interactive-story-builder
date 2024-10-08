@@ -1,12 +1,5 @@
 <?php
-/**
- * The template for displaying a single story story.
- *
- * @package Fart_Calculator
- */
-
- 
-// templates/single-story_builder.php
+// templates/single-sb_story.php
 get_header();
 
 if (have_posts()) :

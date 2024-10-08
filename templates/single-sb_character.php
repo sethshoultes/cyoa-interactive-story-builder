@@ -1,5 +1,5 @@
 <?php
-// templates/single-iasb_character.php
+// templates/single-sb_character.php
 get_header();
 
 if (have_posts()) :

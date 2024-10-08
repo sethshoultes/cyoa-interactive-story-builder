@@ -1,5 +1,5 @@
 <?php
-// templates/single-iasb_location.php
+// templates/single-sb_location.php
 get_header();
 
 if (have_posts()) :

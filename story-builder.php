@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: Interactive Adeventure Story Builder
- * Description: A storytelling platform for choose your own adventure story-related stories. Users can choose their own path through the story.
+ * Plugin Name: CYOA Interactive Adventure Story Builder
+ * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story.
  * Version: 1.0
  * Author: Seth Shoultes
  * License: GPL2

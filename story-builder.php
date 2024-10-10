@@ -1758,3 +1758,36 @@ function iasb_save_character_profile_field($user_id) {
 add_action('personal_options_update', 'iasb_save_character_profile_field');
 add_action('edit_user_profile_update', 'iasb_save_character_profile_field');
 
+// Shortcode to display content based on user's current story progress
+function iasb_conditional_content_shortcode($atts, $content = null) {
+    $atts = shortcode_atts(
+        array(
+            'episode' => 0,
+        ),
+        $atts,
+        'conditional_content'
+    );
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+        return ''; // Not logged in
+    }
+
+    $progress = get_user_meta($user_id, 'story_builder_progress', true);
+    if (!$progress || !is_array($progress)) {
+        return ''; // No progress found
+    }
+
+    $target_episode = intval($atts['episode']);
+    foreach ($progress as $universe => $data) {
+        if (isset($data['story_id'])) {
+            $current_episode = get_post_meta($data['story_id'], '_iasb_story_builder_episode', true);
+            if (intval($current_episode) >= $target_episode) {
+                return do_shortcode($content);
+            }
+        }
+    }
+
+    return ''; // Episode not reached
+}
+add_shortcode('conditional_content', 'iasb_conditional_content_shortcode');

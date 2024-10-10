@@ -104,6 +104,25 @@ A WordPress plugin that allows you to create interactive, choose-your-own-advent
 
 - `[iasb_resume_reading]`: Displays a 'Resume Reading' button for logged-in users to continue where they left off.
 
+### Filters 
+`// Function to override the user story name with character profile name
+function myplugin_override_user_story_name($output, $atts) {
+    $user_id = get_current_user_id();
+    if ($user_id) {
+        // Retrieve the character profile ID associated with the user
+        $character_profile_id = get_user_meta($user_id, 'iasb_character_profile_id', true);
+        if ($character_profile_id) {
+            // Get the character's name from the profile
+            $character_name = get_the_title($character_profile_id);
+            if ($character_name) {
+                $output = esc_html($character_name);
+            }
+        }
+    }
+    return $output;
+}
+add_filter('iasb_user_story_name', 'myplugin_override_user_story_name', 10, 2);`
+
 ### Displaying Breadcrumbs and Navigation
 
 - The plugin automatically displays breadcrumb navigation and 'Next Episode' links in the story templates.

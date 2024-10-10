@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: CYOA Interactive Adventure Story Builder
- * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story.
+ * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story. Shortcodes are available to embed stories in posts and pages: [user_story_name].
  * Version: 1.0
  * Author: Seth Shoultes
  * License: GPL2
@@ -1565,3 +1565,55 @@ function iasb_npc_character_name_shortcode($atts) {
     return __('Unknown Character', 'story-builder');
 }
 add_shortcode('npc_character_name', 'iasb_npc_character_name_shortcode');
+
+
+// Add a field to the user profile to select a character profile
+function iasb_add_character_profile_field($user) {
+    // Get all characters
+    $characters = get_posts(array(
+        'post_type'      => 'iasb_character',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'title',
+        'order'          => 'ASC',
+    ));
+
+    // Get the user's current character profile ID
+    $selected_character_id = get_user_meta($user->ID, 'iasb_character_profile_id', true);
+
+    ?>
+    <h3><?php _e('Character Profile', 'story-builder'); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="iasb_character_profile_id"><?php _e('Select Character', 'story-builder'); ?></label></th>
+            <td>
+                <select name="iasb_character_profile_id" id="iasb_character_profile_id">
+                    <option value=""><?php _e('— No Character —', 'story-builder'); ?></option>
+                    <?php foreach ($characters as $character): ?>
+                        <option value="<?php echo esc_attr($character->ID); ?>" <?php selected($selected_character_id, $character->ID); ?>>
+                            <?php echo esc_html($character->post_title); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <p class="description"><?php _e('Select a character profile to associate with your account.', 'story-builder'); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('show_user_profile', 'iasb_add_character_profile_field');
+add_action('edit_user_profile', 'iasb_add_character_profile_field');
+
+// Save the character profile selection
+function iasb_save_character_profile_field($user_id) {
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    if (isset($_POST['iasb_character_profile_id'])) {
+        update_user_meta($user_id, 'iasb_character_profile_id', intval($_POST['iasb_character_profile_id']));
+    }
+}
+add_action('personal_options_update', 'iasb_save_character_profile_field');
+add_action('edit_user_profile_update', 'iasb_save_character_profile_field');
+

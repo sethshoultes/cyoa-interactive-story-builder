@@ -3,4 +3,8 @@ jQuery(document).ready(function($) {
         width: '100%',
         placeholder: 'Select parent episodes',
     });
+    $('select[name="iasb_child_episodes[]"]').select2({
+        width: '100%',
+        placeholder: 'Select child episodes',
+    });
 });

@@ -1449,3 +1449,119 @@ function iasb_save_story_progress($user_id, $story_id, $season, $episode) {
     );
     update_user_meta($user_id, 'story_builder_progress', $progress);
 }
+
+// Add the story name field to the user profile pages
+function iasb_add_story_name_field($user) {
+    ?>
+    <h3><?php _e('Story Name', 'story-builder'); ?></h3>
+    <table class="form-table">
+        <tr>
+            <th><label for="iasb_story_name"><?php _e('Story Name', 'story-builder'); ?></label></th>
+            <td>
+                <input type="text" name="iasb_story_name" id="iasb_story_name" value="<?php echo esc_attr(get_user_meta($user->ID, 'iasb_story_name', true)); ?>" class="regular-text" placeholder="<?php echo esc_attr($user->display_name); ?>" /><br />
+                <span class="description"><?php _e('This name will be used in stories where the [user_story_name] shortcode is present.', 'story-builder'); ?></span>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+add_action('show_user_profile', 'iasb_add_story_name_field');
+add_action('edit_user_profile', 'iasb_add_story_name_field');
+
+// Save the story name field
+function iasb_save_story_name_field($user_id) {
+    // Check if the current user has permission to edit the user
+    if (!current_user_can('edit_user', $user_id)) {
+        return false;
+    }
+
+    // Update the user meta with the new story name
+    if (isset($_POST['iasb_story_name'])) {
+        update_user_meta($user_id, 'iasb_story_name', sanitize_text_field($_POST['iasb_story_name']));
+    }
+}
+add_action('personal_options_update', 'iasb_save_story_name_field');
+add_action('edit_user_profile_update', 'iasb_save_story_name_field');
+
+// Shortcode to display the user's story name
+function iasb_user_story_name_shortcode($atts) {
+    // Get the current user ID
+    $user_id = get_current_user_id();
+
+    // Initialize the output variable
+    $output = '';
+
+    // If the user is logged in
+    if ($user_id) {
+        // Get the user's story name
+        $story_name = get_user_meta($user_id, 'iasb_story_name', true);
+
+        // If the story name is set, use it; otherwise, use the display name
+        if (!empty($story_name)) {
+            $output = esc_html($story_name);
+        } else {
+            $user_info = get_userdata($user_id);
+            $output = esc_html($user_info->display_name);
+        }
+    } else {
+        // If the user is not logged in, return a default value or prompt
+        $output = __('Adventurer', 'story-builder');
+    }
+
+    // Apply a filter to allow other plugins to modify the output
+    $output = apply_filters('iasb_user_story_name', $output, $atts);
+
+    return "<strong class='user_story_name'>{$output}</strong>";
+}
+add_shortcode('user_story_name', 'iasb_user_story_name_shortcode');
+
+// Shortcode to display NPC character name
+function iasb_npc_character_name_shortcode($atts) {
+    // Shortcode attributes with default values
+    $atts = shortcode_atts(
+        array(
+            'id'    => 0,      // The ID of the character
+            'slug'  => '',     // The slug of the character
+            'link'  => 'false' // Whether to link to the character's profile page ('true' or 'false')
+        ),
+        $atts,
+        'npc_character_name'
+    );
+
+    // Get the character post
+    $character_post = null;
+
+    if (!empty($atts['slug'])) {
+        // Get the character by slug
+        $character_post = get_page_by_path($atts['slug'], OBJECT, 'iasb_character');
+    } elseif (!empty($atts['id'])) {
+        // Get the character by ID
+        $character_post = get_post(intval($atts['id']));
+    }
+
+    $output = '';
+
+
+    if ($character_post && $character_post->post_type === 'iasb_character' && $character_post->post_status === 'publish') {
+        // Get the character's name
+        $character_name = $character_post->post_title;
+
+        // Check if we should link to the character's profile page
+        if (filter_var($atts['link'], FILTER_VALIDATE_BOOLEAN)) {
+            $character_link = get_permalink($character_post->ID);
+            $output = '<a href="' . esc_url($character_link) . '" target="_blank">' . esc_html($character_name) . '</a>';
+            // Apply a filter to allow modification of the output
+            $output = apply_filters('iasb_npc_character_name', $output, $atts, $character_post);
+            return $output;
+
+        } else {
+            
+            $output = esc_html($character_name);
+            return $output;
+        }
+    }
+
+    // If character not found, return an empty string or a placeholder
+    return __('Unknown Character', 'story-builder');
+}
+add_shortcode('npc_character_name', 'iasb_npc_character_name_shortcode');

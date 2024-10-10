@@ -12,6 +12,41 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+// Enqueue plugin styles and scripts
+function iasb_enqueue_admin_assets($hook) {
+    if ('post.php' != $hook && 'post-new.php' != $hook) {
+        return;
+    }
+    wp_enqueue_style('select2-css', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css');
+    wp_enqueue_script('select2-js', 'https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js', array('jquery'), '4.1.0', true);
+    wp_enqueue_script('iasb-admin-js', plugin_dir_url(__FILE__) . 'js/iasb-admin.js', array('jquery', 'select2-js'), null, true);
+}
+add_action('admin_enqueue_scripts', 'iasb_enqueue_admin_assets');
+
+function iasb_enqueue_d3_js_library($hook) {
+    // Check if we're on the Story Manager page
+    if ($hook !== 'story_builder_page_story-story-manager') {
+        return;
+    }
+
+    // Enqueue D3.js for the flowchart
+    wp_enqueue_script('d3-js', 'https://d3js.org/d3.v7.min.js', array(), null, true);
+
+    // Enqueue our custom script to handle the D3.js flowchart logic
+    wp_enqueue_script('story-story-manager-js', plugin_dir_url(__FILE__) . 'js/story-story-manager.js', array('d3-js'), null, true);
+
+    // Localize script to pass AJAX URL and nonce
+    wp_localize_script('story-story-manager-js', 'iasb_ajax_object', array(
+        'ajaxurl' => admin_url('admin-ajax.php'),
+        'nonce'   => wp_create_nonce('iasb_story_builder_manager_nonce')
+    ));
+
+    // Enqueue CSS for styling the tree
+    wp_enqueue_style('story-story-manager-css', plugin_dir_url(__FILE__) . 'css/story-story-manager.css');
+}
+add_action('admin_enqueue_scripts', 'iasb_enqueue_d3_js_library');
+
+
 // Register Custom Post Type for Stories
 function iasb_register_story_stories_cpt() {
     $labels = array(
@@ -34,8 +69,8 @@ function iasb_register_story_stories_cpt() {
         'public'             => true,
         'has_archive'        => true,
         'rewrite'            => array('slug' => 'story-stories'),
-        'supports'           => array('title', 'editor', 'author', 'thumbnail', 'comments', 'page-attributes'),
-        'hierarchical'       => true, // Enable parent-child relationships
+        'supports'           => array('title', 'editor', 'author', 'thumbnail', 'comments'),
+        'hierarchical'       => false, // disable parent-child relationships
         'capability_type'    => 'post',
         'menu_position'      => 26,
         'menu_icon'          => 'dashicons-book-alt',
@@ -472,8 +507,142 @@ function iasb_display_location_columns($column, $post_id) {
 }
 add_action('manage_iasb_location_posts_custom_column', 'iasb_display_location_columns', 10, 2);
 
+// Add Meta Box to select multiple parent episodes
+function iasb_add_parent_episodes_meta_box() {
+    add_meta_box(
+        'iasb_parent_episodes', // ID
+        __('Parent Episodes', 'story-builder'), // Title
+        'iasb_render_parent_episodes_meta_box', // Callback function
+        'story_builder', // Post type
+        'side', // Context
+        'default' // Priority
+    );
+}
+add_action('add_meta_boxes', 'iasb_add_parent_episodes_meta_box');
 
+// Render the Parent Episodes Meta Box
+function iasb_render_parent_episodes_meta_box($post) {
+    // Retrieve existing parent episodes
+    $parent_episode_ids = get_post_meta($post->ID, '_iasb_parent_episode', false);
+    if (!is_array($parent_episode_ids)) {
+        $parent_episode_ids = array();
+    }
 
+    $episodes = get_posts(array(
+        'post_type'      => 'story_builder',
+        'posts_per_page' => -1,
+        'post__not_in'   => array($post->ID),
+        'post_status'    => 'publish',
+        'meta_key'       => '_iasb_story_builder_episode',
+    ));
+    
+    // Organize and sort episodes by storyline and episode number
+    $episodes_by_storyline = array();
+    
+    foreach ($episodes as $episode) {
+        $storylines = wp_get_post_terms($episode->ID, 'storyline');
+        $storyline_name = (!empty($storylines) && !is_wp_error($storylines)) ? $storylines[0]->name : __('Uncategorized', 'story-builder');
+    
+        $episode_number = get_post_meta($episode->ID, '_iasb_story_builder_episode', true);
+    
+        if (!isset($episodes_by_storyline[$storyline_name])) {
+            $episodes_by_storyline[$storyline_name] = array();
+        }
+    
+        $episodes_by_storyline[$storyline_name][] = array(
+            'episode'        => $episode,
+            'episode_number' => $episode_number,
+        );
+    }
+    
+    // Sort the storylines alphabetically
+    ksort($episodes_by_storyline);
+    
+    // Sort episodes within each storyline
+    foreach ($episodes_by_storyline as &$storyline_episodes) {
+        usort($storyline_episodes, function($a, $b) {
+            $a_num = intval($a['episode_number']);
+            $b_num = intval($b['episode_number']);
+            if ($a_num == $b_num) {
+                return strcmp($a['episode']->post_title, $b['episode']->post_title);
+            }
+            return ($a_num < $b_num) ? -1 : 1;
+        });
+    }
+    unset($storyline_episodes);
+    
+    // Render the select field with optgroups
+    echo '<select name="iasb_parent_episodes[]" multiple style="width:100%; height:150px;">';
+    foreach ($episodes_by_storyline as $storyline_name => $storyline_episodes) {
+        echo '<optgroup label="' . esc_attr($storyline_name) . '">';
+        foreach ($storyline_episodes as $item) {
+            $episode = $item['episode'];
+            $episode_number = $item['episode_number'];
+            $selected = in_array($episode->ID, $parent_episode_ids) ? 'selected' : '';
+            $episode_title = 'Episode ' . $episode_number . ': ' . $episode->post_title;
+            echo '<option value="' . esc_attr($episode->ID) . '" ' . $selected . '>' . esc_html($episode_title) . '</option>';
+        }
+        echo '</optgroup>';
+    }
+    echo '</select>';
+
+}
+// Save the Parent Episodes Meta Data
+function iasb_save_parent_episodes_meta($post_id) {
+    // Check for autosave and permissions
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    // Delete existing parent episodes
+    delete_post_meta($post_id, '_iasb_parent_episode');
+
+    // Save the selected parent episodes as separate meta entries
+    if (isset($_POST['iasb_parent_episodes'])) {
+        $parent_episode_ids = array_map('intval', $_POST['iasb_parent_episodes']);
+        foreach ($parent_episode_ids as $parent_id) {
+            add_post_meta($post_id, '_iasb_parent_episode', $parent_id);
+        }
+    }
+}
+
+add_action('save_post', 'iasb_save_parent_episodes_meta');
+// Add Parent Episodes Column
+function iasb_add_parent_episodes_column($columns) {
+    $columns['parent_episodes'] = __('Parent Episodes', 'story-builder');
+    return $columns;
+}
+add_filter('manage_story_builder_posts_columns', 'iasb_add_parent_episodes_column');
+// Populate Parent Episodes Column
+function iasb_display_parent_episodes_column($column, $post_id) {
+    if ($column === 'parent_episodes') {
+        $parent_episodes = iasb_get_parent_episodes($post_id);
+        if ($parent_episodes) {
+            $titles = wp_list_pluck($parent_episodes, 'post_title');
+            echo esc_html(implode(', ', $titles));
+        } else {
+            echo '—';
+        }
+    }
+}
+add_action('manage_story_builder_posts_custom_column', 'iasb_display_parent_episodes_column', 10, 2);
+
+// Function to get parent episodes of a given episode
+function iasb_get_parent_episodes($post_id) {
+    $parent_episode_ids = get_post_meta($post_id, '_iasb_parent_episode', false); // Note: false to get all values
+    if (!is_array($parent_episode_ids)) {
+        $parent_episode_ids = array();
+    }
+
+    // Get the parent episodes
+    $parent_episodes = get_posts(array(
+        'post_type'      => 'story_builder',
+        'post__in'       => $parent_episode_ids,
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+    ));
+
+    return $parent_episodes;
+}
 // Render Story Branches Meta Box
 function iasb_render_story_branch_metabox($post) {
     $terms = get_terms(array('taxonomy' => 'story_branch', 'hide_empty' => false));
@@ -621,44 +790,23 @@ function iasb_story_stories_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'iasb_story_stories_enqueue_assets');
 
-
-function iasb_enqueue_d3_js_library($hook) {
-    // Check if we're on the Story Manager page
-    if ($hook !== 'story_builder_page_story-story-manager') {
-        return;
-    }
-
-    // Enqueue D3.js for the flowchart
-    wp_enqueue_script('d3-js', 'https://d3js.org/d3.v7.min.js', array(), null, true);
-
-    // Enqueue our custom script to handle the D3.js flowchart logic
-    wp_enqueue_script('story-story-manager-js', plugin_dir_url(__FILE__) . 'js/story-story-manager.js', array('d3-js'), null, true);
-
-    // Localize script to pass AJAX URL and nonce
-    wp_localize_script('story-story-manager-js', 'iasb_ajax_object', array(
-        'ajaxurl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('iasb_story_builder_manager_nonce')
-    ));
-
-    // Enqueue CSS for styling the tree
-    wp_enqueue_style('story-story-manager-css', plugin_dir_url(__FILE__) . 'css/story-story-manager.css');
-}
-add_action('admin_enqueue_scripts', 'iasb_enqueue_d3_js_library');
-
-
 // Function to display child episodes as choices
 function iasb_render_child_episodes($post_id) {
     // Get the current season
     $current_season = get_post_meta($post_id, '_iasb_story_builder_season', true);
 
-    $child_episodes = get_children(array(
-        'post_parent' => $post_id,
-        'post_type'   => 'story_builder',
-        'numberposts' => -1,
-        'post_status' => 'publish',
-        'orderby'     => 'menu_order',
-        'order'       => 'ASC',
-        'meta_query'  => array(
+    // Query for episodes where '_iasb_parent_episode' meta field equals the current post ID
+    $child_episodes = new WP_Query(array(
+        'post_type'      => 'story_builder',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+       'meta_query'     => array(
+            array(
+                'key'     => '_iasb_parent_episode',
+                'value'   => $post_id,
+                'compare' => '=',
+                'type'    => 'NUMERIC',
+            ),
             array(
                 'key'     => '_iasb_story_builder_season',
                 'value'   => $current_season,
@@ -666,23 +814,37 @@ function iasb_render_child_episodes($post_id) {
                 'type'    => 'NUMERIC',
             ),
         ),
+        'orderby'        => array(
+            'meta_value_num' => 'ASC', // Order by episode number
+            'ID'             => 'ASC', // Secondary order by post ID
+        ),
+        'meta_key'       => '_iasb_story_builder_episode',
     ));
 
-    if ($child_episodes) {
+    if ($child_episodes->have_posts()) {
         echo '<div class="story-choices">';
         echo '<h3 class="choices-heading">' . __('What do you do next?', 'story-builder') . '</h3>';
         echo '<ul class="choices-list">';
-        foreach ($child_episodes as $child) {
-            echo '<li class="choice-item"><a href="' . get_permalink($child->ID) . '" data-story-id="' . $child->ID . '" class="choice-link">' . esc_html($child->post_title) . '</a></li>';
+        while ($child_episodes->have_posts()) {
+            $child_episodes->the_post();
+            //$episode_number = get_post_meta(get_the_ID(), '_iasb_story_builder_episode', true);
+            $episode_title = get_the_title();
+            echo '<li class="choice-item"><a href="' . get_permalink() . '" data-story-id="' . get_the_ID() . '" class="choice-link">' . esc_html($episode_title) . '</a></li>';
         }
         echo '</ul>';
         echo '</div>';
+        // Debugging: Output the query
+        //echo '<pre>' . print_r($child_episodes->request, true) . '</pre>';
     } else {
         echo '<div class="story-end">';
         echo '<p>' . __('The End.', 'story-builder') . '</p>';
         echo '</div>';
+        // Debugging: Output the query
+        //echo '<pre>' . print_r($child_episodes->request, true) . '</pre>';
     }
+    wp_reset_postdata();
 }
+
 
 
 

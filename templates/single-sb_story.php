@@ -65,6 +65,9 @@ if (have_posts()) :
             // Display the user's progress
             iasb_display_user_progress($user_id);
 
+             // Display Next Episode Link
+             //iasb_render_next_episode_link(get_the_ID());
+
             ?>
             <div class="story-story-meta">
                 <?php // Display breadcrumb navigation

@@ -1,12 +1,27 @@
+/* Define CSS variables at the root level */
+:root {
+    --iasb-primary-color: #0073aa; /* Default Primary Color */
+    --iasb-secondary-color: #333333; /* Default Secondary Color */
+    --iasb-accent-color: #ff9800; /* Default Accent Color for Vehicles, Locations, and Weapons */
+    --iasb-font-family: Arial, sans-serif; /* Default Font Family */
+    --iasb-primary-color-dark: #005177; /* Darker shade of primary color */
+    --iasb-accent-color-dark: #e68900; /* Darker shade of accent color */
+}
+
 /* General Styles */
-body.single-story_builder {
-    font-family: Arial, sans-serif;
+body.single-story_builder,
+body.single-iasb_vehicle,
+body.single-iasb_location,
+body.single-iasb_character,
+body.single-iasb_weapon { 
+    font-family: var(--iasb-font-family);
     background-color: #f5f5f5;
     color: #333;
     line-height: 1.6;
     padding: 20px;
 }
 
+/* Article Styles */
 article.story_builder {
     background-color: #fff;
     max-width: 800px;
@@ -17,12 +32,28 @@ article.story_builder {
     width: 100%;
 }
 
+article.story_builder.vehicle_builder,
+article.story_builder.location_builder,
+article.story_builder.weapon_builder,
+article.story_builder.character_builder {
+    border-left: 5px solid var(--iasb-accent-color);
+    padding-left: 25px;
+    background-color: #fffbe6;
+}
+
 /* Title */
 .story-story-title {
     font-size: 2.5em;
     text-align: center;
     margin-bottom: 20px;
     color: #222;
+}
+
+.vehicle-builder .story-story-title,
+.location-builder .story-story-title,
+.weapon-builder .story-story-title,
+.character-builder .story-story-title {
+    color: var(--iasb-accent-color);
 }
 
 /* Meta Information */
@@ -38,6 +69,16 @@ article.story_builder {
     margin: 0 15px;
 }
 
+.location-meta .location-type,
+.vehicle-meta .vehicle-type,
+.weapon-meta .weapon-type,
+.character-meta .character-type {
+    font-size: 1.1em;
+    color: #555;
+    display: block;
+    margin-top: 10px;
+}
+
 /* Story Content */
 .story-content {
     margin-bottom: 40px;
@@ -45,6 +86,51 @@ article.story_builder {
 
 .story-content p {
     margin-bottom: 1.5em;
+}
+
+.vehicle-content,
+.location-content,
+.weapon-content,
+.character-content {
+    background-color: #fff8e1;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ffe082;
+}
+
+/* Specific Content Enhancements */
+.location-builder .location-content {
+    background-color: #e3f2fd; /* Light blue background for locations */
+    border: 1px solid #90caf9;
+}
+
+.weapon-builder .weapon-content {
+    background-color: #ffe6e6; /* Light red background for weapons */
+    border: 1px solid #ffcccc;
+}
+
+.character-builder .character-content {
+    background-color: #e6f7ff; /* Light blue background for characters */
+    border: 1px solid #99d6ff;
+}
+
+/* Image Styles */
+.vehicle-image,
+.location-image,
+.weapon-image,
+.character-image {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.vehicle-image img,
+.location-image img,
+.weapon-image img,
+.character-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 /* User Progress */
@@ -73,6 +159,7 @@ article.story_builder {
 .parallel-universes h3 {
     font-size: 1.5em;
     margin-bottom: 10px;
+    color: var(--iasb-secondary-color);
 }
 
 .parallel-universes ul {
@@ -87,16 +174,12 @@ article.story_builder {
 
 .parallel-universes a {
     text-decoration: none;
-    color: #0073aa;
+    color: var(--iasb-primary-color);
+    position: relative;
 }
 
 .parallel-universes a:hover {
     text-decoration: underline;
-}
-
-.parallel-universes a {
-    position: relative;
-    text-decoration: none;
 }
 
 .parallel-universes a:hover::after {
@@ -113,37 +196,168 @@ article.story_builder {
     opacity: 0.9;
 }
 
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .story-story-title {
-        font-size: 2em;
-    }
-
-    .story-story-meta {
-        font-size: 1em;
-    }
-
-    .branch-link, .ending-link {
-        font-size: 1em;
-        padding: 10px 15px;
-    }
+/* Tooltip Enhancements (Optional Advanced Feature) */
+.parallel-universes a[data-tooltip] {
+    position: relative;
+    cursor: pointer;
 }
 
-.branch-link, .ending-link {
-    transition: background-color 0.3s, transform 0.2s;
+.parallel-universes a[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 50%;
+    bottom: 125%;
+    transform: translateX(-50%);
+    background: #333;
+    color: #fff;
+    padding: 5px 10px;
+    white-space: nowrap;
+    border-radius: 5px;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
 
-.branch-link:hover, .ending-link:hover {
-    background-color: #e65100;
+.parallel-universes a[data-tooltip]:hover::after {
+    opacity: 0.9;
+}
+
+/* Choices Section */
+.story-choices {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #fff7e6;
+    border: 1px solid #ffd27f;
+    border-radius: 8px;
+}
+
+.choices-heading {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+}
+
+.choices-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.choice-item {
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.choice-link {
+    display: block;
+    padding: 15px;
+    background-color: var(--iasb-accent-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    text-align: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.choice-link:hover {
+    background-color: var(--iasb-accent-color-dark);
     transform: translateY(-2px);
 }
 
-.branch-link:focus, .ending-link:focus {
-    outline: 2px dashed #ff9800;
-    outline-offset: 4px;
+.choice-link:active {
+    background-color: #cc7a00;
 }
 
+@media screen and (min-width: 600px) {
+    .choices-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .choice-item {
+        margin: 10px;
+        width: auto;
+    }
+
+    .choice-link {
+        width: 250px;
+    }
+}
+
+/* Next Episode Link */
+.next-episode-link {
+    margin-top: 30px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.next-episode-link a {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--iasb-primary-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.next-episode-link a:hover {
+    background-color: var(--iasb-primary-color-dark);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.no-more-episodes {
+    margin-top: 30px;
+    text-align: center;
+    color: #888;
+    font-size: 1.1em;
+}
+
+.resume-reading-button {
+    margin: 20px 0;
+}
+
+.resume-reading-button .button {
+    background-color: var(--iasb-primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.resume-reading-button .button:hover {
+    background-color: var(--iasb-primary-color-dark);
+}
+
+/* Breadcrumbs */
+.fc-breadcrumbs {
+    background-color: #e0f7fa;
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: inline-block;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.fc-breadcrumbs a {
+    color: var(--iasb-primary-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.fc-breadcrumbs a:hover {
+    text-decoration: underline;
+}
 
 /* Archive Styles */
 .story-story-archive {
@@ -179,7 +393,7 @@ article.story_builder {
 }
 
 .story-story-item h2 a {
-    color: #0073aa;
+    color: var(--iasb-primary-color);
     text-decoration: none;
     transition: color 0.3s;
 }
@@ -206,19 +420,20 @@ article.story_builder {
 
 .story-story-item .read-more {
     display: inline-block;
-    background-color: #ff9800;
+    background-color: var(--iasb-accent-color);
     color: #fff;
     padding: 10px 15px;
     text-decoration: none;
     border-radius: 4px;
     font-size: 1em;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s ease;
 }
 
 .story-story-item .read-more:hover {
-    background-color: #e65100;
+    background-color: var(--iasb-accent-color-dark);
 }
 
+/* Pagination */
 .story-story-pagination {
     text-align: center;
     margin-top: 40px;
@@ -236,7 +451,7 @@ article.story_builder {
 }
 
 .story-story-pagination .page-numbers.current {
-    background-color: #0073aa;
+    background-color: var(--iasb-primary-color);
     color: #fff;
 }
 
@@ -246,6 +461,19 @@ article.story_builder {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .story-story-title {
+        font-size: 2em;
+    }
+
+    .story-story-meta {
+        font-size: 1em;
+    }
+
+    .branch-link, .ending-link {
+        font-size: 1em;
+        padding: 10px 15px;
+    }
+
     .story-story-item {
         padding: 20px 25px;
     }
@@ -262,132 +490,58 @@ article.story_builder {
     .story-story-pagination .page-numbers {
         padding: 8px 12px;
     }
+
+    article.story_builder.vehicle_builder,
+    article.story_builder.location_builder,
+    article.story_builder.weapon_builder,
+    article.story_builder.character_builder {
+        padding-left: 15px;
+    }
+
+    .vehicle-builder .story-story-title,
+    .location-builder .story-story-title,
+    .weapon-builder .story-story-title,
+    .character-builder .story-story-title {
+        font-size: 2em;
+    }
+
+    .vehicle-builder .vehicle-content,
+    .location-builder .location-content,
+    .weapon-builder .weapon-content,
+    .character-builder .character-content {
+        padding: 10px;
+    }
 }
 
+/* Additional Enhancements */
 
-/* Styles for the "What do you do next?" section */
-
-.story-choices {
-    margin-top: 40px;
-    padding: 20px;
-    background-color: #fff7e6;
-    border: 1px solid #ffd27f;
-    border-radius: 8px;
-}
-
-.choices-heading {
-    font-size: 1.8em;
-    margin-bottom: 20px;
-    color: #333;
-    text-align: center;
-}
-
-.choices-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.choice-item {
-    margin-bottom: 15px;
-    width: 100%;
-    max-width: 500px;
-}
-
+/* Hover and Active States for Interactive Elements */
 .choice-link {
-    display: block;
-    padding: 15px;
-    background-color: #ff9800;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    text-align: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .choice-link:hover {
-    background-color: #e68900;
-}
-
-.choice-link:active {
-    background-color: #cc7a00;
-}
-
-@media screen and (min-width: 600px) {
-    .choices-list {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .choice-item {
-        margin: 10px;
-        width: auto;
-    }
-
-    .choice-link {
-        width: 250px;
-    }
-}
-
-/* Styles for the "Next Episode" link */
-.next-episode-link {
-    margin-top: 30px;
-    text-align: center;
-    margin-bottom: 10px;
+    transform: translateY(-2px);
 }
 
 .next-episode-link a {
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: #007bff;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .next-episode-link a:hover {
-    background-color: #0056b3;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.no-more-episodes {
-    margin-top: 30px;
-    text-align: center;
-    color: #888;
-    font-size: 1.1em;
-}
-.resume-reading-button {
-    margin: 20px 0;
-}
-
-.resume-reading-button .button {
-    background-color: #0073aa;
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
+/* Icon Styles for Meta Information */
+.weapon-type i,
+.location-type i,
+.character-type i,
+.vehicle-type i {
+    margin-right: 8px;
+    color: var(--iasb-accent-color);
 }
 
-.resume-reading-button .button:hover {
-    background-color: #005177;
-}
-
-.fc-breadcrumbs {
-    margin: 10px 0;
-    font-size: 0.9em;
-}
-
-.fc-breadcrumbs a {
-    color: #0073aa;
-    text-decoration: none;
-}
-
-.fc-breadcrumbs a:hover {
-    text-decoration: underline;
+/* Optional: Distinct Weapon Title Color */
+.weapon-builder .story-story-title {
+    color: #d32f2f; /* Red color for weapon titles */
 }

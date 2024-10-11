@@ -130,11 +130,7 @@ function iasb_restrict_character_by_type($post_type, $which) {
 add_action('restrict_manage_posts', 'iasb_restrict_character_by_type', 10, 2);
 
 
-
 function iasb_render_child_episodes($post_id) {
-    // Get the current season
-    $current_season = get_post_meta($post_id, '_iasb_story_builder_season', true);
-
     // Get child episodes assigned via parent
     $child_episode_ids = get_post_meta($post_id, '_iasb_child_episode', false);
     if (!is_array($child_episode_ids)) {
@@ -403,7 +399,7 @@ function iasb_get_next_season_number($current_season, $current_storyline_id) {
     return $next_season ? $next_season : false;
 }
 
-// Add Season and Episode Columns to the Fart Story List
+// Add Season and Episode Columns to the Story List
 function iasb_add_season_episode_columns($columns) {
     // Remove unwanted columns
     unset($columns['comments']); // Remove the comments column if desired
@@ -415,6 +411,7 @@ function iasb_add_season_episode_columns($columns) {
         'title'          => $columns['title'],
         'season_number'  => __('Season', 'story-builder'),
         'episode_number' => __('Episode', 'story-builder'),
+        'child_episodes' => __('Child Episodes', 'story-builder'),// Add Child Episodes Column
         'author'         => $columns['author'],
         'date'           => $columns['date'], // Re-add date column
     );
@@ -432,6 +429,25 @@ function iasb_display_season_episode_columns($column, $post_id) {
     if ($column === 'episode_number') {
         $episode = get_post_meta($post_id, '_iasb_story_builder_episode', true);
         echo esc_html($episode);
+    }
+    if ($column === 'child_episodes') {
+        $child_episode_ids = get_post_meta($post_id, '_iasb_child_episode', false);
+        if (!empty($child_episode_ids)) {
+            $child_episodes = get_posts(array(
+                'post_type'      => 'story_builder',
+                'post__in'       => $child_episode_ids,
+                'posts_per_page' => -1,
+                'post_status'    => 'publish',
+            ));
+            if ($child_episodes) {
+                $titles = wp_list_pluck($child_episodes, 'post_title');
+                echo esc_html(implode(', ', $titles));
+            } else {
+                echo '—';
+            }
+        } else {
+            echo '—';
+        }
     }
 
 }

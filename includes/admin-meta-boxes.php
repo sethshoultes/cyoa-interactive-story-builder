@@ -140,38 +140,6 @@ function iasb_save_child_episodes_meta($post_id) {
 }
 add_action('save_post', 'iasb_save_child_episodes_meta');
 
-// Add Child Episodes Column
-function iasb_add_child_episodes_column($columns) {
-    $columns['child_episodes'] = __('Child Episodes', 'story-builder');
-    return $columns;
-}
-add_filter('manage_story_builder_posts_columns', 'iasb_add_child_episodes_column');
-
-// Populate Child Episodes Column
-function iasb_display_child_episodes_column($column, $post_id) {
-    if ($column === 'child_episodes') {
-        $child_episode_ids = get_post_meta($post_id, '_iasb_child_episode', false);
-        if (!empty($child_episode_ids)) {
-            $child_episodes = get_posts(array(
-                'post_type'      => 'story_builder',
-                'post__in'       => $child_episode_ids,
-                'posts_per_page' => -1,
-                'post_status'    => 'publish',
-            ));
-            if ($child_episodes) {
-                $titles = wp_list_pluck($child_episodes, 'post_title');
-                echo esc_html(implode(', ', $titles));
-            } else {
-                echo '—';
-            }
-        } else {
-            echo '—';
-        }
-    }
-}
-add_action('manage_story_builder_posts_custom_column', 'iasb_display_child_episodes_column', 10, 2);
-
-
 // Render Meta Boxes
 function iasb_render_story_characters_meta_box($post) {
     iasb_render_entity_meta_box($post, 'iasb_character', 'iasb_story_characters');
@@ -450,31 +418,7 @@ function iasb_save_story_builder_meta($post_id) {
 add_action('save_post', 'iasb_save_story_builder_meta');
 
 /* Not working yet */
-/**
- * Add a custom column to the 'story_builder' post type
- *
- * @param array $columns
- * @return array
- */
-// Add Parent Episodes Column
-function iasb_add_parent_episodes_column($columns) {
-    $columns['parent_episodes'] = __('Parent Episodes', 'story-builder');
-    return $columns;
-}
-add_filter('manage_story_builder_posts_columns', 'iasb_add_parent_episodes_column');
-// Populate Parent Episodes Column
-function iasb_display_parent_episodes_column($column, $post_id) {
-    if ($column === 'parent_episodes') {
-        $parent_episodes = iasb_get_parent_episodes($post_id);
-        if ($parent_episodes) {
-            $titles = wp_list_pluck($parent_episodes, 'post_title');
-            echo esc_html(implode(', ', $titles));
-        } else {
-            echo '—';
-        }
-    }
-}
-add_action('manage_story_builder_posts_custom_column', 'iasb_display_parent_episodes_column', 10, 2);
+
 
 /**
  * Get the parent episodes of a given post

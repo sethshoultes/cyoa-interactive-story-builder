@@ -24,15 +24,15 @@ if (have_posts()) :
             // Store in cookie
             setcookie('iasb_previous_universe', $from_universe_id, time() + 3600, COOKIEPATH, COOKIE_DOMAIN);
         }
-
+        
         // Display the story content
         ?>
         <article id="post-<?php the_ID(); ?>" <?php post_class('story_builder'); ?>>
             <h1 class="story-story-title"><?php the_title(); ?></h1>
             <div class="story-story-meta">
-                <span class="story-story-storyline"><?php echo __('Storyline:', 'story-builder') . ' ' . iasb_get_storyline_names($post_id); ?></span>
-                <span class="story-story-season"><?php echo __('Season:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_season', true); ?></span>
-                <span class="story-story-episode"><?php echo __('Episode:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_episode', true); ?></span>
+                <?php // Display breadcrumb navigation
+                    iasb_display_breadcrumbs($post_id);
+                ?>
             </div>
 
             <div class="story-content">
@@ -65,10 +65,12 @@ if (have_posts()) :
             // Display the user's progress
             iasb_display_user_progress($user_id);
 
-            // Display breadcrumb navigation
-            iasb_display_breadcrumbs($post_id);
             ?>
-
+            <div class="story-story-meta">
+                <?php // Display breadcrumb navigation
+                    iasb_display_breadcrumbs($post_id);
+                ?>
+            </div>
             <div class="story-entities">
                 <?php
                 // Display Characters

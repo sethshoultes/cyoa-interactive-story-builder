@@ -4,7 +4,7 @@ get_header();
 ?>
 
 <div class="story-story-archive">
-    <h1><?php _e('Fart Stories Archive', 'story-builder'); ?></h1>
+    <h1><?php _e('Stories Archive', 'story-builder'); ?></h1>
 
     <?php
     // Get all storylines

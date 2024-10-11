@@ -620,6 +620,7 @@ function iasb_story_builder_template($template) {
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_template');
+
 // Character Template Redirect
 function iasb_story_builder__character_template($template) {
     if (is_singular('iasb_character')) {
@@ -632,6 +633,42 @@ function iasb_story_builder__character_template($template) {
 }
 add_filter('single_template', 'iasb_story_builder__character_template');
 
+// Vehicle Template Redirect
+function iasb_story_builder__vehicle_template($template) {
+    if (is_singular('iasb_vehicle')) {
+        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder__vehicle_template');
+
+
+// Weapon Template Redirect
+function iasb_story_builder__weapon_template($template) {
+    if (is_singular('iasb_weapon')) {
+        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder__weapon_template');
+
+// Location Template Redirect
+function iasb_story_builder__location_template($template) {
+    if (is_singular('iasb_location')) {
+        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
+        if (file_exists($plugin_template)) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder__location_template');
 
 // Function to display breadcrumb navigation
 function iasb_display_breadcrumbs($post_id) {
@@ -651,10 +688,11 @@ function iasb_display_breadcrumbs($post_id) {
         echo esc_html($universe->name) . ' &raquo; ';
     }
     echo sprintf(__('Season %s', 'story-builder'), '<a href="' . esc_url(add_query_arg('season', $season, get_post_type_archive_link('story_builder'))) . '">' . esc_html($season) . '</a>') . ' &raquo; ';
-    echo sprintf(__('Episode %s', 'story-builder'), '<a href="' . esc_url(add_query_arg(array('season' => $season, 'episode' => $episode), get_post_type_archive_link('story_builder'))) . '">' . esc_html($episode) . '</a>');
+    echo sprintf(__('Episode %s', 'story-builder'),  esc_html($episode) );
     echo '</nav>';
 }
 
+// Function to save the user's story progress
 function iasb_save_story_progress($user_id, $story_id, $season, $episode) {
     $progress = array(
         'story_id' => $story_id,

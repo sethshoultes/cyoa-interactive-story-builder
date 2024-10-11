@@ -8,6 +8,7 @@ if (have_posts()) :
         <article id="post-<?php the_ID(); ?>" <?php post_class('fc-character'); ?>>
             <h1 class="character-title"><?php the_title(); ?></h1>
             <div class="character-content">
+                <?php echo do_shortcode('[iasb_resume_reading]'); ?>
                 <?php the_content(); ?>
             </div>
             <?php

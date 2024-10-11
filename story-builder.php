@@ -74,8 +74,6 @@ function iasb_render_story_manager_page() {
     <?php
 }
 
-
-
 // Function to get parent episodes of a given episode
 function iasb_get_parent_episodes($post_id) {
     $parent_episode_ids = get_post_meta($post_id, '_iasb_parent_episode', false); // Note: false to get all values
@@ -169,58 +167,6 @@ function iasb_render_child_episodes($post_id) {
     wp_reset_postdata();
 }
 
-
-// Helper function to get the next story in a branch within the same season
-function iasb_get_next_story_in_branch($branch_id, $current_post_id) {
-    $current_episode = get_post_meta($current_post_id, '_iasb_story_builder_episode', true);
-    $current_season = get_post_meta($current_post_id, '_iasb_story_builder_season', true);
-
-    $meta_query = array(
-        'relation' => 'AND',
-        array(
-            'key'     => '_iasb_story_builder_season',
-            'value'   => $current_season,
-            'compare' => '=',
-            'type'    => 'NUMERIC',
-        ),
-    );
-
-    if ($current_episode) {
-        $meta_query[] = array(
-            'key'     => '_iasb_story_builder_episode',
-            'value'   => $current_episode,
-            'compare' => '>',
-            'type'    => 'NUMERIC',
-        );
-    } else {
-        // If current episode is not set, get any story in the branch
-        $meta_query[] = array(
-            'key'     => '_iasb_story_builder_episode',
-            'compare' => 'EXISTS',
-        );
-    }
-
-    $args = array(
-        'post_type'      => 'story_builder',
-        'posts_per_page' => 1,
-        'post__not_in'   => array($current_post_id),
-        'tax_query'      => array(
-            array(
-                'taxonomy' => 'story_branch',
-                'field'    => 'term_id',
-                'terms'    => $branch_id,
-            ),
-        ),
-        'meta_query'     => $meta_query,
-        'meta_key'       => '_iasb_story_builder_episode',
-        'orderby'        => 'meta_value_num',
-        'order'          => 'ASC',
-    );
-
-    $query = new WP_Query($args);
-
-    return $query->have_posts() ? $query->posts[0] : null;
-}
 
 // Function to display the "Next Episode" link considering seasons and next season
 function iasb_render_next_episode_link($post_id) {
@@ -414,24 +360,6 @@ function iasb_get_story_structure() {
 
 add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
 
-// Helper function to get the alternate ending story
-function iasb_get_alternate_ending_story($ending_id, $current_post_id) {
-    $args = array(
-        'post_type'      => 'story_builder',
-        'posts_per_page' => 1,
-        'post__not_in'   => array($current_post_id),
-        'tax_query'      => array(
-            array(
-                'taxonomy' => 'alternate_ending',
-                'field'    => 'term_id',
-                'terms'    => $ending_id,
-            ),
-        ),
-    );
-    $query = new WP_Query($args);
-    return $query->have_posts() ? $query->posts[0] : null;
-}
-
 // Function to display universes and allow switching if available
 function iasb_render_universes($post_id, $user_id) {
     // Get all universes
@@ -612,9 +540,14 @@ add_action('wp_ajax_iasb_update_user_progress', 'iasb_update_user_progress');
 // Story Template Redirect
 function iasb_story_builder_template($template) {
     if (is_singular('story_builder')) {
-        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_story.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_story.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_story.php';
         }
     }
     return $template;
@@ -622,53 +555,73 @@ function iasb_story_builder_template($template) {
 add_filter('single_template', 'iasb_story_builder_template');
 
 // Character Template Redirect
-function iasb_story_builder__character_template($template) {
+function iasb_story_builder_character_template($template) {
     if (is_singular('iasb_character')) {
-        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_character.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_character.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_character.php';
         }
     }
     return $template;
 }
-add_filter('single_template', 'iasb_story_builder__character_template');
+add_filter('single_template', 'iasb_story_builder_character_template');
 
 // Vehicle Template Redirect
-function iasb_story_builder__vehicle_template($template) {
+function iasb_story_builder_vehicle_template($template) {
     if (is_singular('iasb_vehicle')) {
-        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_vehicle.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
         }
     }
     return $template;
 }
-add_filter('single_template', 'iasb_story_builder__vehicle_template');
+add_filter('single_template', 'iasb_story_builder_vehicle_template');
 
 
 // Weapon Template Redirect
-function iasb_story_builder__weapon_template($template) {
+function iasb_story_builder_weapon_template($template) {
     if (is_singular('iasb_weapon')) {
-        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_weapon.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
         }
     }
     return $template;
 }
-add_filter('single_template', 'iasb_story_builder__weapon_template');
+add_filter('single_template', 'iasb_story_builder_weapon_template');
 
 // Location Template Redirect
-function iasb_story_builder__location_template($template) {
+function iasb_story_builder_location_template($template) {
     if (is_singular('iasb_location')) {
-        $plugin_template = plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
-        if (file_exists($plugin_template)) {
-            return $plugin_template;
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_location.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
         }
     }
     return $template;
 }
-add_filter('single_template', 'iasb_story_builder__location_template');
+add_filter('single_template', 'iasb_story_builder_location_template');
 
 // Function to display breadcrumb navigation
 function iasb_display_breadcrumbs($post_id) {
@@ -786,4 +739,15 @@ function iasb_save_character_profile_field($user_id) {
 }
 add_action('personal_options_update', 'iasb_save_character_profile_field');
 add_action('edit_user_profile_update', 'iasb_save_character_profile_field');
+
+// Enqueue Font Awesome on the template pages
+function iasb_enqueue_font_awesome() {
+    if (is_singular('iasb_weapon') || is_post_type_archive('iasb_weapon') ||
+        is_singular('iasb_location') || is_post_type_archive('iasb_location') ||
+        is_singular('iasb_vehicle') || is_post_type_archive('iasb_vehicle') ||
+        is_singular('iasb_character') || is_post_type_archive('iasb_character')) {
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
+    }
+}
+add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
 

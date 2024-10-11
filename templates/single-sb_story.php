@@ -25,60 +25,47 @@ if (have_posts()) :
             setcookie('iasb_previous_universe', $from_universe_id, time() + 3600, COOKIEPATH, COOKIE_DOMAIN);
         }
 
-
         // Display the story content
         ?>
         <article id="post-<?php the_ID(); ?>" <?php post_class('story_builder'); ?>>
             <h1 class="story-story-title"><?php the_title(); ?></h1>
             <div class="story-story-meta">
-            <span class="story-story-storyline"><?php echo __('Storyline:', 'story-builder') . ' ' . iasb_get_storyline_names($post_id); ?></span>
-            <span class="story-story-season"><?php echo __('Season:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_season', true); ?></span>
-            <span class="story-story-episode"><?php echo __('Episode:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_episode', true); ?></span>
-        </div>
+                <span class="story-story-storyline"><?php echo __('Storyline:', 'story-builder') . ' ' . iasb_get_storyline_names($post_id); ?></span>
+                <span class="story-story-season"><?php echo __('Season:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_season', true); ?></span>
+                <span class="story-story-episode"><?php echo __('Episode:', 'story-builder') . ' ' . get_post_meta($post_id, '_iasb_story_builder_episode', true); ?></span>
+            </div>
 
             <div class="story-content">
                 <?php the_content(); ?>
             </div>
-            
+
             <?php
 
             // Provide a link back to previous universe if available
-        if (isset($_COOKIE['iasb_previous_universe'])) {
-            $previous_universe_id = sanitize_text_field($_COOKIE['iasb_previous_universe']);
-            if ($previous_universe_id !== $current_universe_id) {
-                $progress = get_user_meta($user_id, 'story_builder_progress', true);
-                if ($progress && isset($progress[$previous_universe_id])) {
-                    $previous_story_id = $progress[$previous_universe_id]['story_id'];
-                    $universe_name = ($previous_universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : get_term($previous_universe_id, 'parallel_universe')->name;
-                    echo '<div class="return-to-previous-universe">';
-                    echo '<a href="' . get_permalink($previous_story_id) . '">' . sprintf(__('Return to your place in %s', 'story-builder'), esc_html($universe_name)) . '</a>';
-                    echo '</div>';
+            if (isset($_COOKIE['iasb_previous_universe'])) {
+                $previous_universe_id = sanitize_text_field($_COOKIE['iasb_previous_universe']);
+                if ($previous_universe_id !== $current_universe_id) {
+                    $progress = get_user_meta($user_id, 'story_builder_progress', true);
+                    if ($progress && isset($progress[$previous_universe_id])) {
+                        $previous_story_id = $progress[$previous_universe_id]['story_id'];
+                        $universe_name = ($previous_universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : get_term($previous_universe_id, 'parallel_universe')->name;
+                        echo '<div class="return-to-previous-universe">';
+                        echo '<a href="' . get_permalink($previous_story_id) . '">' . sprintf(__('Return to your place in %s', 'story-builder'), esc_html($universe_name)) . '</a>';
+                        echo '</div>';
+                    }
                 }
             }
-        }
 
-
-            // Check if there are child episodes
-            $child_episodes = get_children(array(
-                'post_parent' => $post_id,
-                'post_type'   => 'story_builder',
-                'numberposts' => -1,
-                'post_status' => 'publish',
-            ));
-
-            // If there are child episodes, display choices; otherwise, display "Next Episode" link
-            if ($child_episodes) {
-                iasb_render_child_episodes($post_id);
-            } else {
-                iasb_render_next_episode_link($post_id);
-            }
+            // Render child episodes directly without using get_children()
+            iasb_render_child_episodes($post_id);
 
             // Display universes
             iasb_render_universes($post_id, $user_id);
 
             // Display the user's progress
             iasb_display_user_progress($user_id);
-            
+
+            // Display breadcrumb navigation
             iasb_display_breadcrumbs($post_id);
             ?>
 
@@ -127,7 +114,6 @@ if (have_posts()) :
                     }
                     echo '</ul>';
                 }?>
-
             </div>
 
         </article>
@@ -138,3 +124,4 @@ if (have_posts()) :
 endif;
 
 get_footer();
+?>

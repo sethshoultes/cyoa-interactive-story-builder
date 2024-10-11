@@ -1,4 +1,3 @@
-
 <?php
 // Register Custom Post Type for Stories
 function iasb_register_story_stories_cpt() {

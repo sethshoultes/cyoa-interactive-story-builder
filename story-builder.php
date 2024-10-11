@@ -641,7 +641,7 @@ function iasb_display_breadcrumbs($post_id) {
     $episode = get_post_meta($post_id, '_iasb_story_builder_episode', true);
 
     echo '<nav class="fc-breadcrumbs">';
-    echo 'Current location: <a href="' . get_post_type_archive_link('story_builder') . '">' . __('Fart Stories', 'story-builder') . '</a> &raquo; ';
+    echo 'Current location: <a href="' . get_post_type_archive_link('story_builder') . '">' . __('Stories', 'story-builder') . '</a> &raquo; ';
     if (!empty($storylines)) {
         $storyline = $storylines[0];
         echo '<a href="' . get_term_link($storyline) . '">' . esc_html($storyline->name) . '</a> &raquo; ';

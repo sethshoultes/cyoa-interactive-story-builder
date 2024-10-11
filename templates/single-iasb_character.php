@@ -38,6 +38,12 @@ if (have_posts()) :
             ?>
             
             <?php
+            // Display Child Episodes
+            iasb_render_child_episodes(get_the_ID());
+
+            // Display Next Episode Link (if no child episodes)
+            // This is handled inside iasb_render_child_episodes()
+            
             // Display Related Stories
             $current_character_id = get_the_ID();
 

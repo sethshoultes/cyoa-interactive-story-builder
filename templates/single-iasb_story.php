@@ -1,5 +1,5 @@
 <?php
-// templates/single-sb_story.php
+// templates/single-iasb_story.php
 get_header();
 
 if (have_posts()) :

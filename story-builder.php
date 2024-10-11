@@ -92,50 +92,57 @@ add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
 
 // Template Redirects
 // Story Template Redirect
+
+
+// Updated Story Template Redirect
 function iasb_story_builder_template($template) {
     if (is_singular('story_builder')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_story.php'));
-        
+        $theme_template = locate_template(array('templates/archive-iasb_story.php', 'templates/single-iasb_story.php')); // Updated file name
+
         if ($theme_template) {
             return $theme_template;
         } else {
             // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_story.php';
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_story.php'; // Updated file name
         }
     }
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_template');
 
-// Character Template Redirect
+
+
+// Updated Character Template Redirect
 function iasb_story_builder_character_template($template) {
     if (is_singular('iasb_character')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_character.php'));
-        
+        $theme_template = locate_template(array('templates/archive-iasb_character.php', 'templates/single-iasb_character.php')); // Updated file name
+
         if ($theme_template) {
             return $theme_template;
         } else {
             // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_character.php';
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_character.php'; // Updated file name
         }
     }
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_character_template');
 
-// Vehicle Template Redirect
+
+
+// Updated Vehicle Template Redirect
 function iasb_story_builder_vehicle_template($template) {
     if (is_singular('iasb_vehicle')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_vehicle.php'));
-        
+        $theme_template = locate_template(array('templates/archive-iasb_vehicle.php', 'templates/single-iasb_vehicle.php')); // Updated file name
+
         if ($theme_template) {
             return $theme_template;
         } else {
             // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_vehicle.php'; // Updated file name
         }
     }
     return $template;
@@ -143,39 +150,46 @@ function iasb_story_builder_vehicle_template($template) {
 add_filter('single_template', 'iasb_story_builder_vehicle_template');
 
 
-// Weapon Template Redirect
+
+
+// Updated Weapon Template Redirect
 function iasb_story_builder_weapon_template($template) {
     if (is_singular('iasb_weapon')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_weapon.php'));
-        
+        $theme_template = locate_template(array('templates/archive-iasb_weapon.php', 'templates/single-iasb_weapon.php')); // Updated file name
+
         if ($theme_template) {
             return $theme_template;
         } else {
             // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_weapon.php'; // Updated file name
         }
     }
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_weapon_template');
 
-// Location Template Redirect
+
+
+
+
+// Updated Location Template Redirect
 function iasb_story_builder_location_template($template) {
     if (is_singular('iasb_location')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_location.php'));
-        
+        $theme_template = locate_template(array('templates/archive-iasb_weapon.php', 'templates/single-iasb_location.php')); // Updated file name
+
         if ($theme_template) {
             return $theme_template;
         } else {
             // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_location.php'; // Updated file name
         }
     }
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_location_template');
+
 
 
 // Enqueue D3.js library and custom script for the Story Manager page

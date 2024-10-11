@@ -1,5 +1,5 @@
 <?php
-// templates/single-sb_vehicle.php
+// templates/single-iasb_vehicle.php
 get_header();
 
 if (have_posts()) :

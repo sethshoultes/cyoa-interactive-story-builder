@@ -118,7 +118,8 @@ article.story_builder.character_builder {
 .vehicle-image,
 .location-image,
 .weapon-image,
-.character-image {
+.character-image,
+.single-story-image {
     text-align: center;
     margin-bottom: 20px;
 }
@@ -126,7 +127,8 @@ article.story_builder.character_builder {
 .vehicle-image img,
 .location-image img,
 .weapon-image img,
-.character-image img {
+.character-image img,
+.single-story-image img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;

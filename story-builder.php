@@ -160,13 +160,11 @@ function iasb_render_child_episodes($post_id) {
         echo '</ul>';
         echo '</div>';
     } else {
-        echo '<div class="story-end">';
-        echo '<p>' . __('The End.', 'story-builder') . '</p>';
-        echo '</div>';
+       // Display Next Episode Link
+       iasb_render_next_episode_link($post_id);
     }
     wp_reset_postdata();
 }
-
 
 // Function to display the "Next Episode" link considering seasons and next season
 function iasb_render_next_episode_link($post_id) {

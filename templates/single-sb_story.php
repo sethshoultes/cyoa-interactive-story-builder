@@ -34,6 +34,11 @@ if (have_posts()) :
                     iasb_display_breadcrumbs($post_id);
                 ?>
             </div>
+            <?php if (has_post_thumbnail()) : ?>
+                <div class="single-story-image">
+                    <?php the_post_thumbnail('large', array('alt' => get_the_title())); ?>
+                </div>
+            <?php endif; ?>
 
             <div class="story-content">
                 <?php the_content(); ?>

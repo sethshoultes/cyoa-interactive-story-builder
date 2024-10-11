@@ -112,7 +112,7 @@ function iasb_register_persona_cpts() {
     $args = array(
         'labels'             => $labels,
         'public'             => true,
-        'has_archive'        => false,
+        'has_archive'        => true,
         'rewrite'            => array('slug' => 'characters'),
         'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
         'menu_position'      => 27,
@@ -137,7 +137,7 @@ function iasb_register_persona_cpts() {
     $args = array(
         'labels'             => $labels,
         'public'             => true,
-        'has_archive'        => false,
+        'has_archive'        => true,
         'rewrite'            => array('slug' => 'locations'),
         'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
         'menu_position'      => 28,
@@ -161,7 +161,7 @@ function iasb_register_persona_cpts() {
     $args = array(
         'labels'             => $labels,
         'public'             => true,
-        'has_archive'        => false,
+        'has_archive'        => true,
         'rewrite'            => array('slug' => 'vehicles'),
         'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
         'menu_position'      => 29,
@@ -185,7 +185,7 @@ function iasb_register_persona_cpts() {
     $args = array(
         'labels'             => $labels,
         'public'             => true,
-        'has_archive'        => false,
+        'has_archive'        => true,
         'rewrite'            => array('slug' => 'weapons'),
         'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
         'menu_position'      => 30,

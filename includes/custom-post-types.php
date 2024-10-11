@@ -287,3 +287,19 @@ function iasb_register_persona_taxonomies() {
     ));
 }
 add_action('init', 'iasb_register_persona_taxonomies');
+
+// Save Taxonomies
+function iasb_save_story_builder_taxonomies($post_id) {
+    // Check if nonce is valid
+    if (!isset($_POST['iasb_story_builder_nonce']) || !wp_verify_nonce($_POST['iasb_story_builder_nonce'], basename(__FILE__))) {
+        return $post_id;
+    }
+
+    // Save selected parallel universe (custom dropdown)
+    if (isset($_POST['parallel_universe'])) {
+        $universe = intval($_POST['parallel_universe']);
+        wp_set_post_terms($post_id, array($universe), 'parallel_universe');
+    }
+
+}
+add_action('save_post', 'iasb_save_story_builder_taxonomies');

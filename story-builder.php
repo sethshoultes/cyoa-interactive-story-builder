@@ -2,15 +2,55 @@
 /**
  * Plugin Name: CYOA Interactive Adventure Story Builder
  * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story. Shortcodes are available to embed stories in posts and pages: [user_story_name].
- * Version: 1.0
+ * Version: 1.1.0
  * Author: Seth Shoultes
  * License: GPL2
  */
-
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 // Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
+
+
+/**
+ * Initialize the plugin update checker.
+ */
+function my_plugin_auto_update() {
+    // Include the library if it's not already included
+    if ( ! class_exists( '\\YahnisElsts\\PluginUpdateChecker\\PluginUpdateChecker' ) ) {
+        require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
+    }
+
+    // Replace these variables with your own repository details
+    $github_username   = 'sethshoultes';
+    $github_repository = 'cyoa-interactive-story-builder';
+    $plugin_slug       = 'cyoa-interactive-story-builder'; // This should match the plugin's folder name
+
+    // Initialize the update checker
+    $updateChecker = PucFactory::buildUpdateChecker(
+        "https://github.com/{$github_username}/{$github_repository}/",
+        __FILE__,
+        $plugin_slug
+    );
+
+    /*
+     * Create a new release using the "Releases" feature on GitHub. The tag name and release title don't matter. 
+     * The description is optional, but if you do provide one, it will be displayed when the user clicks the 
+     * "View version x.y.z details" link on the "Plugins" page. Note that PUC ignores releases marked as 
+     * "This is a pre-release".
+     *
+     * If you want to use release assets, call the enableReleaseAssets() method after creating the update checker instance:
+     */
+    //$updateChecker->getVcsApi()->enableReleaseAssets();
+
+    // Optional: Set the branch that contains the stable release
+    $updateChecker->setBranch('main'); // Change 'main' to the branch you use
+
+    // Optional: If your repository is private, add your access token
+    // $updateChecker->setAuthentication('your_github_access_token');
+}
+add_action( 'init', 'my_plugin_auto_update' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
@@ -40,7 +80,106 @@ function iasb_story_stories_enqueue_assets() {
 }
 add_action('wp_enqueue_scripts', 'iasb_story_stories_enqueue_assets');
 
+// Enqueue Font Awesome on the template pages
+function iasb_enqueue_font_awesome() {
+    if (is_singular('iasb_weapon') || is_post_type_archive('iasb_weapon') ||
+        is_singular('iasb_location') || is_post_type_archive('iasb_location') ||
+        is_singular('iasb_vehicle') || is_post_type_archive('iasb_vehicle') ||
+        is_singular('iasb_character') || is_post_type_archive('iasb_character')) {
+        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
+    }
+}
+add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
 
+// Template Redirects
+// Story Template Redirect
+function iasb_story_builder_template($template) {
+    if (is_singular('story_builder')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_story.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_story.php';
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_template');
+
+// Character Template Redirect
+function iasb_story_builder_character_template($template) {
+    if (is_singular('iasb_character')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_character.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_character.php';
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_character_template');
+
+// Vehicle Template Redirect
+function iasb_story_builder_vehicle_template($template) {
+    if (is_singular('iasb_vehicle')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_vehicle.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_vehicle_template');
+
+
+// Weapon Template Redirect
+function iasb_story_builder_weapon_template($template) {
+    if (is_singular('iasb_weapon')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_weapon.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_weapon_template');
+
+// Location Template Redirect
+function iasb_story_builder_location_template($template) {
+    if (is_singular('iasb_location')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('/templates/single-sb_location.php'));
+        
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_location_template');
+
+
+// Enqueue D3.js library and custom script for the Story Manager page
 function iasb_enqueue_d3_js_library($hook) {
     // Check if we're on the Story Manager page
     if ($hook !== 'story_builder_page_story-story-manager') {
@@ -63,8 +202,7 @@ function iasb_enqueue_d3_js_library($hook) {
     wp_enqueue_style('story-story-manager-css', plugin_dir_url(__FILE__) . 'css/story-story-manager.css');
 }
 add_action('admin_enqueue_scripts', 'iasb_enqueue_d3_js_library');
-
-
+// Function to render the Story Manager page
 function iasb_render_story_manager_page() {
     ?>
     <div class="wrap">
@@ -73,61 +211,45 @@ function iasb_render_story_manager_page() {
     </div>
     <?php
 }
+// Add the Story Manager page to the admin menu
+function iasb_get_story_structure() {
+    // Verify nonce for security
+    check_ajax_referer('iasb_story_builder_manager_nonce', 'nonce');
 
-// Function to get parent episodes of a given episode
-function iasb_get_parent_episodes($post_id) {
-    $parent_episode_ids = get_post_meta($post_id, '_iasb_parent_episode', false); // Note: false to get all values
-    if (!is_array($parent_episode_ids)) {
-        $parent_episode_ids = array();
-    }
-
-    // Get the parent episodes
-    $parent_episodes = get_posts(array(
-        'post_type'      => 'story_builder',
-        'post__in'       => $parent_episode_ids,
+    // Fetch all story stories
+    $story_stories = get_posts(array(
+        'post_type' => 'story_builder',
         'posts_per_page' => -1,
-        'post_status'    => 'publish',
+        'post_status' => 'publish'
     ));
 
-    return $parent_episodes;
-}
+    $story_tree = array();
 
-// Save Taxonomies
-function iasb_save_story_builder_taxonomies($post_id) {
-    // Check if nonce is valid
-    if (!isset($_POST['iasb_story_builder_nonce']) || !wp_verify_nonce($_POST['iasb_story_builder_nonce'], basename(__FILE__))) {
-        return $post_id;
+    // Build the story tree structure
+    foreach ($story_stories as $story) {
+        $universes = wp_get_post_terms($story->ID, 'parallel_universe', array('fields' => 'names'));
+        $branches = wp_get_post_terms($story->ID, 'story_branch', array('fields' => 'names'));
+        $endings = wp_get_post_terms($story->ID, 'alternate_ending', array('fields' => 'names'));
+
+        $story_node = array(
+            'name' => $story->post_title,
+            'universes' => $universes,
+            'branches' => $branches,
+            'endings' => $endings,
+        );
+
+        // Add to the tree
+        $story_tree[] = $story_node;
     }
 
-    // Save selected parallel universe (custom dropdown)
-    if (isset($_POST['parallel_universe'])) {
-        $universe = intval($_POST['parallel_universe']);
-        wp_set_post_terms($post_id, array($universe), 'parallel_universe');
-    }
-
+    // Return the tree data in a format that D3.js can use
+    wp_send_json_success($story_tree);
 }
-add_action('save_post', 'iasb_save_story_builder_taxonomies');
 
-// Add Filter Dropdown
-function iasb_restrict_character_by_type($post_type, $which) {
-    if ('iasb_character' !== $post_type)
-        return;
-
-    $taxonomy = 'character_type';
-    wp_dropdown_categories(array(
-        'show_option_all' => __('Show All Types', 'story-builder'),
-        'taxonomy'        => $taxonomy,
-        'name'            => $taxonomy,
-        'orderby'         => 'name',
-        'selected'        => isset($_GET[$taxonomy]) ? $_GET[$taxonomy] : '',
-        'hierarchical'    => true,
-        'show_count'      => true,
-        'hide_empty'      => true,
-    ));
-}
-add_action('restrict_manage_posts', 'iasb_restrict_character_by_type', 10, 2);
+add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
 
 
+// Function to render the Child Episode Buttons on the front end
 function iasb_render_child_episodes($post_id) {
     // Query for episodes where '_iasb_parent_episode' meta field equals the current post ID
     $child_episodes = new WP_Query(array(
@@ -321,44 +443,7 @@ function iasb_get_next_season_number($current_season, $current_storyline_id) {
     return $next_season ? $next_season : false;
 }
 
-
-function iasb_get_story_structure() {
-    // Verify nonce for security
-    check_ajax_referer('iasb_story_builder_manager_nonce', 'nonce');
-
-    // Fetch all story stories
-    $story_stories = get_posts(array(
-        'post_type' => 'story_builder',
-        'posts_per_page' => -1,
-        'post_status' => 'publish'
-    ));
-
-    $story_tree = array();
-
-    // Build the story tree structure
-    foreach ($story_stories as $story) {
-        $universes = wp_get_post_terms($story->ID, 'parallel_universe', array('fields' => 'names'));
-        $branches = wp_get_post_terms($story->ID, 'story_branch', array('fields' => 'names'));
-        $endings = wp_get_post_terms($story->ID, 'alternate_ending', array('fields' => 'names'));
-
-        $story_node = array(
-            'name' => $story->post_title,
-            'universes' => $universes,
-            'branches' => $branches,
-            'endings' => $endings,
-        );
-
-        // Add to the tree
-        $story_tree[] = $story_node;
-    }
-
-    // Return the tree data in a format that D3.js can use
-    wp_send_json_success($story_tree);
-}
-
-add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
-
-// Function to display universes and allow switching if available
+// Function to display universes and allow switching if available front end
 function iasb_render_universes($post_id, $user_id) {
     // Get all universes
     $all_universes = get_terms('parallel_universe', array('hide_empty' => false));
@@ -456,14 +541,6 @@ function iasb_render_universes($post_id, $user_id) {
     }
 }
 
-
-//Helper Function to Get Storyline Names:
-function iasb_get_storyline_names($post_id) {
-    $storylines = wp_get_post_terms($post_id, 'storyline', array('fields' => 'names'));
-    return !empty($storylines) ? esc_html(implode(', ', $storylines)) : __('None', 'story-builder');
-}
-
-
 // Function to save user story progress per universe
 function iasb_save_user_story_progress($user_id, $story_id) {
     // Get the universes associated with the story
@@ -507,119 +584,6 @@ function iasb_display_user_progress($user_id, $current_universe_id = null) {
     }
 }
 
-
-//Helper Function to get User Progress:
-function iasb_get_user_story_progress($user_id) {
-    return get_user_meta($user_id, 'story_builder_progress', true);
-}
-
-
-// AJAX handler to update user progress
-function iasb_update_user_progress() {
-    check_ajax_referer('iasb_update_progress_nonce', 'nonce');
-
-    if (!is_user_logged_in()) {
-        wp_send_json_error(__('You must be logged in to save your progress', 'story-builder'));
-    }
-
-    $user_id = get_current_user_id();
-    $story_id = isset($_POST['story_id']) ? intval($_POST['story_id']) : 0;
-
-    if ($story_id) {
-        iasb_save_user_story_progress($user_id, $story_id);
-        wp_send_json_success(__('Progress saved', 'story-builder'));
-    } else {
-        wp_send_json_error(__('Invalid story ID', 'story-builder'));
-    }
-}
-add_action('wp_ajax_iasb_update_user_progress', 'iasb_update_user_progress');
-
-// Template Redirects
-// Story Template Redirect
-function iasb_story_builder_template($template) {
-    if (is_singular('story_builder')) {
-        // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_story.php'));
-        
-        if ($theme_template) {
-            return $theme_template;
-        } else {
-            // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_story.php';
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'iasb_story_builder_template');
-
-// Character Template Redirect
-function iasb_story_builder_character_template($template) {
-    if (is_singular('iasb_character')) {
-        // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_character.php'));
-        
-        if ($theme_template) {
-            return $theme_template;
-        } else {
-            // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_character.php';
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'iasb_story_builder_character_template');
-
-// Vehicle Template Redirect
-function iasb_story_builder_vehicle_template($template) {
-    if (is_singular('iasb_vehicle')) {
-        // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_vehicle.php'));
-        
-        if ($theme_template) {
-            return $theme_template;
-        } else {
-            // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_vehicle.php';
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'iasb_story_builder_vehicle_template');
-
-
-// Weapon Template Redirect
-function iasb_story_builder_weapon_template($template) {
-    if (is_singular('iasb_weapon')) {
-        // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_weapon.php'));
-        
-        if ($theme_template) {
-            return $theme_template;
-        } else {
-            // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_weapon.php';
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'iasb_story_builder_weapon_template');
-
-// Location Template Redirect
-function iasb_story_builder_location_template($template) {
-    if (is_singular('iasb_location')) {
-        // Check if the theme has an override template
-        $theme_template = locate_template(array('/templates/single-sb_location.php'));
-        
-        if ($theme_template) {
-            return $theme_template;
-        } else {
-            // Load the default plugin template
-            return plugin_dir_path(__FILE__) . 'templates/single-sb_location.php';
-        }
-    }
-    return $template;
-}
-add_filter('single_template', 'iasb_story_builder_location_template');
 
 // Function to display breadcrumb navigation
 function iasb_display_breadcrumbs($post_id) {
@@ -686,8 +650,6 @@ function iasb_save_story_name_field($user_id) {
 add_action('personal_options_update', 'iasb_save_story_name_field');
 add_action('edit_user_profile_update', 'iasb_save_story_name_field');
 
-
-
 // Add a field to the user profile to select a character profile
 function iasb_add_character_profile_field($user) {
     // Get all characters
@@ -737,15 +699,3 @@ function iasb_save_character_profile_field($user_id) {
 }
 add_action('personal_options_update', 'iasb_save_character_profile_field');
 add_action('edit_user_profile_update', 'iasb_save_character_profile_field');
-
-// Enqueue Font Awesome on the template pages
-function iasb_enqueue_font_awesome() {
-    if (is_singular('iasb_weapon') || is_post_type_archive('iasb_weapon') ||
-        is_singular('iasb_location') || is_post_type_archive('iasb_location') ||
-        is_singular('iasb_vehicle') || is_post_type_archive('iasb_vehicle') ||
-        is_singular('iasb_character') || is_post_type_archive('iasb_character')) {
-        wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
-    }
-}
-add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
-

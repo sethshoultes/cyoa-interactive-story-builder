@@ -15,7 +15,7 @@ if (!defined('ABSPATH')) {
 /**
  * Initialize the plugin update checker.
  */
-function my_plugin_auto_update() {
+function iasb_story_builder_plugin_auto_update() {
     // Include the library if it's not already included
     if ( ! class_exists( '\\YahnisElsts\\PluginUpdateChecker\\PluginUpdateChecker' ) ) {
         require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
@@ -49,7 +49,7 @@ function my_plugin_auto_update() {
     // Optional: If your repository is private, add your access token
     // $updateChecker->setAuthentication('your_github_access_token');
 }
-add_action( 'init', 'my_plugin_auto_update' );
+add_action( 'init', 'iasb_story_builder_plugin_auto_update' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';

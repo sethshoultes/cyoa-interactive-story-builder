@@ -12,7 +12,6 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-
 /**
  * Initialize the plugin update checker.
  */

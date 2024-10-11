@@ -103,6 +103,32 @@ A WordPress plugin that allows you to create interactive, choose-your-own-advent
 ### Shortcodes
 
 - `[iasb_resume_reading]`: Displays a 'Resume Reading' button for logged-in users to continue where they left off.
+- `[iasb_resume_reading]`: Displays a 'Resume Reading' button for logged-in users to continue where they left off.
+- `[user_story_name]`: Displays the logged in user name
+
+**Usage Examples**
+Example 1: Display Content Only to Administrators
+`[conditional_content role="administrator"]
+<p>This content is only visible to administrators.</p>
+[/conditional_content]`
+
+Example 2: Display Content Based on Story Progress
+
+Assuming story_id corresponds to the storyline's term ID or post ID as per your implementation.
+`[conditional_content story_id="123" season="2" episode="5"]
+<p>You have unlocked this special scene because you've reached Season 2, Episode 5!</p>
+[/conditional_content]`
+
+Example 3: Combine Role and Story Progress Conditions
+
+`[conditional_content role="subscriber" story_id="123" season="3" episode="10"]
+<p>Subscribers who have reached Season 3, Episode 10 can see this exclusive content.</p>
+[/conditional_content]`
+
+Explanation:
+
+The content within the shortcode will only be displayed if the user meets all specified conditions.
+If multiple attributes are provided, all must be satisfied for the content to render.
 
 ### Filters 
 `// Function to override the user story name with character profile name

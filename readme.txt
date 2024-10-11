@@ -90,6 +90,52 @@ The **CYOA Interactive Adventure Story Builder** is a WordPress plugin that allo
 - `[iasb_resume_reading]`: Displays a 'Resume Reading' button for logged-in users to continue where they left off.
 - `[user_story_name]`: Displays the logged in user name
 
+**Usage Examples**
+Example 1: Display Content Only to Administrators
+`[conditional_content role="administrator"]
+<p>This content is only visible to administrators.</p>
+[/conditional_content]`
+
+Example 2: Display Content Based on Story Progress
+
+Assuming story_id corresponds to the storyline's term ID or post ID as per your implementation.
+`[conditional_content story_id="123" season="2" episode="5"]
+<p>You have unlocked this special scene because you've reached Season 2, Episode 5!</p>
+[/conditional_content]`
+
+Example 3: Combine Role and Story Progress Conditions
+
+`[conditional_content role="subscriber" story_id="123" season="3" episode="10"]
+<p>Subscribers who have reached Season 3, Episode 10 can see this exclusive content.</p>
+[/conditional_content]`
+
+Explanation:
+
+The content within the shortcode will only be displayed if the user meets all specified conditions.
+If multiple attributes are provided, all must be satisfied for the content to render.
+
+`[conditional_content]`:
+
+Attributes:
+role: Specify the user role required to view the content.
+story_id, season, episode: Define the story progress required.
+Example:
+`[conditional_content role="subscriber" story_id="123" season="2" episode="4"]
+<p>Exclusive content for subscribers who have reached Season 2, Episode 4.</p>
+[/conditional_content]`
+
+`[dynamic_content]`:
+
+Attributes:
+type: Define the type of content (text, image, link, etc.).
+id: Related ID for the content.
+class: Additional CSS classes.
+title: Title or text content.
+target: Link target attribute.
+Example:
+`[dynamic_content type="image" id="456" class="story-image" title="A mysterious artifact"]`
+
+
 **Displaying Breadcrumbs and Navigation:**
 
 - The plugin automatically displays breadcrumb navigation and 'Next Episode' links in the story templates.

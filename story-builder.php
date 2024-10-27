@@ -93,8 +93,6 @@ add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
 // Template Redirects
 // Story Template Redirect
 
-
-// Updated Story Template Redirect
 function iasb_story_builder_template($template) {
     if (is_singular('story_builder')) {
         // Check if the theme has an override template
@@ -110,8 +108,6 @@ function iasb_story_builder_template($template) {
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_template');
-
-
 
 // Updated Character Template Redirect
 function iasb_story_builder_character_template($template) {
@@ -130,8 +126,6 @@ function iasb_story_builder_character_template($template) {
 }
 add_filter('single_template', 'iasb_story_builder_character_template');
 
-
-
 // Updated Vehicle Template Redirect
 function iasb_story_builder_vehicle_template($template) {
     if (is_singular('iasb_vehicle')) {
@@ -149,9 +143,6 @@ function iasb_story_builder_vehicle_template($template) {
 }
 add_filter('single_template', 'iasb_story_builder_vehicle_template');
 
-
-
-
 // Updated Weapon Template Redirect
 function iasb_story_builder_weapon_template($template) {
     if (is_singular('iasb_weapon')) {
@@ -168,10 +159,6 @@ function iasb_story_builder_weapon_template($template) {
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_weapon_template');
-
-
-
-
 
 // Updated Location Template Redirect
 function iasb_story_builder_location_template($template) {

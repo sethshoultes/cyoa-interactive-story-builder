@@ -135,6 +135,50 @@ if (have_posts()) :
                     }
                     echo '</ul>';
                 }
+
+                // Display Lore
+                $lore = get_post_meta($post_id, 'iasb_story_lore', true);
+                if (!empty($lore)) {
+                    echo '<h3>' . __('Lore in this story:', 'story-builder') . '</h3>';
+                    echo '<ul>';
+                    foreach ($lore as $lore_id) {
+                        echo '<li><a href="' . get_permalink($lore_id) . '">' . get_the_title($lore_id) . '</a></li>';
+                    }
+                    echo '</ul>';
+                }
+
+                // Display Organizations
+                $organizations = get_post_meta($post_id, 'iasb_story_organizations', true);
+                if (!empty($organizations)) {
+                    echo '<h3>' . __('Organizations in this story:', 'story-builder') . '</h3>';
+                    echo '<ul>';
+                    foreach ($organizations as $organization_id) {
+                        echo '<li><a href="' . get_permalink($organization_id) . '">' . get_the_title($organization_id) . '</a></li>';
+                    }
+                    echo '</ul>';
+                }
+
+                // Display Technology
+                $technology = get_post_meta($post_id, 'iasb_story_technology', true);
+                if (!empty($technology)) {
+                    echo '<h3>' . __('Technology in this story:', 'story-builder') . '</h3>';
+                    echo '<ul>';
+                    foreach ($technology as $technology_id) {
+                        echo '<li><a href="' . get_permalink($technology_id) . '">' . get_the_title($technology_id) . '</a></li>';
+                    }
+                    echo '</ul>';
+                }
+
+                // Display Laws
+                $laws = get_post_meta($post_id, 'iasb_story_laws', true);
+                if (!empty($laws)) {
+                    echo '<h3>' . __('Laws in this story:', 'story-builder') . '</h3>';
+                    echo '<ul>';
+                    foreach ($laws as $law_id) {
+                        echo '<li><a href="' . get_permalink($law_id) . '">' . get_the_title($law_id) . '</a></li>';
+                    }
+                    echo '</ul>';
+                }
                 ?>
             </div>
 

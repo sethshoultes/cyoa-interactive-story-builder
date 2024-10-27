@@ -13,7 +13,12 @@ body.single-story_builder,
 body.single-iasb_vehicle,
 body.single-iasb_location,
 body.single-iasb_character,
-body.single-iasb_weapon { 
+body.single-iasb_weapon,
+body.single-iasb_item,
+body.single-iasb_lore,
+body.single-iasb_organization,
+body.single-iasb_technology,
+body.single-iasb_law { 
     font-family: var(--iasb-font-family);
     background-color: #f5f5f5;
     color: #333;
@@ -35,7 +40,12 @@ article.story_builder {
 article.story_builder.vehicle_builder,
 article.story_builder.location_builder,
 article.story_builder.weapon_builder,
-article.story_builder.character_builder {
+article.story_builder.character_builder,
+article.story_builder.item_builder,
+article.story_builder.lore_builder,
+article.story_builder.organization_builder,
+article.story_builder.technology_builder,
+article.story_builder.law_builder {
     border-left: 5px solid var(--iasb-accent-color);
     padding-left: 25px;
     background-color: #fffbe6;
@@ -52,7 +62,12 @@ article.story_builder.character_builder {
 .vehicle-builder .story-story-title,
 .location-builder .story-story-title,
 .weapon-builder .story-story-title,
-.character-builder .story-story-title {
+.character-builder .story-story-title,
+.item-builder .story-story-title,
+.lore-builder .story-story-title,
+.organization-builder .story-story-title,
+.technology-builder .story-story-title,
+.law-builder .story-story-title {
     color: var(--iasb-accent-color);
 }
 
@@ -72,7 +87,12 @@ article.story_builder.character_builder {
 .location-meta .location-type,
 .vehicle-meta .vehicle-type,
 .weapon-meta .weapon-type,
-.character-meta .character-type {
+.character-meta .character-type,
+.item-meta .item-type,
+.lore-meta .lore-type,
+.organization-meta .organization-type,
+.technology-meta .technology-type,
+.law-meta .law-type {
     font-size: 1.1em;
     color: #555;
     display: block;
@@ -91,7 +111,12 @@ article.story_builder.character_builder {
 .vehicle-content,
 .location-content,
 .weapon-content,
-.character-content {
+.character-content,
+.item-content,
+.lore-content,
+.organization-content,
+.technology-content,
+.law-content {
     background-color: #fff8e1;
     padding: 15px;
     border-radius: 5px;
@@ -114,11 +139,41 @@ article.story_builder.character_builder {
     border: 1px solid #99d6ff;
 }
 
+.item-builder .item-content {
+    background-color: #fff3e0; /* Light orange background for items */
+    border: 1px solid #ffcc80;
+}
+
+.lore-builder .lore-content {
+    background-color: #f3e5f5; /* Light purple background for lore */
+    border: 1px solid #ce93d8;
+}
+
+.organization-builder .organization-content {
+    background-color: #e8f5e9; /* Light green background for organizations */
+    border: 1px solid #a5d6a7;
+}
+
+.technology-builder .technology-content {
+    background-color: #e0f7fa; /* Light cyan background for technology */
+    border: 1px solid #80deea;
+}
+
+.law-builder .law-content {
+    background-color: #f1f8e9; /* Light lime background for laws */
+    border: 1px solid #c5e1a5;
+}
+
 /* Image Styles */
 .vehicle-image,
 .location-image,
 .weapon-image,
 .character-image,
+.item-image,
+.lore-image,
+.organization-image,
+.technology-image,
+.law-image,
 .single-story-image {
     text-align: center;
     margin-bottom: 20px;
@@ -128,6 +183,11 @@ article.story_builder.character_builder {
 .location-image img,
 .weapon-image img,
 .character-image img,
+.item-image img,
+.lore-image img,
+.organization-image img,
+.technology-image img,
+.law-image img,
 .single-story-image img {
     max-width: 100%;
     height: auto;
@@ -538,7 +598,8 @@ article.story_builder.character_builder {
 .weapon-type i,
 .location-type i,
 .character-type i,
-.vehicle-type i {
+.vehicle-type i,
+.law-type i {
     margin-right: 8px;
     color: var(--iasb-accent-color);
 }

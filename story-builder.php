@@ -83,6 +83,11 @@ add_action('wp_enqueue_scripts', 'iasb_story_stories_enqueue_assets');
 function iasb_enqueue_font_awesome() {
     if (is_singular('iasb_weapon') || is_post_type_archive('iasb_weapon') ||
         is_singular('iasb_location') || is_post_type_archive('iasb_location') ||
+        is_singular('iasb_item') || is_post_type_archive('iasb_item') ||
+        is_singular('iasb_lore') || is_post_type_archive('iasb_lore') ||
+        is_singular('iasb_organization') || is_post_type_archive('iasb_organization') ||
+        is_singular('iasb_technology') || is_post_type_archive('iasb_technology') ||
+        is_singular('iasb_law') || is_post_type_archive('iasb_law') ||
         is_singular('iasb_vehicle') || is_post_type_archive('iasb_vehicle') ||
         is_singular('iasb_character') || is_post_type_archive('iasb_character')) {
         wp_enqueue_style('font-awesome', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css', array(), '6.0.0-beta3');
@@ -164,7 +169,7 @@ add_filter('single_template', 'iasb_story_builder_weapon_template');
 function iasb_story_builder_location_template($template) {
     if (is_singular('iasb_location')) {
         // Check if the theme has an override template
-        $theme_template = locate_template(array('templates/archive-iasb_weapon.php', 'templates/single-iasb_location.php')); // Updated file name
+        $theme_template = locate_template(array('templates/archive-iasb_location.php', 'templates/single-iasb_location.php')); // Updated file name
 
         if ($theme_template) {
             return $theme_template;
@@ -176,6 +181,91 @@ function iasb_story_builder_location_template($template) {
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_location_template');
+
+// Updated Item Template Redirect
+function iasb_story_builder_item_template($template) {
+    if (is_singular('iasb_item')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('templates/archive-iasb_item.php', 'templates/single-iasb_item.php')); // Updated file name
+
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_item.php'; // Updated file name
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_item_template');
+
+// Updated Lore Template Redirect
+function iasb_story_builder_lore_template($template) {
+    if (is_singular('iasb_lore')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('templates/archive-iasb_lore.php', 'templates/single-iasb_lore.php')); // Updated file name
+
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_lore.php'; // Updated file name
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_lore_template');
+
+// Updated Organization Template Redirect
+function iasb_story_builder_organization_template($template) {
+    if (is_singular('iasb_organization')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('templates/archive-iasb_organization.php', 'templates/single-iasb_organization.php')); // Updated file name
+
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_organization.php'; // Updated file name
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_organization_template');
+
+// Updated Technology Template Redirect
+function iasb_story_builder_technology_template($template) {
+    if (is_singular('iasb_technology')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('templates/archive-iasb_technology.php', 'templates/single-iasb_technology.php')); // Updated file name
+
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_technology.php'; // Updated file name
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_technology_template');
+
+// Updated Law Template Redirect
+function iasb_story_builder_law_template($template) {
+    if (is_singular('iasb_law')) {
+        // Check if the theme has an override template
+        $theme_template = locate_template(array('templates/archive-iasb_law.php', 'templates/single-iasb_law.php')); // Updated file name
+
+        if ($theme_template) {
+            return $theme_template;
+        } else {
+            // Load the default plugin template
+            return plugin_dir_path(__FILE__) . 'templates/single-iasb_law.php'; // Updated file name
+        }
+    }
+    return $template;
+}
+add_filter('single_template', 'iasb_story_builder_law_template');
 
 
 

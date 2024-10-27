@@ -34,6 +34,46 @@ function iasb_add_story_entity_meta_boxes() {
         'normal',
         'default'
     );
+    add_meta_box(
+        'iasb_story_items',
+        __('Items', 'story-builder'),
+        'iasb_render_story_items_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_lore',
+        __('Lore', 'story-builder'),
+        'iasb_render_story_lore_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_organizations',
+        __('Organizations', 'story-builder'),
+        'iasb_render_story_organizations_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_technology',
+        __('Technology', 'story-builder'),
+        'iasb_render_story_technology_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_laws',
+        __('Laws', 'story-builder'),
+        'iasb_render_story_laws_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
 }
 add_action('add_meta_boxes', 'iasb_add_story_entity_meta_boxes');
 
@@ -157,6 +197,26 @@ function iasb_render_story_weapons_meta_box($post) {
     iasb_render_entity_meta_box($post, 'iasb_weapon', 'iasb_story_weapons');
 }
 
+function iasb_render_story_items_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_item', 'iasb_story_items');
+}
+
+function iasb_render_story_lore_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_lore', 'iasb_story_lore');
+}
+
+function iasb_render_story_organizations_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_organization', 'iasb_story_organizations');
+}
+
+function iasb_render_story_technology_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_technology', 'iasb_story_technology');
+}
+
+function iasb_render_story_laws_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_law', 'iasb_story_laws');
+}
+
 function iasb_render_entity_meta_box($post, $entity_post_type, $meta_key) {
     // Retrieve existing values
     $selected_entities = get_post_meta($post->ID, $meta_key, true);
@@ -219,6 +279,46 @@ function iasb_save_story_entities_meta($post_id) {
         update_post_meta($post_id, 'iasb_story_weapons', $weapons);
     } else {
         delete_post_meta($post_id, 'iasb_story_weapons');
+    }
+
+    // Save Items
+    if (isset($_POST['iasb_story_items'])) {
+        $items = array_map('intval', $_POST['iasb_story_items']);
+        update_post_meta($post_id, 'iasb_story_items', $items);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_items');
+    }
+
+    // Save Lore
+    if (isset($_POST['iasb_story_lore'])) {
+        $lore = array_map('intval', $_POST['iasb_story_lore']);
+        update_post_meta($post_id, 'iasb_story_lore', $lore);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_lore');
+    }
+
+    // Save Organizations
+    if (isset($_POST['iasb_story_organizations'])) {
+        $organizations = array_map('intval', $_POST['iasb_story_organizations']);
+        update_post_meta($post_id, 'iasb_story_organizations', $organizations);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_organizations');
+    }
+
+    // Save Technology
+    if (isset($_POST['iasb_story_technology'])) {
+        $technology = array_map('intval', $_POST['iasb_story_technology']);
+        update_post_meta($post_id, 'iasb_story_technology', $technology);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_technology');
+    }
+
+    // Save Laws
+    if (isset($_POST['iasb_story_laws'])) {
+        $laws = array_map('intval', $_POST['iasb_story_laws']);
+        update_post_meta($post_id, 'iasb_story_laws', $laws);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_laws');
     }
 }
 add_action('save_post', 'iasb_save_story_entities_meta');

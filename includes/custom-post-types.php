@@ -217,6 +217,102 @@ function iasb_register_persona_cpts() {
         'show_in_rest'       => true,
     );
     register_post_type('iasb_item', $args);
+
+    // Lore CPT
+    $labels = array(
+        'name'               => __('Lore', 'story-builder'),
+        'singular_name'      => __('Lore', 'story-builder'),
+        'menu_name'          => __('Lore', 'story-builder'),
+        'add_new_item'       => __('Add New Lore', 'story-builder'),
+        'edit_item'          => __('Edit Lore', 'story-builder'),
+        'new_item'           => __('New Lore', 'story-builder'),
+        'view_item'          => __('View Lore', 'story-builder'),
+        'all_items'          => __('All Lore', 'story-builder'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'lore'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_position'      => 32,
+        'menu_icon'          => 'dashicons-book',
+        'show_in_rest'       => true,
+    );
+    register_post_type('iasb_lore', $args);
+
+    // Organization CPT
+    $labels = array(
+        'name'               => __('Organizations', 'story-builder'),
+        'singular_name'      => __('Organization', 'story-builder'),
+        'menu_name'          => __('Organizations', 'story-builder'),
+        'add_new_item'       => __('Add New Organization', 'story-builder'),
+        'edit_item'          => __('Edit Organization', 'story-builder'),
+        'new_item'           => __('New Organization', 'story-builder'),
+        'view_item'          => __('View Organization', 'story-builder'),
+        'all_items'          => __('All Organizations', 'story-builder'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'organizations'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_position'      => 33,
+        'menu_icon'          => 'dashicons-building',
+        'show_in_rest'       => true,
+    );
+    register_post_type('iasb_organization', $args);
+
+    // Technology CPT
+    $labels = array(
+        'name'               => __('Technologies', 'story-builder'),
+        'singular_name'      => __('Technology', 'story-builder'),
+        'menu_name'          => __('Technologies', 'story-builder'),
+        'add_new_item'       => __('Add New Technology', 'story-builder'),
+        'edit_item'          => __('Edit Technology', 'story-builder'),
+        'new_item'           => __('New Technology', 'story-builder'),
+        'view_item'          => __('View Technology', 'story-builder'),
+        'all_items'          => __('All Technologies', 'story-builder'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'technologies'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_position'      => 34,
+        'menu_icon'          => 'dashicons-lightbulb',
+        'show_in_rest'       => true,
+    );
+    register_post_type('iasb_technology', $args);
+
+    // Laws CPT
+    $labels = array(
+        'name'               => __('Laws', 'story-builder'),
+        'singular_name'      => __('Law', 'story-builder'),
+        'menu_name'          => __('Laws', 'story-builder'),
+        'add_new_item'       => __('Add New Law', 'story-builder'),
+        'edit_item'          => __('Edit Law', 'story-builder'),
+        'new_item'           => __('New Law', 'story-builder'),
+        'view_item'          => __('View Law', 'story-builder'),
+        'all_items'          => __('All Laws', 'story-builder'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'laws'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_position'      => 35,
+        'menu_icon'          => 'dashicons-shield',
+        'show_in_rest'       => true,
+    );
+    register_post_type('iasb_law', $args);
 }
 add_action('init', 'iasb_register_persona_cpts');
 
@@ -329,6 +425,94 @@ function iasb_register_persona_taxonomies() {
         'show_ui'           => true,
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'item-type'),
+        'show_in_rest'      => true,
+    ));
+
+    // Lore Type Taxonomy
+    register_taxonomy('lore_type', 'iasb_lore', array(
+        'hierarchical' => true,
+        'labels' => array(
+            'name'              => __('Lore Types', 'story-builder'),
+            'singular_name'     => __('Lore Type', 'story-builder'),
+            'search_items'      => __('Search Lore Types', 'story-builder'),
+            'all_items'         => __('All Lore Types', 'story-builder'),
+            'parent_item'       => __('Parent Lore Type', 'story-builder'),
+            'parent_item_colon' => __('Parent Lore Type:', 'story-builder'),
+            'edit_item'         => __('Edit Lore Type', 'story-builder'),
+            'update_item'       => __('Update Lore Type', 'story-builder'),
+            'add_new_item'      => __('Add New Lore Type', 'story-builder'),
+            'new_item_name'     => __('New Lore Type Name', 'story-builder'),
+            'menu_name'         => __('Lore Types', 'story-builder'),
+        ),
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => array('slug' => 'lore-type'),
+        'show_in_rest'      => true,
+    ));
+
+    // Organization Type Taxonomy
+    register_taxonomy('organization_type', 'iasb_organization', array(
+        'hierarchical' => true,
+        'labels' => array(
+            'name'              => __('Organization Types', 'story-builder'),
+            'singular_name'     => __('Organization Type', 'story-builder'),
+            'search_items'      => __('Search Organization Types', 'story-builder'),
+            'all_items'         => __('All Organization Types', 'story-builder'),
+            'parent_item'       => __('Parent Organization Type', 'story-builder'),
+            'parent_item_colon' => __('Parent Organization Type:', 'story-builder'),
+            'edit_item'         => __('Edit Organization Type', 'story-builder'),
+            'update_item'       => __('Update Organization Type', 'story-builder'),
+            'add_new_item'      => __('Add New Organization Type', 'story-builder'),
+            'new_item_name'     => __('New Organization Type Name', 'story-builder'),
+            'menu_name'         => __('Organization Types', 'story-builder'),
+        ),
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => array('slug' => 'organization-type'),
+        'show_in_rest'      => true,
+    ));
+
+    // Technology Type Taxonomy
+    register_taxonomy('technology_type', 'iasb_technology', array(
+        'hierarchical' => true,
+        'labels' => array(
+            'name'              => __('Technology Types', 'story-builder'),
+            'singular_name'     => __('Technology Type', 'story-builder'),
+            'search_items'      => __('Search Technology Types', 'story-builder'),
+            'all_items'         => __('All Technology Types', 'story-builder'),
+            'parent_item'       => __('Parent Technology Type', 'story-builder'),
+            'parent_item_colon' => __('Parent Technology Type:', 'story-builder'),
+            'edit_item'         => __('Edit Technology Type', 'story-builder'),
+            'update_item'       => __('Update Technology Type', 'story-builder'),
+            'add_new_item'      => __('Add New Technology Type', 'story-builder'),
+            'new_item_name'     => __('New Technology Type Name', 'story-builder'),
+            'menu_name'         => __('Technology Types', 'story-builder'),
+        ),
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => array('slug' => 'technology-type'),
+        'show_in_rest'      => true,
+    ));
+
+    // Law Type Taxonomy
+    register_taxonomy('law_type', 'iasb_law', array(
+        'hierarchical' => true,
+        'labels' => array(
+            'name'              => __('Law Types', 'story-builder'),
+            'singular_name'     => __('Law Type', 'story-builder'),
+            'search_items'      => __('Search Law Types', 'story-builder'),
+            'all_items'         => __('All Law Types', 'story-builder'),
+            'parent_item'       => __('Parent Law Type', 'story-builder'),
+            'parent_item_colon' => __('Parent Law Type:', 'story-builder'),
+            'edit_item'         => __('Edit Law Type', 'story-builder'),
+            'update_item'       => __('Update Law Type', 'story-builder'),
+            'add_new_item'      => __('Add New Law Type', 'story-builder'),
+            'new_item_name'     => __('New Law Type Name', 'story-builder'),
+            'menu_name'         => __('Law Types', 'story-builder'),
+        ),
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => array('slug' => 'law-type'),
         'show_in_rest'      => true,
     ));
 }

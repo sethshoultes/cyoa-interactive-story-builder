@@ -123,7 +123,19 @@ if (have_posts()) :
                         echo '<li><a href="' . get_permalink($weapon_id) . '">' . get_the_title($weapon_id) . '</a></li>';
                     }
                     echo '</ul>';
-                }?>
+                }
+
+                // Display Items
+                $items = get_post_meta($post_id, 'iasb_story_items', true);
+                if (!empty($items)) {
+                    echo '<h3>' . __('Items in this story:', 'story-builder') . '</h3>';
+                    echo '<ul>';
+                    foreach ($items as $item_id) {
+                        echo '<li><a href="' . get_permalink($item_id) . '">' . get_the_title($item_id) . '</a></li>';
+                    }
+                    echo '</ul>';
+                }
+                ?>
             </div>
 
         </article>

@@ -34,6 +34,46 @@ function iasb_add_story_entity_meta_boxes() {
         'normal',
         'default'
     );
+    add_meta_box(
+        'iasb_story_items',
+        __('Items', 'story-builder'),
+        'iasb_render_story_items_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_lore',
+        __('Lore', 'story-builder'),
+        'iasb_render_story_lore_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_organizations',
+        __('Organizations', 'story-builder'),
+        'iasb_render_story_organizations_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_technology',
+        __('Technology', 'story-builder'),
+        'iasb_render_story_technology_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
+    add_meta_box(
+        'iasb_story_laws',
+        __('Laws', 'story-builder'),
+        'iasb_render_story_laws_meta_box',
+        'story_builder',
+        'normal',
+        'default'
+    );
 }
 add_action('add_meta_boxes', 'iasb_add_story_entity_meta_boxes');
 
@@ -157,6 +197,26 @@ function iasb_render_story_weapons_meta_box($post) {
     iasb_render_entity_meta_box($post, 'iasb_weapon', 'iasb_story_weapons');
 }
 
+function iasb_render_story_items_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_item', 'iasb_story_items');
+}
+
+function iasb_render_story_lore_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_lore', 'iasb_story_lore');
+}
+
+function iasb_render_story_organizations_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_organization', 'iasb_story_organizations');
+}
+
+function iasb_render_story_technology_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_technology', 'iasb_story_technology');
+}
+
+function iasb_render_story_laws_meta_box($post) {
+    iasb_render_entity_meta_box($post, 'iasb_law', 'iasb_story_laws');
+}
+
 function iasb_render_entity_meta_box($post, $entity_post_type, $meta_key) {
     // Retrieve existing values
     $selected_entities = get_post_meta($post->ID, $meta_key, true);
@@ -219,6 +279,46 @@ function iasb_save_story_entities_meta($post_id) {
         update_post_meta($post_id, 'iasb_story_weapons', $weapons);
     } else {
         delete_post_meta($post_id, 'iasb_story_weapons');
+    }
+
+    // Save Items
+    if (isset($_POST['iasb_story_items'])) {
+        $items = array_map('intval', $_POST['iasb_story_items']);
+        update_post_meta($post_id, 'iasb_story_items', $items);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_items');
+    }
+
+    // Save Lore
+    if (isset($_POST['iasb_story_lore'])) {
+        $lore = array_map('intval', $_POST['iasb_story_lore']);
+        update_post_meta($post_id, 'iasb_story_lore', $lore);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_lore');
+    }
+
+    // Save Organizations
+    if (isset($_POST['iasb_story_organizations'])) {
+        $organizations = array_map('intval', $_POST['iasb_story_organizations']);
+        update_post_meta($post_id, 'iasb_story_organizations', $organizations);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_organizations');
+    }
+
+    // Save Technology
+    if (isset($_POST['iasb_story_technology'])) {
+        $technology = array_map('intval', $_POST['iasb_story_technology']);
+        update_post_meta($post_id, 'iasb_story_technology', $technology);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_technology');
+    }
+
+    // Save Laws
+    if (isset($_POST['iasb_story_laws'])) {
+        $laws = array_map('intval', $_POST['iasb_story_laws']);
+        update_post_meta($post_id, 'iasb_story_laws', $laws);
+    } else {
+        delete_post_meta($post_id, 'iasb_story_laws');
     }
 }
 add_action('save_post', 'iasb_save_story_entities_meta');
@@ -534,8 +634,121 @@ function iasb_season_episode_column_orderby($query) {
 }
 add_action('pre_get_posts', 'iasb_season_episode_column_orderby');
 
+// Add Filter Dropdowns for Storyline and Parallel Universe
+function iasb_add_storyline_universe_filters() {
+    global $typenow;
+    if ($typenow === 'story_builder') {
+        $storyline = isset($_GET['storyline']) ? $_GET['storyline'] : '';
+        $universe = isset($_GET['parallel_universe']) ? $_GET['parallel_universe'] : '';
+        $storyline_taxonomy = get_taxonomy('storyline');
+        $universe_taxonomy = get_taxonomy('parallel_universe');
+        wp_dropdown_categories(array(
+            'show_option_all' => $storyline_taxonomy->label,
+            'taxonomy'        => 'storyline',
+            'name'            => 'storyline',
+            'orderby'         => 'name',
+            'selected'        => $storyline,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+        wp_dropdown_categories(array(
+            'show_option_all' => $universe_taxonomy->label,
+            'taxonomy'        => 'parallel_universe',
+            'name'            => 'parallel_universe',
+            'orderby'         => 'name',
+            'selected'        => $universe,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_storyline_universe_filters');
 
+// Filter the Query by Storyline and Parallel Universe
+function iasb_filter_storyline_universe_query($query) {
+    global $pagenow;
+    $type = 'story_builder';
+    if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === $type) {
+        $storyline = isset($_GET['storyline']) ? $_GET['storyline'] : '';
+        $universe = isset($_GET['parallel_universe']) ? $_GET['parallel_universe'] : '';
+        if (!empty($storyline)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'storyline',
+                    'field'    => 'id',
+                    'terms'    => $storyline,
+                ),
+            ));
+        }
+        if (!empty($universe)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'parallel_universe',
+                    'field'    => 'id',
+                    'terms'    => $universe,
+                ),
+            ));
+        }
+    }
+}
+add_action('pre_get_posts', 'iasb_filter_storyline_universe_query');
 
+// Add Filter Dropdowns for Character Types
+function iasb_add_character_type_filter() {
+    global $typenow;
+    if ($typenow === 'iasb_character') {
+        $character_type = isset($_GET['character_type']) ? $_GET['character_type'] : '';
+        $character_type_taxonomy = get_taxonomy('character_type');
+        wp_dropdown_categories(array(
+            'show_option_all' => $character_type_taxonomy->label,
+            'taxonomy'        => 'character_type',
+            'name'            => 'character_type',
+            'orderby'         => 'name',
+            'selected'        => $character_type,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_character_type_filter');
+
+// Filter the Query by Character Type
+function iasb_filter_character_type_query($query) {
+    global $pagenow;
+    $type = 'iasb_character';
+    if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === $type) {
+        $character_type = isset($_GET['character_type']) ? $_GET['character_type'] : '';
+        if (!empty($character_type)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'character_type',
+                    'field'    => 'id',
+                    'terms'    => $character_type,
+                ),
+            ));
+        }
+    }
+}
+add_action('pre_get_posts', 'iasb_filter_character_type_query');
+
+// Add Filter Dropdowns for Location Types
+function iasb_add_location_type_filter() {
+    global $typenow;
+    if ($typenow === 'iasb_location') {
+        $location_type = isset($_GET['location_type']) ? $_GET['location_type'] : '';
+        $location_type_taxonomy = get_taxonomy('location_type');
+        wp_dropdown_categories(array(
+            'show_option_all' => $location_type_taxonomy->label,
+            'taxonomy'        => 'location_type',
+            'name'            => 'location_type',
+            'orderby'         => 'name',
+            'selected'        => $location_type,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_location_type_filter');
 
 
 /* Not working yet */

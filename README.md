@@ -130,8 +130,8 @@ Explanation:
 The content within the shortcode will only be displayed if the user meets all specified conditions.
 If multiple attributes are provided, all must be satisfied for the content to render.
 
-### Filters 
-`// Function to override the user story name with character profile name
+```php
+// Function to override the user story name with character profile name
 function myplugin_override_user_story_name($output, $atts) {
     $user_id = get_current_user_id();
     if ($user_id) {
@@ -147,7 +147,8 @@ function myplugin_override_user_story_name($output, $atts) {
     }
     return $output;
 }
-add_filter('iasb_user_story_name', 'myplugin_override_user_story_name', 10, 2);`
+add_filter('iasb_user_story_name', 'myplugin_override_user_story_name', 10, 2);
+```
 
 ### Displaying Breadcrumbs and Navigation
 

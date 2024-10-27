@@ -193,6 +193,30 @@ function iasb_register_persona_cpts() {
         'show_in_rest'       => true,
     );
     register_post_type('iasb_weapon', $args);
+
+    // Items CPT
+    $labels = array(
+        'name'               => __('Items', 'story-builder'),
+        'singular_name'      => __('Item', 'story-builder'),
+        'menu_name'          => __('Items', 'story-builder'),
+        'add_new_item'       => __('Add New Item', 'story-builder'),
+        'edit_item'          => __('Edit Item', 'story-builder'),
+        'new_item'           => __('New Item', 'story-builder'),
+        'view_item'          => __('View Item', 'story-builder'),
+        'all_items'          => __('All Items', 'story-builder'),
+    );
+
+    $args = array(
+        'labels'             => $labels,
+        'public'             => true,
+        'has_archive'        => true,
+        'rewrite'            => array('slug' => 'items'),
+        'supports'           => array('title', 'editor', 'thumbnail', 'custom-fields'),
+        'menu_position'      => 31,
+        'menu_icon'          => 'dashicons-archive',
+        'show_in_rest'       => true,
+    );
+    register_post_type('iasb_item', $args);
 }
 add_action('init', 'iasb_register_persona_cpts');
 
@@ -283,6 +307,28 @@ function iasb_register_persona_taxonomies() {
         'show_ui'           => true,
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'weapon-type'),
+        'show_in_rest'      => true,
+    ));
+
+    // Item Type Taxonomy
+    register_taxonomy('item_type', 'iasb_item', array(
+        'hierarchical' => true,
+        'labels' => array(
+            'name'              => __('Item Types', 'story-builder'),
+            'singular_name'     => __('Item Type', 'story-builder'),
+            'search_items'      => __('Search Item Types', 'story-builder'),
+            'all_items'         => __('All Item Types', 'story-builder'),
+            'parent_item'       => __('Parent Item Type', 'story-builder'),
+            'parent_item_colon' => __('Parent Item Type:', 'story-builder'),
+            'edit_item'         => __('Edit Item Type', 'story-builder'),
+            'update_item'       => __('Update Item Type', 'story-builder'),
+            'add_new_item'      => __('Add New Item Type', 'story-builder'),
+            'new_item_name'     => __('New Item Type Name', 'story-builder'),
+            'menu_name'         => __('Item Types', 'story-builder'),
+        ),
+        'show_ui'           => true,
+        'show_admin_column' => true,
+        'rewrite'           => array('slug' => 'item-type'),
         'show_in_rest'      => true,
     ));
 }

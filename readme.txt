@@ -165,6 +165,10 @@ add_filter('iasb_user_story_name', 'myplugin_override_user_story_name', 10, 2);`
 
 Yes, you can customize the templates by copying the template files from the plugin's `templates` directory into your theme and modifying them as needed.
 
+= Can I add more entities to my stories? =
+
+In our Wiki, you can learn how to use Advanced Custom Fields (ACF) to [add new entity types](https://github.com/sethshoultes/cyoa-interactive-story-builder/wiki/Tutorial:-Using-ACF-to-Enhance-the-CYOA-Story-Builder-Plugin)—such as Lore, Organizations, and Laws—to your stories created with the CYOA Story Builder plugin.
+
 = Do users need to be logged in to track their progress? =
 
 Yes, user progress tracking is available for logged-in users. This allows users to resume their reading across sessions.

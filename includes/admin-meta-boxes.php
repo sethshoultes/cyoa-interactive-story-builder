@@ -534,8 +534,121 @@ function iasb_season_episode_column_orderby($query) {
 }
 add_action('pre_get_posts', 'iasb_season_episode_column_orderby');
 
+// Add Filter Dropdowns for Storyline and Parallel Universe
+function iasb_add_storyline_universe_filters() {
+    global $typenow;
+    if ($typenow === 'story_builder') {
+        $storyline = isset($_GET['storyline']) ? $_GET['storyline'] : '';
+        $universe = isset($_GET['parallel_universe']) ? $_GET['parallel_universe'] : '';
+        $storyline_taxonomy = get_taxonomy('storyline');
+        $universe_taxonomy = get_taxonomy('parallel_universe');
+        wp_dropdown_categories(array(
+            'show_option_all' => $storyline_taxonomy->label,
+            'taxonomy'        => 'storyline',
+            'name'            => 'storyline',
+            'orderby'         => 'name',
+            'selected'        => $storyline,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+        wp_dropdown_categories(array(
+            'show_option_all' => $universe_taxonomy->label,
+            'taxonomy'        => 'parallel_universe',
+            'name'            => 'parallel_universe',
+            'orderby'         => 'name',
+            'selected'        => $universe,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_storyline_universe_filters');
 
+// Filter the Query by Storyline and Parallel Universe
+function iasb_filter_storyline_universe_query($query) {
+    global $pagenow;
+    $type = 'story_builder';
+    if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === $type) {
+        $storyline = isset($_GET['storyline']) ? $_GET['storyline'] : '';
+        $universe = isset($_GET['parallel_universe']) ? $_GET['parallel_universe'] : '';
+        if (!empty($storyline)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'storyline',
+                    'field'    => 'id',
+                    'terms'    => $storyline,
+                ),
+            ));
+        }
+        if (!empty($universe)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'parallel_universe',
+                    'field'    => 'id',
+                    'terms'    => $universe,
+                ),
+            ));
+        }
+    }
+}
+add_action('pre_get_posts', 'iasb_filter_storyline_universe_query');
 
+// Add Filter Dropdowns for Character Types
+function iasb_add_character_type_filter() {
+    global $typenow;
+    if ($typenow === 'iasb_character') {
+        $character_type = isset($_GET['character_type']) ? $_GET['character_type'] : '';
+        $character_type_taxonomy = get_taxonomy('character_type');
+        wp_dropdown_categories(array(
+            'show_option_all' => $character_type_taxonomy->label,
+            'taxonomy'        => 'character_type',
+            'name'            => 'character_type',
+            'orderby'         => 'name',
+            'selected'        => $character_type,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_character_type_filter');
+
+// Filter the Query by Character Type
+function iasb_filter_character_type_query($query) {
+    global $pagenow;
+    $type = 'iasb_character';
+    if ($pagenow === 'edit.php' && isset($_GET['post_type']) && $_GET['post_type'] === $type) {
+        $character_type = isset($_GET['character_type']) ? $_GET['character_type'] : '';
+        if (!empty($character_type)) {
+            $query->set('tax_query', array(
+                array(
+                    'taxonomy' => 'character_type',
+                    'field'    => 'id',
+                    'terms'    => $character_type,
+                ),
+            ));
+        }
+    }
+}
+add_action('pre_get_posts', 'iasb_filter_character_type_query');
+
+// Add Filter Dropdowns for Location Types
+function iasb_add_location_type_filter() {
+    global $typenow;
+    if ($typenow === 'iasb_location') {
+        $location_type = isset($_GET['location_type']) ? $_GET['location_type'] : '';
+        $location_type_taxonomy = get_taxonomy('location_type');
+        wp_dropdown_categories(array(
+            'show_option_all' => $location_type_taxonomy->label,
+            'taxonomy'        => 'location_type',
+            'name'            => 'location_type',
+            'orderby'         => 'name',
+            'selected'        => $location_type,
+            'show_count'      => true,
+            'hide_empty'      => true,
+        ));
+    }
+}
+add_action('restrict_manage_posts', 'iasb_add_location_type_filter');
 
 
 /* Not working yet */

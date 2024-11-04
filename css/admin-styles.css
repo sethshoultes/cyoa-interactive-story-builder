@@ -1,0 +1,86 @@
+/* General styles for all IASB blocks */
+.wp-block[data-type^="iasb/"] {
+    border: 1px solid #e0e0e0;
+    padding: 15px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+.wp-block[data-type^="iasb/"]::before {
+    content: "IASB";
+    display: block;
+    font-size: 10px;
+    font-weight: bold;
+    color: #888;
+    margin-bottom: 5px;
+}
+
+/* Resume Reading block */
+.wp-block[data-type="iasb/resume-reading"] {
+    background-color: #e8f0fe;
+    border-color: #4285f4;
+}
+
+.wp-block[data-type="iasb/resume-reading"]::before {
+    content: "IASB: Resume Reading";
+    color: #4285f4;
+}
+
+/* Conditional Content block */
+.wp-block[data-type="iasb/conditional-content"] {
+    background-color: #fce8e6;
+    border-color: #ea4335;
+}
+
+.wp-block[data-type="iasb/conditional-content"]::before {
+    content: "IASB: Conditional Content";
+    color: #ea4335;
+}
+
+/* Dynamic Content block */
+.wp-block[data-type="iasb/dynamic-content"] {
+    background-color: #e6f4ea;
+    border-color: #34a853;
+}
+
+.wp-block[data-type="iasb/dynamic-content"]::before {
+    content: "IASB: Dynamic Content";
+    color: #34a853;
+}
+
+/* User Story Name block */
+.wp-block[data-type="iasb/user-story-name"] {
+    background-color: #fef7e0;
+    border-color: #fbbc04;
+}
+
+.wp-block[data-type="iasb/user-story-name"]::before {
+    content: "IASB: User Story Name";
+    color: #fbbc04;
+}
+
+/* NPC Character Name block */
+.wp-block[data-type="iasb/npc-character-name"] {
+    background-color: #e8eaed;
+    border-color: #5f6368;
+}
+
+.wp-block[data-type="iasb/npc-character-name"]::before {
+    content: "IASB: NPC Character Name";
+    color: #5f6368;
+}
+
+/* Style for block content */
+.wp-block[data-type^="iasb/"] .block-editor-rich-text__editable {
+    background-color: white;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+/* Style for block icons in the inserter */
+.block-editor-block-types-list__item[aria-label^="IASB"] .block-editor-block-types-list__item-icon {
+    background-color: #f1f3f4;
+    padding: 5px;
+    border-radius: 4px;
+}

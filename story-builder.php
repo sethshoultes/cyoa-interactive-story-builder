@@ -63,6 +63,12 @@ function iasb_enqueue_block_editor_assets() {
         array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor'),
         filemtime(plugin_dir_path(__FILE__) . 'js/blocks.js')
     );
+    wp_enqueue_style(
+        'iasb-block-editor-styles',
+        plugins_url('css/admin-styles.css', __FILE__),
+        array(),
+        filemtime(plugin_dir_path(__FILE__) . 'css/admin-styles.css')
+    );
 }
 add_action('enqueue_block_editor_assets', 'iasb_enqueue_block_editor_assets');
 

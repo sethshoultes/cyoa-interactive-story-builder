@@ -657,7 +657,14 @@ function iasb_display_user_progress($user_id, $current_universe_id = null) {
         echo '<div class="user-progress">';
         if ($current_universe_id !== null && isset($progress[$current_universe_id])) {
             $story_id = $progress[$current_universe_id]['story_id'];
+            $parent_episode_ids = get_post_meta($story_id, '_iasb_parent_episode', false);
+            $parent_episode = !empty($parent_episode_ids) ? get_post($parent_episode_ids[0]) : null;
+            
             echo '<p>' . __('Your progress in this universe:', 'story-builder') . ' <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a></p>';
+            
+            if ($parent_episode) {
+                echo '<p>' . __('Parent episode:', 'story-builder') . ' <a href="' . get_permalink($parent_episode->ID) . '">' . get_the_title($parent_episode->ID) . '</a></p>';
+            }
         } else {
             echo '<p>' . __('Your progress:', 'story-builder') . '</p>';
             echo '<ul>';
@@ -665,7 +672,17 @@ function iasb_display_user_progress($user_id, $current_universe_id = null) {
                 $universe_name = ($universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : (get_term($universe_id, 'parallel_universe') ? get_term($universe_id, 'parallel_universe')->name : __('Unknown Universe', 'story-builder'));
                 if (is_array($data) && isset($data['story_id'])) {
                     $story_id = $data['story_id'];
-                    echo '<li>' . esc_html($universe_name) . ': <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a></li>';
+                    $parent_episode_ids = get_post_meta($story_id, '_iasb_parent_episode', false);
+                    $parent_episode = !empty($parent_episode_ids) ? get_post($parent_episode_ids[0]) : null;
+                    
+                   //echo '<li>' . esc_html($universe_name) . ': <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
+                    echo '<li><a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
+                    
+                    if ($parent_episode) {
+                        echo ' (Parent: <a href="' . get_permalink($parent_episode->ID) . '">' . get_the_title($parent_episode->ID) . '</a>)';
+                    }
+                    
+                    echo '</li>';
                 }
             }
             echo '</ul>';

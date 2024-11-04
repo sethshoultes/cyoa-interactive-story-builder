@@ -26,9 +26,8 @@ add_shortcode('iasb_resume_reading', 'iasb_resume_reading_shortcode');
 // Shortcode to display content based on user's current story progress
 function iasb_conditional_content_shortcode($atts, $content = null) {
     $atts = shortcode_atts([
-        'episode' => 0,
-        'content' => $content,
         'id' => 0, // Add post_id parameter
+        'content' => $content,
     ], $atts, 'conditional_content');
 
     $user_id = get_current_user_id();
@@ -36,28 +35,15 @@ function iasb_conditional_content_shortcode($atts, $content = null) {
         return ''; // Not logged in
     }
 
-    $progress = get_user_meta($user_id, 'story_builder_progress', true);
+    $progress = get_user_meta($user_id, '_iasb_viewed_episodes', true);
     if (!$progress || !is_array($progress)) {
         return ''; // No progress found
     }
 
-    $target_episode = intval($atts['episode']);
     $specific_id = intval($atts['id']);
 
-    foreach ($progress as $data) {
-        if (isset($data['story_id'])) {
-            // If post_id is specified, only check that specific post
-            if ($specific_id > 0 && $data['story_id'] != $specific_id) {
-                continue;
-            }
-
-            $current_episode = intval(get_post_meta($data['story_id'], '_iasb_story_builder_episode', true));
-            $target_episode = intval($target_episode);
-            
-            if ($current_episode >= $target_episode) {
-                return do_shortcode($atts['content']);
-            }
-        }
+    if (in_array($specific_id, $progress)) {
+        return do_shortcode($atts['content']);
     }
 
     return ''; // Episode not reached
@@ -149,7 +135,6 @@ function iasb_dynamic_content_shortcode($atts) {
 }
 add_shortcode('dynamic_content', 'iasb_dynamic_content_shortcode');
 
-
 // Shortcode to display the user's story name
 function iasb_user_story_name_shortcode($atts) {
     // Get the current user ID
@@ -208,7 +193,6 @@ function iasb_npc_character_name_shortcode($atts) {
 
     $output = '';
 
-
     if ($character_post && $character_post->post_type === 'iasb_character' && $character_post->post_status === 'publish') {
         // Get the character's name
         $character_name = $character_post->post_title;
@@ -232,3 +216,4 @@ function iasb_npc_character_name_shortcode($atts) {
     return __('Unknown Character', 'story-builder');
 }
 add_shortcode('npc_character_name', 'iasb_npc_character_name_shortcode');
+

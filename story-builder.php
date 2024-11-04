@@ -648,6 +648,16 @@ function iasb_save_user_story_progress($user_id, $story_id) {
 
     // Update user meta
     update_user_meta($user_id, 'story_builder_progress', $progress);
+
+    // Save the episode viewing history
+    $viewed_episodes = get_user_meta($user_id, '_iasb_viewed_episodes', true);
+    if (!is_array($viewed_episodes)) {
+        $viewed_episodes = array();
+    }
+    if (!in_array($story_id, $viewed_episodes)) {
+        $viewed_episodes[] = $story_id;
+        update_user_meta($user_id, '_iasb_viewed_episodes', $viewed_episodes);
+    }
 }
 
 // Function to display the user's progress per universe

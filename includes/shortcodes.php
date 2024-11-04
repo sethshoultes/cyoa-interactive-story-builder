@@ -217,3 +217,67 @@ function iasb_npc_character_name_shortcode($atts) {
 }
 add_shortcode('npc_character_name', 'iasb_npc_character_name_shortcode');
 
+
+// Register Gutenberg blocks
+function iasb_register_gutenberg_blocks() {
+    // Check if Gutenberg is available
+    if (!function_exists('register_block_type')) {
+        return;
+    }
+
+    // Register Resume Reading block
+    register_block_type('iasb/resume-reading', array(
+        'render_callback' => 'iasb_resume_reading_shortcode',
+    ));
+
+    // Register Conditional Content block
+    register_block_type('iasb/conditional-content', array(
+        'attributes' => array(
+            'id' => array('type' => 'number'),
+            'content' => array('type' => 'string'),
+        ),
+        'render_callback' => 'iasb_conditional_content_shortcode',
+    ));
+
+    // Register Dynamic Content block
+    register_block_type('iasb/dynamic-content', array(
+        'attributes' => array(
+            'type' => array('type' => 'string', 'default' => 'text'),
+            'id' => array('type' => 'number'),
+            'class' => array('type' => 'string'),
+            'title' => array('type' => 'string'),
+            'target' => array('type' => 'string', 'default' => '_self'),
+        ),
+        'render_callback' => 'iasb_dynamic_content_shortcode',
+    ));
+
+    // Register User Story Name block
+    register_block_type('iasb/user-story-name', array(
+        'render_callback' => 'iasb_user_story_name_shortcode',
+    ));
+
+    // Register NPC Character Name block
+    register_block_type('iasb/npc-character-name', array(
+        'attributes' => array(
+            'id' => array('type' => 'number'),
+            'slug' => array('type' => 'string'),
+            'link' => array('type' => 'string', 'default' => 'false'),
+        ),
+        'render_callback' => 'iasb_npc_character_name_shortcode',
+    ));
+}
+add_action('init', 'iasb_register_gutenberg_blocks');
+
+// Add block category for IASB blocks
+function iasb_block_category($categories, $post) {
+    return array_merge(
+        $categories,
+        array(
+            array(
+                'slug' => 'iasb-blocks',
+                'title' => __('Interactive Story Builder', 'story-builder'),
+            ),
+        )
+    );
+}
+add_filter('block_categories_all', 'iasb_block_category', 10, 2);

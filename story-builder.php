@@ -55,6 +55,17 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 
+// Enqueue block editor assets
+function iasb_enqueue_block_editor_assets() {
+    wp_enqueue_script(
+        'iasb-blocks',
+        plugins_url('js/blocks.js', __FILE__),
+        array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor'),
+        filemtime(plugin_dir_path(__FILE__) . 'js/blocks.js')
+    );
+}
+add_action('enqueue_block_editor_assets', 'iasb_enqueue_block_editor_assets');
+
 // Enqueue plugin styles and scripts
 function iasb_enqueue_admin_assets($hook) {
     if ('post.php' != $hook && 'post-new.php' != $hook) {

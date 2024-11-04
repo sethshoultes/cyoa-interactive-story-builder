@@ -674,7 +674,6 @@ function iasb_display_user_progress($user_id, $current_universe_id = null) {
     }
 }
 
-
 // Function to display breadcrumb navigation
 function iasb_display_breadcrumbs($post_id) {
     $storylines = wp_get_post_terms($post_id, 'storyline');

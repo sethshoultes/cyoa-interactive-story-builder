@@ -25,13 +25,11 @@ add_shortcode('iasb_resume_reading', 'iasb_resume_reading_shortcode');
 
 // Shortcode to display content based on user's current story progress
 function iasb_conditional_content_shortcode($atts, $content = null) {
-    $atts = shortcode_atts(
-        array(
-            'episode' => 0,
-        ),
-        $atts,
-        'conditional_content'
-    );
+    $atts = shortcode_atts([
+        'episode' => 0,
+        'content' => $content,
+        'id' => 0, // Add post_id parameter
+    ], $atts, 'conditional_content');
 
     $user_id = get_current_user_id();
     if (!$user_id) {
@@ -44,11 +42,20 @@ function iasb_conditional_content_shortcode($atts, $content = null) {
     }
 
     $target_episode = intval($atts['episode']);
-    foreach ($progress as $universe => $data) {
+    $specific_id = intval($atts['id']);
+
+    foreach ($progress as $data) {
         if (isset($data['story_id'])) {
-            $current_episode = get_post_meta($data['story_id'], '_iasb_story_builder_episode', true);
-            if (intval($current_episode) >= $target_episode) {
-                return do_shortcode($content);
+            // If post_id is specified, only check that specific post
+            if ($specific_id > 0 && $data['story_id'] != $specific_id) {
+                continue;
+            }
+
+            $current_episode = intval(get_post_meta($data['story_id'], '_iasb_story_builder_episode', true));
+            $target_episode = intval($target_episode);
+            
+            if ($current_episode >= $target_episode) {
+                return do_shortcode($atts['content']);
             }
         }
     }
@@ -80,9 +87,11 @@ function iasb_dynamic_content_shortcode($atts) {
                 $post = get_post($atts['id']);
                 if ($post) {
                     $output = apply_filters('the_content', $post->post_content);
+                } else {
+                    $output = __('Post not found', 'story-builder');
                 }
-            } elseif (!empty($atts['title'])) {
-                $output = '<p class="' . esc_attr($atts['class']) . '">' . esc_html($atts['title']) . '</p>';
+            } else {
+                $output = __('ID not set', 'story-builder');
             }
             break;
 
@@ -91,7 +100,11 @@ function iasb_dynamic_content_shortcode($atts) {
                 $image_url = wp_get_attachment_url($atts['id']);
                 if ($image_url) {
                     $output = '<img src="' . esc_url($image_url) . '" class="' . esc_attr($atts['class']) . '" alt="' . esc_attr($atts['title']) . '" />';
+                } else {
+                    $output = __('Image not found', 'story-builder');
                 }
+            } else {
+                $output = __('ID not set', 'story-builder');
             }
             break;
 
@@ -100,21 +113,27 @@ function iasb_dynamic_content_shortcode($atts) {
                 $post = get_post($atts['id']);
                 if ($post) {
                     $output = '<a href="' . get_permalink($post->ID) . '" class="' . esc_attr($atts['class']) . '" target="' . esc_attr($atts['target']) . '">' . esc_html($post->post_title) . '</a>';
+                } else {
+                    $output = __('Link not found', 'story-builder');
                 }
-            } elseif (!empty($atts['title'])) {
-                $output = '<a href="' . esc_url($atts['title']) . '" class="' . esc_attr($atts['class']) . '" target="' . esc_attr($atts['target']) . '">' . esc_html($atts['title']) . '</a>';
+            } else {
+                $output = __('ID not set', 'story-builder');
             }
             break;
         case 'video':
-        if ($atts['id']) {
-            $video_url = wp_get_attachment_url($atts['id']);
-            if ($video_url) {
-                $output = '<video class="' . esc_attr($atts['class']) . '" controls>';
-                $output .= '<source src="' . esc_url($video_url) . '" type="video/mp4">';
-                $output .= __('Your browser does not support the video tag.', 'story-builder');
-                $output .= '</video>';
+            if ($atts['id']) {
+                $video_url = wp_get_attachment_url($atts['id']);
+                if ($video_url) {
+                    $output = '<video class="' . esc_attr($atts['class']) . '" controls>';
+                    $output .= '<source src="' . esc_url($video_url) . '" type="video/mp4">';
+                    $output .= __('Your browser does not support the video tag.', 'story-builder');
+                    $output .= '</video>';
+                } else {
+                    $output = __('Video not found', 'story-builder');
+                }
+            } else {
+                $output = __('ID not set', 'story-builder');
             }
-        }
         break;
 
         // Add more cases as needed for different types

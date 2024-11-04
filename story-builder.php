@@ -55,7 +55,6 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 
-
 // Enqueue plugin styles and scripts
 function iasb_enqueue_admin_assets($hook) {
     if ('post.php' != $hook && 'post-new.php' != $hook) {

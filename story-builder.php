@@ -551,11 +551,16 @@ function iasb_get_next_season_number($current_season, $current_storyline_id) {
 
 // Function to display universes and allow switching if available front end
 function iasb_render_universes($post_id, $user_id) {
+
+    // error_log("iasb_render_universes called for post_id: $post_id");
+
     // Get all universes
     $all_universes = get_terms('parallel_universe', array('hide_empty' => false));
 
     // Get universes associated with the current post
     $current_universes = wp_get_post_terms($post_id, 'parallel_universe');
+    // error_log("Current universes: " . print_r($current_universes, true));
+    
     $current_universe_id = !empty($current_universes) ? $current_universes[0]->term_id : 'default_universe';
 
     // Ensure there are universes to work with
@@ -565,6 +570,8 @@ function iasb_render_universes($post_id, $user_id) {
         $current_episode = get_post_meta($post_id, '_iasb_story_builder_episode', true);
         $current_storyline_terms = wp_get_post_terms($post_id, 'storyline', array('fields' => 'ids'));
         $current_storyline_id = !empty($current_storyline_terms) ? $current_storyline_terms[0] : null;
+        
+        // error_log("Current storyline: $current_storyline_id, Season: $current_season, Episode: $current_episode");
 
         // Proceed only if storyline, season, and episode are set
         if ($current_storyline_id && $current_season && $current_episode) {
@@ -614,6 +621,13 @@ function iasb_render_universes($post_id, $user_id) {
                 );
 
                 $query = new WP_Query($args);
+                
+               /*  error_log("Query for universe {$universe->name}: " . $query->request);
+                if ($query->have_posts()) {
+                    error_log("Found alternate post in universe {$universe->name}");
+                } else {
+                    error_log("No alternate post found in universe {$universe->name}");
+                } */
 
                 if ($query->have_posts()) {
                     $alternate_post = $query->posts[0];
@@ -623,6 +637,7 @@ function iasb_render_universes($post_id, $user_id) {
                         'description' => $universe->description, // Description of the universe
                     );
                 }
+                //error_log("Alternate universes found: " . count($alternate_universes));
 
                 wp_reset_postdata();
             }
@@ -702,8 +717,8 @@ function iasb_display_user_progress($user_id, $current_universe_id = null) {
                     $parent_episode_ids = get_post_meta($story_id, '_iasb_parent_episode', false);
                     $parent_episode = !empty($parent_episode_ids) ? get_post($parent_episode_ids[0]) : null;
                     
-                   //echo '<li>' . esc_html($universe_name) . ': <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
-                    echo '<li><a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
+                    echo '<li>' . esc_html($universe_name) . ': <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
+                    //echo '<li><a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
                     
                     if ($parent_episode) {
                         echo ' (Parent: <a href="' . get_permalink($parent_episode->ID) . '">' . get_the_title($parent_episode->ID) . '</a>)';

@@ -574,7 +574,7 @@ function iasb_render_universes($post_id, $user_id) {
             $alternate_universes = array();
 
             foreach ($all_universes as $universe) {
-                // Skip the current universes
+                // Skip the current universes because we only want to find alternate universes
                 if (in_array($universe->term_id, $current_universe_ids)) {
                     continue;
                 }
@@ -620,7 +620,7 @@ function iasb_render_universes($post_id, $user_id) {
                     $alternate_universes[] = array(
                         'name' => $universe->name,
                         'link' => get_permalink($alternate_post->ID),
-                        'description' => $universe->description, // Assuming you have descriptions for universes
+                        'description' => $universe->description, // Description of the universe
                     );
                 }
 
@@ -636,8 +636,9 @@ function iasb_render_universes($post_id, $user_id) {
 
                 foreach ($alternate_universes as $alternate) {
                     $alternate_link = add_query_arg('from_universe', $current_universe_id, $alternate['link']);
+                    $universe_description = !empty($alternate['description']) ? esc_attr($alternate['description']) : '';
                     $tooltip = !empty($alternate['description']) ? esc_attr($alternate['description']) : '';
-                    echo '<li><a href="' . esc_url($alternate_link) . '" data-title="' . $tooltip . '">' . esc_html($alternate['name']) . '</a></li>';
+                    echo '<li><a href="' . esc_url($alternate_link) . '" title="' . $tooltip . '">' . esc_html($alternate['name']) . '</a></li>';
                 }
 
                 echo '</ul>';

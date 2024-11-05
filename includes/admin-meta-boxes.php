@@ -449,7 +449,7 @@ add_action('add_meta_boxes', 'iasb_customize_universe_metabox');
 
 // Render Universe Meta Box
 function iasb_render_universe_metabox($post) {
-    wp_nonce_field(basename(__FILE__), 'iasb_story_builder_nonce');
+    wp_nonce_field('iasb_save_universe_data', 'iasb_universe_nonce');
     $terms = wp_get_post_terms($post->ID, 'parallel_universe');
     $all_terms = get_terms('parallel_universe', array('hide_empty' => false));
 
@@ -461,6 +461,35 @@ function iasb_render_universe_metabox($post) {
     }
     echo '</select>';
 }
+
+function iasb_save_universe_data($post_id) {
+    // Check if our nonce is set and verify it
+    if (!isset($_POST['iasb_universe_nonce']) || !wp_verify_nonce($_POST['iasb_universe_nonce'], 'iasb_save_universe_data')) {
+        return;
+    }
+
+    // If this is an autosave, our form has not been submitted, so we don't want to do anything
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    // Check the user's permissions
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    // Make sure that the parallel_universe field is set
+    if (!isset($_POST['parallel_universe'])) {
+        return;
+    }
+
+    // Sanitize the user input
+    $universe = sanitize_text_field($_POST['parallel_universe']);
+
+    // Update the parallel universe
+    wp_set_object_terms($post_id, intval($universe), 'parallel_universe');
+}
+add_action('save_post_story_builder', 'iasb_save_universe_data');
 
 // Add Season and Episode Meta Boxes
 function iasb_add_story_builder_meta_boxes() {

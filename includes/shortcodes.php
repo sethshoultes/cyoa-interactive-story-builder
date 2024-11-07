@@ -458,8 +458,8 @@ function iasb_add_to_inventory_shortcode($atts) {
     
     $state_manager->add_to_inventory($atts['item'], $atts['quantity']);
     
-   // error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to inventory.');
-    //error_log('Debug: New inventory: ' . print_r($state_manager->get_inventory(), true));
+    //error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to global inventory.');
+    //error_log('Debug: New global inventory: ' . print_r($state_manager->get_inventory(), true));
     
     return 'Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to your inventory.';
 }
@@ -670,3 +670,4 @@ function iasb_render_add_to_inventory_block($attributes) {
     
     return 'Added ' . $quantity . ' ' . $item . '(s) to your inventory.';
 }
+

@@ -74,22 +74,9 @@ class IASB_State_Manager {
 
     public function get_inventory() {
         $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
-        $inventory = array();
-        
-        // Combine inventory from all stories
-        foreach ($user_state as $story_state) {
-            if (isset($story_state['inventory']) && is_array($story_state['inventory'])) {
-                foreach ($story_state['inventory'] as $item => $quantity) {
-                    if (!isset($inventory[$item])) {
-                        $inventory[$item] = 0;
-                    }
-                    $inventory[$item] += $quantity;
-                }
-            }
-        }
-        
-        return $inventory;
+        return isset($user_state['global_inventory']) ? $user_state['global_inventory'] : array();
     }
+
 
     // Condition evaluation methods
     public function evaluate_condition($condition) {
@@ -177,12 +164,28 @@ class IASB_State_Manager {
     public function add_to_inventory($item, $quantity = 1) {
         $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
         
-        if (!isset($user_state[$this->story_id]['inventory'][$item])) {
-            $user_state[$this->story_id]['inventory'][$item] = 0;
+        if (!isset($user_state['global_inventory'])) {
+            $user_state['global_inventory'] = array();
         }
-        $user_state[$this->story_id]['inventory'][$item] += intval($quantity);
+        
+        if (!isset($user_state['global_inventory'][$item])) {
+            $user_state['global_inventory'][$item] = 0;
+        }
+        $user_state['global_inventory'][$item] += intval($quantity);
         
         update_user_meta($this->user_id, 'iasb_user_state', $user_state);
+    }
+
+    public function remove_from_inventory($item, $quantity = 1) {
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        
+        if (isset($user_state['global_inventory'][$item])) {
+            $user_state['global_inventory'][$item] = max(0, $user_state['global_inventory'][$item] - intval($quantity));
+            if ($user_state['global_inventory'][$item] == 0) {
+                unset($user_state['global_inventory'][$item]);
+            }
+            update_user_meta($this->user_id, 'iasb_user_state', $user_state);
+        }
     }
 
     private function safe_evaluate($condition) {

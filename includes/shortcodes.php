@@ -549,6 +549,44 @@ function iasb_render_conditional_content_block($attributes, $content) {
  }
  add_shortcode('add_to_inventory', 'iasb_add_to_inventory');
  
+ function iasb_remove_from_inventory($atts) {
+    $atts = shortcode_atts(array(
+        'item' => '',
+        'quantity' => 1,
+    ), $atts);
+
+    if (empty($atts['item'])) {
+        return __('Error: No item specified.', 'story-builder');
+    }
+
+    $user_id = get_current_user_id();
+    $story_id = get_the_ID();
+    $transient_name = 'iasb_inventory_removed_' . $user_id . '_' . $story_id . '_' . sanitize_title($atts['item']);
+
+    // Check if the shortcode has already been executed for this item
+    if (get_transient($transient_name)) {
+        return ''; // Return empty if already executed
+    }
+
+    $character_id = 'default_character';
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    
+    // Remove item from inventory
+    $removed = $state_manager->remove_from_inventory($atts['item'], $atts['quantity']) !== false;
+
+    if ($removed) {
+        // Set the transient to indicate the shortcode has been executed for this item
+        set_transient($transient_name, true, 30 * MINUTE_IN_SECONDS); // Expires after 30 minutes
+
+        // Return a message
+        return sprintf(__('Removed %d %s from your inventory.', 'story-builder'), $atts['quantity'], $atts['item']);
+    } else {
+        return sprintf(__('Could not remove %d %s from your inventory. You may not have enough.', 'story-builder'), $atts['quantity'], $atts['item']);
+    }
+}
+
+add_shortcode('remove_from_inventory', 'iasb_remove_from_inventory');
+
  function iasb_render_add_to_inventory_block($attributes) {
      $item = $attributes['item'] ?? '';
      $quantity = $attributes['quantity'] ?? 1;

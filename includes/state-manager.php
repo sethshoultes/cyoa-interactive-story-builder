@@ -154,7 +154,16 @@ class IASB_State_Manager {
     }
 
     public function get_all_state_variables() {
-        return $this->state['variables'] ?? [];
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        return isset($user_state['variables']) ? $user_state['variables'] : array();
+    }
+    public function update_state_variable($name, $value) {
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        if (!isset($user_state['variables'])) {
+            $user_state['variables'] = array();
+        }
+        $user_state['variables'][$name] = $value;
+        update_user_meta($this->user_id, 'iasb_user_state', $user_state);
     }
 
     public function get_all_character_attributes() {
@@ -280,7 +289,8 @@ class IASB_State_Manager {
 
     // Get all quest progress
     public function get_all_quest_progress() {
-        return $this->state['quests'] ?? array();
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        return isset($user_state['quests']) ? $user_state['quests'] : array();
     }
 
     public function update_state($action, $value) {
@@ -365,10 +375,12 @@ class IASB_State_Manager {
 
     // Update quest progress
     public function update_quest_progress($quest_id, $progress) {
-        $quests = $this->state['quests'] ?? array();
-        $quests[$quest_id] = $progress;
-        $this->state['quests'] = $quests;
-        $this->save_state($this->state);
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        if (!isset($user_state['quests'])) {
+            $user_state['quests'] = array();
+        }
+        $user_state['quests'][$quest_id] = $progress;
+        update_user_meta($this->user_id, 'iasb_user_state', $user_state);
     }
     
     // Get quest progress
@@ -440,25 +452,29 @@ function iasb_display_character_profile_data() {
    // error_log('iasb_display_character_profile_data function called');
     $character_id = get_the_ID();
     $user_id = get_current_user_id();
+    $user_state = get_user_meta($user_id, 'iasb_user_state', true) ?: array();
     $story_id = get_post_meta($character_id, 'associated_story', true);
     //error_log("User ID: $user_id, Story ID: $story_id, Character ID: $character_id");
 
     $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
-    $character_state = $state_manager->get_story_state();
+    $character_state = $state_manager->get_character_state();
    // error_log('Character state: ' . print_r($character_state, true));
     
-    echo '<h2>Character Profile</h2>';
+    echo '<h2>Character Data</h2>';
 
-    // Display Inventory
+    // Display Inventory section
     echo '<h3>Inventory</h3>';
-    if (isset($character_state['inventory']) && is_array($character_state['inventory']) && !empty($character_state['inventory'])) {
+
+    $global_inventory = isset($user_state['global_inventory']) ? $user_state['global_inventory'] : array();
+
+    if (is_array($global_inventory) && !empty($global_inventory)) {
         echo '<ul>';
-        foreach ($character_state['inventory'] as $item => $quantity) {
+        foreach ($global_inventory as $item => $quantity) {
             if (is_array($quantity)) {
                 $total_quantity = array_sum($quantity);
-                echo "<li>$item: $total_quantity</li>";
+                echo "<li>" . esc_html($item) . ": " . esc_html($total_quantity) . "</li>";
             } else {
-                echo "<li>$item: $quantity</li>";
+                echo "<li>" . esc_html($item) . ": " . esc_html($quantity) . "</li>";
             }
         }
         echo '</ul>';
@@ -468,35 +484,28 @@ function iasb_display_character_profile_data() {
     
     // Display Character Stats
     echo '<h3>Character Stats</h3>';
-    if (
-        (isset($character_state['variables']) && is_array($character_state['variables']) && !empty($character_state['variables'])) ||
-        (isset($character_state['strength']) && !is_array($character_state['strength']))
-    ) {
+    if (isset($user_state['variables']) && is_array($user_state['variables']) && !empty($user_state['variables'])) {
         echo '<ul>';
-        if (isset($character_state['variables']) && is_array($character_state['variables'])) {
-            foreach ($character_state['variables'] as $stat => $value) {
-                echo "<li>" . ucfirst($stat) . ": $value</li>";
-            }
-        }
-        if (isset($character_state['strength']) && !is_array($character_state['strength'])) {
-            echo "<li>Strength: {$character_state['strength']}</li>";
+        foreach ($user_state['variables'] as $stat => $value) {
+            echo "<li>" . ucfirst(esc_html($stat)) . ": " . esc_html($value) . "</li>";
         }
         echo '</ul>';
     } else {
         echo '<p>No character stats available.</p>';
     }
-    
+
     // Display Quests
     echo '<h3>Quests</h3>';
-    if (isset($character_state['quests']) && is_array($character_state['quests']) && !empty($character_state['quests'])) {
+    if (isset($user_state['quests']) && is_array($user_state['quests']) && !empty($user_state['quests'])) {
         echo '<ul>';
-        foreach ($character_state['quests'] as $quest => $status) {
-            echo "<li>" . ucfirst($quest) . ": $status</li>";
+        foreach ($user_state['quests'] as $quest => $status) {
+            echo "<li>" . ucfirst(esc_html($quest)) . ": " . esc_html($status) . "</li>";
         }
         echo '</ul>';
     } else {
         echo '<p>No active quests.</p>';
     }
+
     
     // Display Other State Data
     echo '<h3>Other Information</h3>';

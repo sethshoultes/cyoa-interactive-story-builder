@@ -27,11 +27,18 @@
         icon: 'randomize',
         category: 'iasb-blocks',
         attributes: {
-            id: {type: 'number'},
-            content: {type: 'string'},
+            id: {
+                type: 'number',
+            },
+            condition: {
+                type: 'string',
+            },
+            content: {
+                type: 'string',
+            },
         },
         edit: function(props) {
-            return el('div', {},
+            return el('div', {className: props.className},
                 el(InspectorControls, {},
                     el(TextControl, {
                         label: __('Episode ID', 'story-builder'),
@@ -49,7 +56,16 @@
                     onChange: function(value) {
                         props.setAttributes({content: value});
                     },
-                })
+                }),
+                el( 'input', {
+                    type: 'text',
+                    placeholder: 'Enter condition',
+                    value: props.attributes.condition,
+                    onChange: function( event ) {
+                        props.setAttributes( { condition: event.target.value } );
+                    },
+                } ),
+                
             );
         },
         save: function() {

@@ -601,7 +601,7 @@ function iasb_display_season_episode_columns($column, $post_id) {
 }
 add_action('manage_story_builder_posts_custom_column', 'iasb_display_season_episode_columns', 10, 2);
 
-// Add Storyline Column to the Fart Story List
+// Add Storyline Column to the Story List
 function iasb_add_storyline_column($columns) {
     $columns['storyline'] = __('Storyline', 'story-builder');
     return $columns;
@@ -617,7 +617,7 @@ function iasb_display_storyline_column($column, $post_id) {
 }
 add_action('manage_story_builder_posts_custom_column', 'iasb_display_storyline_column', 10, 2);
 
-// Add Parallel Universe Column to the Fart Story List
+// Add Parallel Universe Column to the Story List
 function iasb_add_parallel_universe_column($columns) {
     $columns['parallel_universe'] = __('Parallel Universe', 'story-builder');
     return $columns;
@@ -815,3 +815,87 @@ function iasb_add_parent_episodes_meta_box() {
     );
 }
 add_action('add_meta_boxes', 'iasb_add_parent_episodes_meta_box');
+
+function iasb_add_state_variables_meta_box() {
+   // error_log('iasb_add_state_variables_meta_box function called');
+    add_meta_box(
+        'iasb_state_variables',
+        'State Variables',
+        'iasb_render_state_variables_meta_box',
+        'story_builder',
+        'side',
+        'default'
+    );
+}
+add_action('add_meta_boxes', 'iasb_add_state_variables_meta_box');
+
+function iasb_render_state_variables_meta_box($post) {
+    wp_nonce_field('iasb_save_state_variables', 'iasb_state_variables_nonce');
+
+    $state_variables = get_post_meta($post->ID, '_iasb_state_variables', true);
+    if (!is_array($state_variables)) {
+        $state_variables = array();
+    }
+
+    echo '<div id="iasb-state-variables">';
+    foreach ($state_variables as $index => $variable) {
+        echo '<p>';
+        echo '<input type="text" name="iasb_state_variable_name[]" value="' . esc_attr($variable['name']) . '" placeholder="Variable Name">';
+        echo '<input type="text" name="iasb_state_variable_default[]" value="' . esc_attr($variable['default']) . '" placeholder="Default Value">';
+        echo '<button type="button" class="button iasb-remove-variable">Remove</button>';
+        echo '</p>';
+    }
+    echo '</div>';
+    echo '<button type="button" id="iasb-add-variable" class="button">Add Variable</button>';
+
+    // Add JavaScript to handle dynamic addition/removal of variables
+    ?>
+    <script>
+    jQuery(document).ready(function($) {
+        $('#iasb-add-variable').on('click', function() {
+            var html = '<p>' +
+                '<input type="text" name="iasb_state_variable_name[]" placeholder="Variable Name">' +
+                '<input type="text" name="iasb_state_variable_default[]" placeholder="Default Value">' +
+                '<button type="button" class="button iasb-remove-variable">Remove</button>' +
+                '</p>';
+            $('#iasb-state-variables').append(html);
+        });
+
+        $(document).on('click', '.iasb-remove-variable', function() {
+            $(this).parent().remove();
+        });
+    });
+    </script>
+    <?php
+}
+
+function iasb_save_state_variables($post_id) {
+    if (!isset($_POST['iasb_state_variables_nonce']) || !wp_verify_nonce($_POST['iasb_state_variables_nonce'], 'iasb_save_state_variables')) {
+        return;
+    }
+
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+
+    if (!current_user_can('edit_post', $post_id)) {
+        return;
+    }
+
+    $state_variables = array();
+    if (isset($_POST['iasb_state_variable_name']) && isset($_POST['iasb_state_variable_default'])) {
+        $names = $_POST['iasb_state_variable_name'];
+        $defaults = $_POST['iasb_state_variable_default'];
+        for ($i = 0; $i < count($names); $i++) {
+            if (!empty($names[$i])) {
+                $state_variables[] = array(
+                    'name' => sanitize_text_field($names[$i]),
+                    'default' => sanitize_text_field($defaults[$i])
+                );
+            }
+        }
+    }
+
+    update_post_meta($post_id, '_iasb_state_variables', $state_variables);
+}
+add_action('save_post', 'iasb_save_state_variables');

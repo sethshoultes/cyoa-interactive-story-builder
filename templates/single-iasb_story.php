@@ -1,13 +1,43 @@
 <?php
 // templates/single-iasb_story.php
 get_header();
-
+?>
+<script>
+var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
+$(document).ready(function() {
+    $('.choice-link').on('click', function(e) {
+        e.preventDefault();
+        var choiceId = $(this).data('story-id');
+        var storyId = <?php echo esc_js(get_the_ID()); ?>;
+        
+        $.ajax({
+            url: ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'iasb_process_choice',
+                choice_id: choiceId,
+                story_id: storyId
+            },
+            success: function(response) {
+                if (response.success) {
+                    window.location.href = e.target.href;
+                } else {
+                    alert('An error occurred: ' + response.data);
+                }
+            }
+        });
+    });
+});
+</script>
+<?php
 if (have_posts()) :
     while (have_posts()) : the_post();
 
         // Get the current post ID and user ID
         $post_id = get_the_ID();
         $user_id = get_current_user_id();
+        $state_manager = new IASB_State_Manager($user_id, $post_id);
+
 
         // Get the universes associated with the current post
         $current_universes = wp_get_post_terms($post_id, 'parallel_universe', array('fields' => 'ids'));
@@ -41,7 +71,10 @@ if (have_posts()) :
             <?php endif; ?>
 
             <div class="story-content">
-                <?php the_content(); ?>
+                <?php $content = get_the_content();
+                        $processed_content = $state_manager->process_conditional_content($content);
+                        echo apply_filters('the_content', $processed_content);
+ ?>
             </div>
 
             <?php

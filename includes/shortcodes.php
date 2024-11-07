@@ -453,30 +453,13 @@ function iasb_add_to_inventory_shortcode($atts) {
 
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $character_id = 'default_character';
     $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     
-    // Get the current state
-    $state = $state_manager->get_story_state();
+    $state_manager->add_to_inventory($atts['item'], $atts['quantity']);
     
-    // Add debug output
-    //error_log("Before adding item - State: " . print_r($state, true));
-    
-    // Add the item to the inventory
-    if (!isset($state['inventory'][$atts['item']])) {
-        $state['inventory'][$atts['item']] = 0;
-    }
-    $state['inventory'][$atts['item']] += intval($atts['quantity']);
-    
-    // Save the updated state
-    $state_manager->save_state($state);
-    
-    // Add more debug output
-    //error_log("After adding item and saving - State: " . print_r($state, true));
-    
-    // Retrieve the state again to verify it was saved
-    $new_state = $state_manager->get_story_state();
-    //error_log("State after re-retrieval: " . print_r($new_state, true));
+    error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to inventory.');
+    error_log('Debug: New inventory: ' . print_r($state_manager->get_inventory(), true));
     
     return 'Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to your inventory.';
 }
@@ -620,12 +603,13 @@ function iasb_render_conditional_content_block($attributes, $content) {
 function iasb_render_inventory_block($attributes) {
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $character_id = 'default_character'; // Replace with the appropriate character ID
-    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
-    $state = $state_manager->get_story_state();
+    $state_manager = new IASB_State_Manager($user_id, $story_id, 'default_character');
+    $inventory = $state_manager->get_inventory();
     
-    $inventory = $state['inventory'] ?? array();
-    
+    error_log('Debug: User ID: ' . $user_id);
+    error_log('Debug: Story ID: ' . $story_id);
+    error_log('Debug: Inventory: ' . print_r($inventory, true));
+
     $output = '<ul class="player-inventory">';
     if (empty($inventory)) {
         $output .= '<li>' . esc_html__('Your inventory is empty.', 'story-builder') . '</li>';

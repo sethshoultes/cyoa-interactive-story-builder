@@ -1,4 +1,87 @@
 <?php
+/**
+ * CYOA Interactive Story Builder Shortcodes
+ * 
+ * This file contains all the shortcodes used in the CYOA Interactive Story Builder plugin.
+ * Below is a list of available shortcodes and their usage:
+ *
+ * [iasb_resume_reading]
+ * Description: Displays a "Resume Reading" button for logged-in users.
+ * Usage: [iasb_resume_reading]
+ * Parameters: None
+ *
+ * [conditional_content]
+ * Description: Displays content based on user's current story progress.
+ * Usage: [conditional_content condition="state_variable('example') > 5"]Content to show[/conditional_content]
+ * Parameters:
+ *   - condition: The condition to evaluate (required)
+ *   - id: The post ID to check against (optional, defaults to current post)
+ *
+ * [state_variable]
+ * Description: Displays the value of a state variable.
+ * Usage: [state_variable name="example"]
+ * Parameters:
+ *   - name: The name of the state variable (required)
+ *
+ * [character_attribute]
+ * Description: Displays the value of a character attribute.
+ * Usage: [character_attribute name="strength"]
+ * Parameters:
+ *   - name: The name of the character attribute (required)
+ *
+ * [dynamic_content]
+ * Description: Injects dynamic content based on the specified type and ID.
+ * Usage: [dynamic_content type="text" id="123"]
+ * Parameters:
+ *   - type: The type of content (text, image, link, video) (required)
+ *   - id: The ID of the content (e.g., post ID, attachment ID) (required)
+ *   - class: Additional CSS classes (optional)
+ *   - title: Title attribute for images (optional)
+ *   - target: Link target for links (optional, defaults to "_self")
+ *
+ * [user_story_name]
+ * Description: Displays the user's story name or default name for non-logged-in users.
+ * Usage: [user_story_name]
+ * Parameters: None
+ *
+ * [npc_character_name]
+ * Description: Displays an NPC character's name, optionally linked to their profile.
+ * Usage: [npc_character_name id="123" link="true"]
+ * Parameters:
+ *   - id: The ID of the character (required if slug not provided)
+ *   - slug: The slug of the character (required if id not provided)
+ *   - link: Whether to link to the character's profile (optional, defaults to "false")
+ *
+ * [debug_state]
+ * Description: Displays debug information about the current state (for development use).
+ * Usage: [debug_state]
+ * Parameters: None
+ *
+ * [test_shortcode]
+ * Description: A test shortcode to check if shortcodes are working.
+ * Usage: [test_shortcode]
+ * Parameters: None
+ *
+ * [update_quest_progress]
+ * Description: Updates the progress of a specified quest.
+ * Usage: [update_quest_progress quest="quest_name" status="completed"]
+ * Parameters:
+ *   - quest: The name of the quest (required)
+ *   - status: The new status of the quest (required)
+ *
+ * [display_quest_progress]
+ * Description: Displays the progress of a specified quest.
+ * Usage: [display_quest_progress quest="quest_name"]
+ * Parameters:
+ *   - quest: The name of the quest (required)
+ *
+ * [quest_progress_condition]
+ * Description: Conditionally displays content based on quest progress.
+ * Usage: [quest_progress_condition quest="quest_name" status="completed"]Content to show[/quest_progress_condition]
+ * Parameters:
+ *   - quest: The name of the quest (required)
+ *   - status: The status to check against (required)
+ */
 
 // Shortcode to display "Resume Reading" button
 function iasb_resume_reading_shortcode() {
@@ -45,18 +128,19 @@ function iasb_conditional_content_shortcode($atts, $content = null) {
         return '';
     }
 
-    $state_manager = new IASB_State_Manager($user_id, $atts['id']);
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $atts['id'], $character_id);
     
     $condition = html_entity_decode(str_replace(array('"', '"'), '"', $atts['condition']), ENT_QUOTES);
 
-    error_log("Evaluating condition in function iasb_conditional_content_shortcode--> " . $condition);
+    //error_log("Evaluating condition in function iasb_conditional_content_shortcode--> " . $condition);
 
     if ($state_manager->evaluate_complex_condition($condition)) {
-        error_log("Condition evaluated to true in function iasb_conditional_content_shortcode--> " . $condition);
+        //error_log("Condition evaluated to true in function iasb_conditional_content_shortcode--> " . $condition);
         return do_shortcode($content);
     }
 
-    error_log("Condition evaluated to false in function iasb_conditional_content_shortcode--> " . $condition);
+    //error_log("Condition evaluated to false in function iasb_conditional_content_shortcode--> " . $condition);
     return '';
 }
 add_shortcode('conditional_content', 'iasb_conditional_content_shortcode');
@@ -70,10 +154,10 @@ function iasb_state_variable_shortcode($atts) {
 
     $user_id = get_current_user_id();
     $post_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $post_id);
+    $state_manager = new IASB_State_Manager($user_id, $post_id, 'default_value'); // Replace 'default_value' with the appropriate third argument
     
     $value = $state_manager->get_state_variable($atts['name']);
-    error_log("State Variable - Getting in function iasb_state_variable_shortcode--> {$atts['name']}, Value: $value");
+    //error_log("State Variable - Getting in function iasb_state_variable_shortcode--> {$atts['name']}, Value: $value");
     return $value;
 }
 add_shortcode('state_variable', 'iasb_state_variable_shortcode');
@@ -86,10 +170,11 @@ function iasb_character_attribute_shortcode($atts) {
 
     $user_id = get_current_user_id();
     $post_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $post_id);
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $post_id, $character_id);
     
     $value = $state_manager->get_character_attribute($atts['name']);
-    error_log("Character Attribute - Getting in function iasb_character_attribute_shortcode--> {$atts['name']}, Value: $value");
+    //error_log("Character Attribute - Getting in function iasb_character_attribute_shortcode--> {$atts['name']}, Value: $value");
     return $value;
 }
 add_shortcode('character_attribute', 'iasb_character_attribute_shortcode');
@@ -267,7 +352,8 @@ add_shortcode('npc_character_name', 'iasb_npc_character_name_shortcode');
 function iasb_debug_state_shortcode($atts) {
     $user_id = get_current_user_id();
     $post_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $post_id);
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $post_id, $character_id);
 
    // error_log('Debug State Shortcode - Function called');
     
@@ -304,7 +390,7 @@ function iasb_update_quest_progress_shortcode($atts) {
 
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $story_id);
+    $state_manager = new IASB_State_Manager($user_id, $story_id, 'default_value'); // Replace 'default_value' with the appropriate third argument
     $state_manager->update_quest_progress($atts['quest'], $atts['status']);
 
     return ''; // This shortcode doesn't output anything
@@ -323,10 +409,18 @@ function iasb_display_quest_progress_shortcode($atts) {
 
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $story_id);
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     $quest_progress = $state_manager->get_quest_progress($atts['quest']);
 
-    return isset($quest_progress[$atts['quest']]) ? esc_html($quest_progress[$atts['quest']]) : 'Not started';
+    // Debugging
+    //error_log("User ID in function iasb_display_quest_progress_shortcode --> " . $user_id);
+    //error_log("Story ID in function iasb_display_quest_progress_shortcode -->" . $story_id);
+   // error_log("Quest in function iasb_display_quest_progress_shortcode --> " . $atts['quest']);
+   // error_log("Quest Progress in function iasb_display_quest_progress_shortcode --> " . print_r($quest_progress, true));
+
+    // Return the quest progress directly, or 'Not started' if it's empty
+    return !empty($quest_progress) ? esc_html($quest_progress) : 'Not started';
 }
 add_shortcode('display_quest_progress', 'iasb_display_quest_progress_shortcode');
 
@@ -342,7 +436,8 @@ function iasb_quest_progress_condition_shortcode($atts, $content = null) {
 
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $state_manager = new IASB_State_Manager($user_id, $story_id);
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     $quest_progress = $state_manager->get_quest_progress($atts['quest']);
 
     if ($quest_progress == $atts['status']) {
@@ -353,7 +448,65 @@ function iasb_quest_progress_condition_shortcode($atts, $content = null) {
 }
 add_shortcode('quest_progress_condition', 'iasb_quest_progress_condition_shortcode');
 
+function iasb_add_to_inventory_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'item' => '',
+        'quantity' => 1,
+    ), $atts);
 
+    if (empty($atts['item'])) {
+        return 'Error: No item specified.';
+    }
+
+    $user_id = get_current_user_id();
+    $story_id = get_the_ID();
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    
+    // Get the current state
+    $state = $state_manager->get_story_state();
+    
+    // Add debug output
+    //error_log("Before adding item - State: " . print_r($state, true));
+    
+    // Add the item to the inventory
+    if (!isset($state['inventory'][$atts['item']])) {
+        $state['inventory'][$atts['item']] = 0;
+    }
+    $state['inventory'][$atts['item']] += intval($atts['quantity']);
+    
+    // Save the updated state
+    $state_manager->save_state($state);
+    
+    // Add more debug output
+    //error_log("After adding item and saving - State: " . print_r($state, true));
+    
+    // Retrieve the state again to verify it was saved
+    $new_state = $state_manager->get_story_state();
+    //error_log("State after re-retrieval: " . print_r($new_state, true));
+    
+    return 'Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to your inventory.';
+}
+add_shortcode('add_to_inventory', 'iasb_add_to_inventory_shortcode');
+
+function iasb_display_strength_shortcode() {
+    $user_id = get_current_user_id();
+    $story_id = get_the_ID();
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    
+    // Get all character attributes
+    $attributes = $state_manager->get_all_character_attributes();
+
+    // Debugging
+    //error_log('All character attributes: ' . print_r($attributes, true));
+    
+    // Check if strength attribute exists, if not default to 0
+    $strength = isset($attributes['strength']) ? $attributes['strength'] : 0;
+    
+    return "Your current strength is: " . $strength;
+}
+add_shortcode('display_strength', 'iasb_display_strength_shortcode');
 
 
 /* Gutenberg Blocks */
@@ -422,6 +575,18 @@ function iasb_register_gutenberg_blocks() {
         ),
         'render_callback' => 'iasb_update_state_shortcode',
     ));
+
+    register_block_type('iasb/add-to-inventory', array(
+        'attributes' => array(
+            'item' => array('type' => 'string'),
+            'quantity' => array('type' => 'number', 'default' => 1),
+        ),
+        'render_callback' => 'iasb_render_add_to_inventory_block',
+    ));
+
+    register_block_type('iasb/inventory-display', array(
+        'render_callback' => 'iasb_render_inventory_block',
+    ));
 }
 add_action('init', 'iasb_register_gutenberg_blocks');
 
@@ -452,7 +617,7 @@ function iasb_register_conditional_content_block() {
 add_action('init', 'iasb_register_conditional_content_block');
 
 function iasb_render_conditional_content_block($attributes, $content) {
-    error_log('iasb_render_conditional_content_block called with: ' . print_r($attributes, true));
+   // error_log('iasb_render_conditional_content_block called with: ' . print_r($attributes, true));
     $shortcode_str = '[conditional_content';
     if (isset($attributes['id'])) {
         $shortcode_str .= ' id="' . esc_attr($attributes['id']) . '"';
@@ -461,6 +626,57 @@ function iasb_render_conditional_content_block($attributes, $content) {
         $shortcode_str .= ' condition="' . esc_attr($attributes['condition']) . '"';
     }
     $shortcode_str .= ']' . ($attributes['content'] ?? '') . '[/conditional_content]';
-    error_log('Generated shortcode: ' . $shortcode_str);
+    //error_log('Generated shortcode: ' . $shortcode_str);
     return do_shortcode($shortcode_str);
+}
+function iasb_render_inventory_block($attributes) {
+    $user_id = get_current_user_id();
+    $story_id = get_the_ID();
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    $state = $state_manager->get_story_state();
+    
+    $inventory = $state['inventory'];
+    
+    $output = '<ul class="player-inventory">';
+    foreach ($inventory as $item_name => $quantity) {
+        $output .= '<li>' . esc_html($item_name) . ': ' . esc_html($quantity) . '</li>';
+    }
+    $output .= '</ul>';
+    
+    return $output;
+}
+
+function iasb_add_to_inventory($item, $quantity = 1) {
+    $user_id = get_current_user_id();
+    $story_id = get_the_ID();
+    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    
+    // Get the current state
+    $state = $state_manager->get_story_state();
+    
+    // Add the item to the inventory
+    if (!isset($state['inventory'][$item])) {
+        $state['inventory'][$item] = 0;
+    }
+    $state['inventory'][$item] += intval($quantity);
+    
+    // Save the updated state
+    $state_manager->save_state($state);
+    
+    return true;
+}
+
+function iasb_render_add_to_inventory_block($attributes) {
+    $item = $attributes['item'] ?? '';
+    $quantity = $attributes['quantity'] ?? 1;
+    
+    if (empty($item)) {
+        return 'Error: No item specified.';
+    }
+    
+    iasb_add_to_inventory($item, $quantity);
+    
+    return 'Added ' . $quantity . ' ' . $item . '(s) to your inventory.';
 }

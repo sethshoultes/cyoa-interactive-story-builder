@@ -198,6 +198,23 @@
         },
     });
 
+    // Inventory Display block
+    blocks.registerBlockType('iasb/inventory-display', {
+        title: 'Player Inventory',
+        icon: 'list-view',
+        category: 'iasb-blocks',
+        edit: function(props) {
+            return wp.element.createElement(
+                'div',
+                { className: props.className },
+                'Player Inventory will be displayed here.'
+            );
+        },
+        save: function() {
+            return null; // Dynamic block, render handled by PHP
+        }
+    });
+
 }(
     window.wp.blocks,
     window.wp.element,

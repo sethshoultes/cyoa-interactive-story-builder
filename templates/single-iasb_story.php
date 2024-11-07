@@ -9,6 +9,7 @@ $(document).ready(function() {
         e.preventDefault();
         var choiceId = $(this).data('story-id');
         var storyId = <?php echo esc_js(get_the_ID()); ?>;
+        var characterId = <?php echo esc_js(get_post_meta(get_the_ID(), 'iasb_character_id', true)); ?>;
         
         $.ajax({
             url: ajaxurl,
@@ -36,7 +37,8 @@ if (have_posts()) :
         // Get the current post ID and user ID
         $post_id = get_the_ID();
         $user_id = get_current_user_id();
-        $state_manager = new IASB_State_Manager($user_id, $post_id);
+        $character_id = get_post_meta($post_id, 'iasb_character_id', true);
+        $state_manager = new IASB_State_Manager($user_id, $post_id, $character_id);
 
 
         // Get the universes associated with the current post

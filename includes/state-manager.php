@@ -6,13 +6,15 @@ class IASB_State_Manager {
     private $story_id;
     private $state;
     private $character_data;
+    private $character_id;
     
 
-    public function __construct($user_id, $story_id) {
+    public function __construct($user_id, $story_id, $character_id) {
         $this->user_id = $user_id;
         $this->story_id = $story_id;
         $this->state = $this->get_story_state();
         $this->character_data = $this->get_character_data();
+        $this->character_id = $character_id;
         // Add debug output
         //error_log("State loaded in constructor: " . print_r($this->state, true));
     }
@@ -27,16 +29,22 @@ class IASB_State_Manager {
         
         return $character_data;
     }
-
     public function get_story_state() {
+        $state = array();
         if (is_user_logged_in()) {
-            $state = get_user_meta($this->user_id, 'iasb_story_state_' . $this->story_id, true);
+            $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+            $state = $user_state[$this->story_id] ?? array();
         } else {
-            $state = isset($_SESSION['iasb_story_state_' . $this->story_id]) ? $_SESSION['iasb_story_state_' . $this->story_id] : array();
+            $state = isset($_SESSION['iasb_user_state'][$this->story_id]) ? $_SESSION['iasb_user_state'][$this->story_id] : array();
         }
-        return !empty($state) ? $state : $this->initialize_state();
+        
+        if (empty($state)) {
+            $state = $this->initialize_state();
+        }
+        
+        return $state;
     }
-
+    
     private function initialize_state() {
         return array(
             'inventory' => array(),
@@ -51,14 +59,17 @@ class IASB_State_Manager {
         );
     }
 
-    public function save_state() {
+    public function save_state($state) {
+        $saved = false;
         if (is_user_logged_in()) {
-            update_user_meta($this->user_id, 'iasb_story_state_' . $this->story_id, $this->state);
+            $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+            $user_state[$this->story_id] = $state;
+            $saved = update_user_meta($this->user_id, 'iasb_user_state', $user_state);
         } else {
-            $_SESSION['iasb_story_state_' . $this->story_id] = $this->state;
+            $_SESSION['iasb_user_state'][$this->story_id] = $state;
+            $saved = true;
         }
-        // Add debug output
-        //error_log("State saved: " . print_r($this->state, true));
+        return $saved;
     }
 
     // Condition evaluation methods
@@ -110,17 +121,17 @@ class IASB_State_Manager {
             $this->get_all_quest_progress()
         );
 
-        error_log("Evaluation context in public function evaluate_complex_condition--> " . print_r($context, true));
+       // error_log("Evaluation context in public function evaluate_complex_condition--> " . print_r($context, true));
 
         // Use safe_evaluate instead of eval
         $result = $this->safe_evaluate($condition);
 
         if ($result === false) {
-            error_log('Failed to evaluate condition in public function evaluate_complex_condition--> ' . $condition);
+            //error_log('Failed to evaluate condition in public function evaluate_complex_condition--> ' . $condition);
             return false;
         }
 
-        error_log("Condition result in public function evaluate_complex_condition--> " . ($result ? 'true' : 'false'));
+        //error_log("Condition result in public function evaluate_complex_condition--> " . ($result ? 'true' : 'false'));
         return $result;
     }
 
@@ -142,6 +153,15 @@ class IASB_State_Manager {
 
     public function get_all_character_attributes() {
         return array_change_key_case($this->character_data['Attributes'] ?? [], CASE_LOWER);
+    }
+
+    public function add_to_inventory($item, $quantity = 1) {
+        if (!isset($this->state['inventory'][$item])) {
+            $this->state['inventory'][$item] = 0;
+        }
+        $this->state['inventory'][$item] += intval($quantity);
+        $this->save_state($this->state);
+        //error_log('Inventory after adding item: ' . print_r($this->state['inventory'], true));
     }
 
 
@@ -199,7 +219,7 @@ class IASB_State_Manager {
                 $left_value = $this->get_variable($left);
                 $right_value = is_numeric($right) ? floatval($right) : $this->get_variable($right);
 
-                error_log("Comparing evaluate_single_condition  {$left_value} {$operator} {$right_value}");
+                //error_log("Comparing evaluate_single_condition  {$left_value} {$operator} {$right_value}");
 
                 switch ($operator) {
                     case '>=': return $left_value >= $right_value;
@@ -236,9 +256,8 @@ class IASB_State_Manager {
     }
 
     // Get all quest progress
-    private function get_all_quest_progress() {
-        $quest_progress = get_user_meta($this->user_id, 'quest_progress', true);
-        return is_array($quest_progress) ? $quest_progress : array();
+    public function get_all_quest_progress() {
+        return $this->state['quests'] ?? array();
     }
 
     public function update_state($action, $value) {
@@ -262,7 +281,7 @@ class IASB_State_Manager {
                 // Add more action types as needed
             }
 
-            $this->save_state();
+            $this->save_state($this->state);
         }
         // Add debug output
         //error_log("State updated: " . print_r($this->state['variables'], true));
@@ -277,28 +296,50 @@ class IASB_State_Manager {
 
     
     // Update inventory
-    public function update_inventory($item, $quantity) {
-        $this->state['inventory'][$item] = ($this->state['inventory'][$item] ?? 0) + $quantity;
-        $this->save_state();
+    public function update_inventory($item, $quantity = 1, $operation = 'add') {
+        $inventory = $this->state['inventory'] ?? array();
+        
+        if ($operation === 'add') {
+            $inventory[$item] = ($inventory[$item] ?? 0) + $quantity;
+        } elseif ($operation === 'remove') {
+            $inventory[$item] = max(0, ($inventory[$item] ?? 0) - $quantity);
+            if ($inventory[$item] == 0) {
+                unset($inventory[$item]);
+            }
+        }
+        
+        $this->state['inventory'] = $inventory;
+        $this->save_state($this->state);
     }
 
     // Update flags
     public function update_flag($flag, $value) {
         $this->state['flags'][$flag] = $value;
-        $this->save_state();
+        $this->save_state($this->state);
     }
 
     // Update quest progress
-    public function update_quest_progress($quest_name, $status) {
-        $quest_progress = $this->get_all_quest_progress();
-        $quest_progress[$quest_name] = $status;
-        update_user_meta($this->user_id, 'quest_progress', $quest_progress);
+    public function update_quest_progress($quest_id, $progress) {
+        $quests = $this->state['quests'] ?? array();
+        $quests[$quest_id] = $progress;
+        $this->state['quests'] = $quests;
+        $this->save_state($this->state);
     }
     
     // Get quest progress
-    public function get_quest_progress($quest) {
-        $quest_progress = $this->get_all_quest_progress();
-        return isset($quest_progress[$quest]) ? $quest_progress[$quest] : 'Not started';
+    // Get quest progress
+    public function get_quest_progress($quest_id) {
+        $quest_progress = $this->state['quests'] ?? [];
+
+        if (is_array($quest_progress)) {
+            if (is_string($quest_id)) {
+                return isset($quest_progress[$quest_id]) ? $quest_progress[$quest_id] : 'Not started';
+            } else {
+                return 'Error: Quest ID must be a string';
+            }
+        } else {
+            return 'Error: Quest progress is not an array';
+        }
     }
     // Check path availability
     public function check_path_availability($path_id) {
@@ -312,7 +353,7 @@ class IASB_State_Manager {
         // Implement logic to update state based on user choices
         // This is a placeholder and should be customized based on your requirements
         $this->state['choices_made'][] = $choice_id;
-        $this->save_state();
+        $this->save_state($this->state);
     }
 
     // Process conditional content
@@ -322,15 +363,133 @@ class IASB_State_Manager {
         return $content;
     }
 
+    public function get_character_state() {
+        $state = array(
+            'inventory' => $this->state['inventory'] ?? [],
+            'quests' => $this->get_all_quest_progress(),
+            // Add other relevant state data here
+        );
+        //error_log('Character state in get_character_state: ' . print_r($state, true));
+        return $state;
+    }
+
+    public function debug_state() {
+        $raw_state = get_user_meta($this->user_id, 'iasb_story_state_' . $this->story_id, true);
+        //error_log("Debug - Raw state from database: " . print_r($raw_state, true));
+        $parsed_state = maybe_unserialize($raw_state);
+        //error_log("Debug - Parsed state: " . print_r($parsed_state, true));
+    }
+
     // Add more methods as needed for managing inventory, flags, relationships, stats, etc.
 }
 
+/**
+ * Displays character profile data (inventory, quests, etc.) on the character profile page.
+ *
+ * This function assumes that it is called on the character profile page, and that the character ID is accessible via get_the_ID().
+ * It also assumes that the associated story ID is stored in a post meta field called "associated_story".
+ *
+ * @since 1.0.0
+ */
+function iasb_display_character_profile_data() {
+   // error_log('iasb_display_character_profile_data function called');
+    $character_id = get_the_ID();
+    $user_id = get_current_user_id();
+    $story_id = get_post_meta($character_id, 'associated_story', true);
+    //error_log("User ID: $user_id, Story ID: $story_id, Character ID: $character_id");
 
-function iasb_get_state_manager($user_id, $story_id) {
+    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    $character_state = $state_manager->get_story_state();
+   // error_log('Character state: ' . print_r($character_state, true));
+    
+    echo '<h2>Character Profile</h2>';
+
+    // Display Inventory
+    echo '<h3>Inventory</h3>';
+    if (isset($character_state['inventory']) && is_array($character_state['inventory']) && !empty($character_state['inventory'])) {
+        echo '<ul>';
+        foreach ($character_state['inventory'] as $item => $quantity) {
+            if (is_array($quantity)) {
+                $total_quantity = array_sum($quantity);
+                echo "<li>$item: $total_quantity</li>";
+            } else {
+                echo "<li>$item: $quantity</li>";
+            }
+        }
+        echo '</ul>';
+    } else {
+        echo '<p>Your inventory is empty.</p>';
+    }
+    
+    // Display Character Stats
+    echo '<h3>Character Stats</h3>';
+    if (
+        (isset($character_state['variables']) && is_array($character_state['variables']) && !empty($character_state['variables'])) ||
+        (isset($character_state['strength']) && !is_array($character_state['strength']))
+    ) {
+        echo '<ul>';
+        if (isset($character_state['variables']) && is_array($character_state['variables'])) {
+            foreach ($character_state['variables'] as $stat => $value) {
+                echo "<li>" . ucfirst($stat) . ": $value</li>";
+            }
+        }
+        if (isset($character_state['strength']) && !is_array($character_state['strength'])) {
+            echo "<li>Strength: {$character_state['strength']}</li>";
+        }
+        echo '</ul>';
+    } else {
+        echo '<p>No character stats available.</p>';
+    }
+    
+    // Display Quests
+    echo '<h3>Quests</h3>';
+    if (isset($character_state['quests']) && is_array($character_state['quests']) && !empty($character_state['quests'])) {
+        echo '<ul>';
+        foreach ($character_state['quests'] as $quest => $status) {
+            echo "<li>" . ucfirst($quest) . ": $status</li>";
+        }
+        echo '</ul>';
+    } else {
+        echo '<p>No active quests.</p>';
+    }
+    
+    // Display Other State Data
+    echo '<h3>Other Information</h3>';
+    $other_keys = ['inventory', 'variables', 'strength', 'quests'];
+    $other_data = array_diff_key($character_state, array_flip($other_keys));
+    if (!empty($other_data)) {
+        foreach ($other_data as $key => $value) {
+            if (is_array($value) && !empty($value)) {
+                echo "<h4>" . ucfirst($key) . "</h4><ul>";
+                foreach ($value as $subkey => $subvalue) {
+                    if (is_array($subvalue)) {
+                        echo "<li>$subkey: " . json_encode($subvalue) . "</li>";
+                    } else {
+                        echo "<li>$subkey: $subvalue</li>";
+                    }
+                }
+                echo "</ul>";
+            } elseif (!is_array($value) && !empty($value)) {
+                echo "<p><strong>" . ucfirst($key) . ":</strong> $value</p>";
+            }
+        }
+    } else {
+        echo '<p>No additional information available.</p>';
+    }
+    $state_manager->debug_state();
+}
+
+// Hook this function to display on the character profile
+add_action('iasb_character_profile', 'iasb_display_character_profile_data');
+
+
+
+
+function iasb_get_state_manager($user_id, $story_id, $character_id) {
     static $instances = [];
     $key = $user_id . '_' . $story_id;
     if (!isset($instances[$key])) {
-        $instances[$key] = new IASB_State_Manager($user_id, $story_id);
+        $instances[$key] = new IASB_State_Manager($user_id, $story_id, $character_id);
     }
     return $instances[$key];
 }

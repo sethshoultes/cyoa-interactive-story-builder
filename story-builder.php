@@ -359,7 +359,8 @@ add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
 // Function to render the Child Episode Buttons on the front end
 function iasb_render_child_episodes($post_id) {
     $user_id = get_current_user_id();
-    $state_manager = new IASB_State_Manager($user_id, $post_id);
+    $character_id = get_user_meta($user_id, 'iasb_character_profile_id', true);
+    $state_manager = new IASB_State_Manager($user_id, $post_id, $character_id);
 
     // Query for episodes where '_iasb_parent_episode' meta field equals the current post ID
     $child_episodes = new WP_Query(array(
@@ -403,7 +404,8 @@ function iasb_render_child_episodes($post_id) {
 function iasb_process_choice() {
     if (isset($_POST['choice_id']) && isset($_POST['story_id'])) {
         $user_id = get_current_user_id();
-        $state_manager = new IASB_State_Manager($user_id, $_POST['story_id']);
+        $character_id = get_user_meta($user_id, 'iasb_character_profile_id', true);
+        $state_manager = new IASB_State_Manager($user_id, $_POST['story_id'], $character_id);
         $state_manager->apply_choice_consequences($_POST['choice_id']);
         wp_send_json_success();
     } else {

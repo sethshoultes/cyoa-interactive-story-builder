@@ -41,10 +41,10 @@
             return el('div', {className: props.className},
                 el(InspectorControls, {},
                     el(TextControl, {
-                        label: __('Episode ID', 'story-builder'),
-                        value: props.attributes.id,
+                        label: __('Condition', 'story-builder'),
+                        value: props.attributes.condition,
                         onChange: function(value) {
-                            props.setAttributes({id: parseInt(value)});
+                            props.setAttributes({condition: value});
                         },
                     })
                 ),
@@ -57,15 +57,9 @@
                         props.setAttributes({content: value});
                     },
                 }),
-                el( 'input', {
-                    type: 'text',
-                    placeholder: 'Enter condition',
-                    value: props.attributes.condition,
-                    onChange: function( event ) {
-                        props.setAttributes( { condition: event.target.value } );
-                    },
-                } ),
-                
+                el('div', {className: 'condition-preview'},
+                    __('Condition: ', 'story-builder') + props.attributes.condition
+                )
             );
         },
         save: function() {
@@ -86,55 +80,29 @@
             target: {type: 'string', default: '_self'},
         },
         edit: function(props) {
-            return el('div', {},
+            return el('div', {className: props.className},
                 el(InspectorControls, {},
                     el(SelectControl, {
                         label: __('Content Type', 'story-builder'),
                         value: props.attributes.type,
                         options: [
-                            {label: __('Text', 'story-builder'), value: 'text'},
-                            {label: __('Image', 'story-builder'), value: 'image'},
-                            {label: __('Link', 'story-builder'), value: 'link'},
-                            {label: __('Video', 'story-builder'), value: 'video'},
+                            { label: 'Text', value: 'text' },
+                            { label: 'Image', value: 'image' },
+                            { label: 'Link', value: 'link' },
                         ],
                         onChange: function(value) {
                             props.setAttributes({type: value});
                         },
                     }),
                     el(TextControl, {
-                        label: __('Content ID', 'story-builder'),
+                        label: __('ID', 'story-builder'),
                         value: props.attributes.id,
                         onChange: function(value) {
                             props.setAttributes({id: parseInt(value)});
                         },
-                    }),
-                    el(TextControl, {
-                        label: __('CSS Class', 'story-builder'),
-                        value: props.attributes.class,
-                        onChange: function(value) {
-                            props.setAttributes({class: value});
-                        },
-                    }),
-                    el(TextControl, {
-                        label: __('Title', 'story-builder'),
-                        value: props.attributes.title,
-                        onChange: function(value) {
-                            props.setAttributes({title: value});
-                        },
-                    }),
-                    props.attributes.type === 'link' && el(SelectControl, {
-                        label: __('Link Target', 'story-builder'),
-                        value: props.attributes.target,
-                        options: [
-                            {label: __('Same Window', 'story-builder'), value: '_self'},
-                            {label: __('New Window', 'story-builder'), value: '_blank'},
-                        ],
-                        onChange: function(value) {
-                            props.setAttributes({target: value});
-                        },
                     })
                 ),
-                el('div', {}, __('Dynamic Content: ', 'story-builder') + props.attributes.type)
+                el('div', {}, __('Dynamic Content Placeholder', 'story-builder'))
             );
         },
         save: function() {
@@ -147,8 +115,31 @@
         title: __('User Story Name', 'story-builder'),
         icon: 'admin-users',
         category: 'iasb-blocks',
-        edit: function() {
-            return el('div', {}, __('User Story Name', 'story-builder'));
+        edit: function(props) {
+            const [storyName, setStoryName] = wp.element.useState('');
+        
+            wp.element.useEffect(() => {
+                wp.apiFetch({
+                    path: '/iasb/v1/story-name',
+                }).then(result => {
+                    setStoryName(result.name);
+                });
+            }, []);
+        
+            return el('div', {className: props.className},
+                el(TextControl, {
+                    label: __('User Story Name', 'story-builder'),
+                    value: storyName,
+                    onChange: function(value) {
+                        setStoryName(value);
+                        wp.apiFetch({
+                            path: '/iasb/v1/story-name',
+                            method: 'POST',
+                            data: { name: value },
+                        });
+                    },
+                })
+            );
         },
         save: function() {
             return null; // Render in PHP
@@ -204,10 +195,21 @@
         icon: 'list-view',
         category: 'iasb-blocks',
         edit: function(props) {
-            return wp.element.createElement(
-                'div',
-                { className: props.className },
-                'Player Inventory will be displayed here.'
+            const [inventory, setInventory] = wp.element.useState([]);
+        
+            wp.element.useEffect(() => {
+                wp.apiFetch({
+                    path: '/iasb/v1/inventory',
+                }).then(result => {
+                    setInventory(result);
+                });
+            }, []);
+        
+            return el('div', {className: props.className},
+                el('h3', {}, __('Player Inventory', 'story-builder')),
+                el('ul', {},
+                    inventory.map(item => el('li', {key: item.name}, item.name + ': ' + item.quantity))
+                )
             );
         },
         save: function() {

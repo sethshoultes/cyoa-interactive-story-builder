@@ -54,6 +54,7 @@ add_action( 'init', 'iasb_story_builder_plugin_auto_update' );
 require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {
@@ -357,6 +358,9 @@ add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
 
 // Function to render the Child Episode Buttons on the front end
 function iasb_render_child_episodes($post_id) {
+    $user_id = get_current_user_id();
+    $state_manager = new IASB_State_Manager($user_id, $post_id);
+
     // Query for episodes where '_iasb_parent_episode' meta field equals the current post ID
     $child_episodes = new WP_Query(array(
         'post_type'      => 'story_builder',
@@ -383,17 +387,31 @@ function iasb_render_child_episodes($post_id) {
             $child_episodes->the_post();
             $episode_id = get_the_ID();
             $episode_title = get_the_title();
-            echo '<li class="choice-item"><a href="' . get_permalink() . '" data-story-id="' . esc_attr($episode_id) . '" class="choice-link">' . esc_html($episode_title) . '</a></li>';
+            
+            // Check if this path is available based on the current state
+            if ($state_manager->check_path_availability($episode_id)) {
+                echo '<li class="choice-item"><a href="' . get_permalink() . '" data-story-id="' . esc_attr($episode_id) . '" class="choice-link">' . esc_html($episode_title) . '</a></li>';
+            }
         }
         echo '</ul>';
         echo '</div>';
     } else {
-       // Display Next Episode Link
        iasb_render_next_episode_link($post_id);
     }
     wp_reset_postdata();
 }
-
+function iasb_process_choice() {
+    if (isset($_POST['choice_id']) && isset($_POST['story_id'])) {
+        $user_id = get_current_user_id();
+        $state_manager = new IASB_State_Manager($user_id, $_POST['story_id']);
+        $state_manager->apply_choice_consequences($_POST['choice_id']);
+        wp_send_json_success();
+    } else {
+        wp_send_json_error();
+    }
+}
+add_action('wp_ajax_iasb_process_choice', 'iasb_process_choice');
+add_action('wp_ajax_nopriv_iasb_process_choice', 'iasb_process_choice');
 // Function to display the "Next Episode" link considering seasons and next season
 function iasb_render_next_episode_link($post_id) {
     // Get the current episode number, season, and storyline

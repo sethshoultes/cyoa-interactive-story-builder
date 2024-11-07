@@ -626,7 +626,7 @@ add_shortcode('display_inventory', 'iasb_render_inventory_block');
  * 
  * @return bool True if the item was successfully added, false on failure.
  */
-function iasb_add_to_inventory($item, $quantity = 1) {
+function iasb_add_to_inventory( $quantity = 1) {
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
     $character_id = 'default_character'; // Replace with the appropriate character ID

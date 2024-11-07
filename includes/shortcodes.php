@@ -456,10 +456,7 @@ function iasb_add_to_inventory_shortcode($atts) {
     $character_id = 'default_character';
     $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     
-    $state_manager->add_to_inventory($atts['item'], $atts['quantity']);
-    
-    //error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to global inventory.');
-    //error_log('Debug: New global inventory: ' . print_r($state_manager->get_inventory(), true));
+    $state_manager->add_to_global_inventory($atts['item'], $atts['quantity']);
     
     return 'Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to your inventory.';
 }
@@ -489,10 +486,11 @@ function iasb_register_gutenberg_blocks() {
     }
 
     // Register Resume Reading block
-    register_block_type('iasb/resume-reading', array(
-        'render_callback' => 'iasb_resume_reading_shortcode',
+    register_block_type('iasb/inventory-display', array(
+        'editor_script' => 'iasb-inventory-display-editor',
+        'editor_style' => 'iasb-inventory-display-editor',
+        'render_callback' => 'iasb_render_inventory_block',
     ));
-
     // Register Dynamic Content block
     register_block_type('iasb/dynamic-content', array(
         'attributes' => array(
@@ -600,15 +598,11 @@ function iasb_render_conditional_content_block($attributes, $content) {
     //error_log('Generated shortcode: ' . $shortcode_str);
     return do_shortcode($shortcode_str);
 }
-function iasb_render_inventory_block($attributes) {
+function iasb_render_inventory_block() {
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
     $state_manager = new IASB_State_Manager($user_id, $story_id, 'default_character');
     $inventory = $state_manager->get_inventory();
-    
-    //error_log('Debug: User ID: ' . $user_id);
-    //error_log('Debug: Story ID: ' . $story_id);
-    //error_log('Debug: Inventory: ' . print_r($inventory, true));
 
     $output = '<ul class="player-inventory">';
     if (empty($inventory)) {
@@ -670,4 +664,3 @@ function iasb_render_add_to_inventory_block($attributes) {
     
     return 'Added ' . $quantity . ' ' . $item . '(s) to your inventory.';
 }
-

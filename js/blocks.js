@@ -191,25 +191,43 @@
 
     // Inventory Display block
     blocks.registerBlockType('iasb/inventory-display', {
-        title: 'Player Inventory',
+        title: __('Player Inventory', 'story-builder'),
         icon: 'list-view',
         category: 'iasb-blocks',
         edit: function(props) {
             const [inventory, setInventory] = wp.element.useState([]);
+            const [error, setError] = wp.element.useState(null);
         
             wp.element.useEffect(() => {
                 wp.apiFetch({
                     path: '/iasb/v1/inventory',
                 }).then(result => {
-                    setInventory(result);
+                    console.log('API response:', result);  // Log the entire response
+                    if (Array.isArray(result)) {
+                        setInventory(result);
+                    } else {
+                        setError('Invalid inventory data received');
+                        console.error('Invalid inventory data:', result);
+                    }
+                }).catch(error => {
+                    setError('Error fetching inventory');
+                    console.error('Error fetching inventory:', error);
                 });
             }, []);
         
+            if (error) {
+                return el('div', {className: props.className},
+                    el('p', {}, __('Error: ', 'story-builder') + error)
+                );
+            }
+        
             return el('div', {className: props.className},
                 el('h3', {}, __('Player Inventory', 'story-builder')),
-                el('ul', {},
-                    inventory.map(item => el('li', {key: item.name}, item.name + ': ' + item.quantity))
-                )
+                inventory.length === 0 
+                    ? el('p', {}, __('Loading inventory...', 'story-builder'))
+                    : el('ul', {},
+                        inventory.map(item => el('li', {key: item.name}, item.name + ': ' + item.quantity))
+                      )
             );
         },
         save: function() {

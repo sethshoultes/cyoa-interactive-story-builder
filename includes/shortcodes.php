@@ -621,7 +621,6 @@ add_shortcode('display_inventory', 'iasb_render_inventory_block');
 /**
  * Adds the given item to the current user's inventory, with the given quantity.
  * 
- * @param string $item The name of the item to add to the inventory.
  * @param int $quantity The number of items to add. Defaults to 1.
  * 
  * @return bool True if the item was successfully added, false on failure.

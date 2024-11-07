@@ -255,7 +255,7 @@ function iasb_dynamic_content_shortcode($atts) {
     // Apply a filter to allow modification
     $output = apply_filters('iasb_dynamic_content', $output, $atts);
 
-    return $output;
+    return true;
 }
 add_shortcode('dynamic_content', 'iasb_dynamic_content_shortcode');
 

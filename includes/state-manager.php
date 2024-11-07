@@ -6,7 +6,7 @@ class IASB_State_Manager {
     private $story_id;
     private $state;
     private $character_data;
-    private $character_id;
+    //private $character_id;
     
 
     public function __construct($user_id, $story_id, $character_id) {
@@ -14,7 +14,7 @@ class IASB_State_Manager {
         $this->story_id = $story_id;
         $this->state = $this->get_story_state();
         $this->character_data = $this->get_character_data();
-        $this->character_id = $character_id;
+       // $this->character_id = $character_id;
         // Add debug output
         //error_log("State loaded in constructor: " . print_r($this->state, true));
     }

@@ -327,12 +327,12 @@ function iasb_npc_character_name_shortcode($atts) {
             $output = '<a href="' . esc_url($character_link) . '" target="_blank">' . esc_html($character_name) . '</a>';
             // Apply a filter to allow modification of the output
             $output = apply_filters('iasb_npc_character_name', $output, $atts, $character_post);
-            return $output;
+            return true;
 
         } else {
             
             $output = esc_html($character_name);
-            return $output;
+            return true;
         }
     }
 

@@ -623,28 +623,42 @@ add_shortcode('display_inventory', 'iasb_render_inventory_block');
  * 
  * @param int $quantity The number of items to add. Defaults to 1.
  * 
- * @return bool True if the item was successfully added, false on failure.
+ * @return string Message indicating the result of the operation.
  */
-function iasb_add_to_inventory( $quantity = 1) {
+function iasb_add_to_inventory($atts) {
+    $atts = shortcode_atts(array(
+        'item' => '',
+        'quantity' => 1,
+    ), $atts);
+
+    if (empty($atts['item'])) {
+        return __('Error: No item specified.', 'story-builder');
+    }
+
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
-    $character_id = 'default_character'; // Replace with the appropriate character ID
+    $transient_name = 'iasb_inventory_added_' . $user_id . '_' . $story_id . '_' . sanitize_title($atts['item']);
+
+    // Check if the shortcode has already been executed for this item
+    if (get_transient($transient_name)) {
+        return ''; // Return empty if already executed
+    }
+
+    $character_id = 'default_character';
     $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     
-    $inventory = $state_manager->get_inventory();
-    
-    $output = '<ul class="player-inventory">';
-    if (empty($inventory)) {
-        $output .= '<li>' . esc_html__('Your inventory is empty.', 'story-builder') . '</li>';
-    } else {
-        foreach ($inventory as $item_name => $quantity) {
-            $output .= '<li>' . esc_html($item_name) . ': ' . esc_html($quantity) . '</li>';
-        }
-    }
-    $output .= '</ul>';
-    
-    return true;
+    // Add item to inventory
+    $state_manager->add_to_global_inventory($atts['item'], $atts['quantity']);
+
+    // Set the transient to indicate the shortcode has been executed for this item
+    set_transient($transient_name, true, 30 * MINUTE_IN_SECONDS); // Expires after 30 minutes
+
+    // Return a message
+    return sprintf(__('Added %d %s to your inventory.', 'story-builder'), $atts['quantity'], $atts['item']);
 }
+
+add_shortcode('add_to_inventory', 'iasb_add_to_inventory');
+add_shortcode('add_to_inventory', 'iasb_add_to_inventory');
 
 function iasb_render_add_to_inventory_block($attributes) {
     $item = $attributes['item'] ?? '';

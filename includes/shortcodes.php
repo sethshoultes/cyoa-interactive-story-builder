@@ -458,8 +458,8 @@ function iasb_add_to_inventory_shortcode($atts) {
     
     $state_manager->add_to_inventory($atts['item'], $atts['quantity']);
     
-    error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to inventory.');
-    error_log('Debug: New inventory: ' . print_r($state_manager->get_inventory(), true));
+   // error_log('Debug: Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to inventory.');
+    //error_log('Debug: New inventory: ' . print_r($state_manager->get_inventory(), true));
     
     return 'Added ' . $atts['quantity'] . ' ' . $atts['item'] . '(s) to your inventory.';
 }
@@ -606,9 +606,9 @@ function iasb_render_inventory_block($attributes) {
     $state_manager = new IASB_State_Manager($user_id, $story_id, 'default_character');
     $inventory = $state_manager->get_inventory();
     
-    error_log('Debug: User ID: ' . $user_id);
-    error_log('Debug: Story ID: ' . $story_id);
-    error_log('Debug: Inventory: ' . print_r($inventory, true));
+    //error_log('Debug: User ID: ' . $user_id);
+    //error_log('Debug: Story ID: ' . $story_id);
+    //error_log('Debug: Inventory: ' . print_r($inventory, true));
 
     $output = '<ul class="player-inventory">';
     if (empty($inventory)) {

@@ -638,6 +638,7 @@ function iasb_render_inventory_block($attributes) {
     
     return $output;
 }
+add_shortcode('display_inventory', 'iasb_render_inventory_block');
 
 function iasb_add_to_inventory($item, $quantity = 1) {
     $user_id = get_current_user_id();

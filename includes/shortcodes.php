@@ -99,7 +99,7 @@ function iasb_resume_reading_shortcode() {
             $output .= '<a href="' . get_permalink($last_story_id) . '" class="button">' . sprintf(__('Resume Reading in %s', 'story-builder'), esc_html($universe_name)) . '</a>';
             $output .= '</div>';
 
-            return $output;
+            return true;
         }
     }
     return '';
@@ -640,25 +640,33 @@ function iasb_render_inventory_block($attributes) {
 }
 add_shortcode('display_inventory', 'iasb_render_inventory_block');
 
+/**
+ * Adds the given item to the current user's inventory, with the given quantity.
+ * 
+ * @param string $item The name of the item to add to the inventory.
+ * @param int $quantity The number of items to add. Defaults to 1.
+ * 
+ * @return bool True if the item was successfully added, false on failure.
+ */
 function iasb_add_to_inventory($item, $quantity = 1) {
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
     $character_id = 'default_character'; // Replace with the appropriate character ID
     $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
     
-    // Get the current state
-    $state = $state_manager->get_story_state();
+    $inventory = $state_manager->get_inventory();
     
-    // Add the item to the inventory
-    if (!isset($state['inventory'][$item])) {
-        $state['inventory'][$item] = 0;
+    $output = '<ul class="player-inventory">';
+    if (empty($inventory)) {
+        $output .= '<li>' . esc_html__('Your inventory is empty.', 'story-builder') . '</li>';
+    } else {
+        foreach ($inventory as $item_name => $quantity) {
+            $output .= '<li>' . esc_html($item_name) . ': ' . esc_html($quantity) . '</li>';
+        }
     }
-    $state['inventory'][$item] += intval($quantity);
+    $output .= '</ul>';
     
-    // Save the updated state
-    $state_manager->save_state($state);
-    
-    return true;
+    return $output;
 }
 
 function iasb_render_add_to_inventory_block($attributes) {

@@ -72,6 +72,22 @@ class IASB_State_Manager {
         return $saved;
     }
 
+    public function get_inventory() {
+        $inventory = array();
+        foreach ($this->state as $story_state) {
+            if (isset($story_state['inventory']) && is_array($story_state['inventory'])) {
+                foreach ($story_state['inventory'] as $item => $quantity) {
+                    if (!isset($inventory[$item])) {
+                        $inventory[$item] = 0;
+                    }
+                    $inventory[$item] += $quantity;
+                }
+            }
+        }
+        return $inventory;
+    }
+
+
     // Condition evaluation methods
     public function evaluate_condition($condition) {
         //error_log('State Manager - Evaluating condition: ' . $condition);

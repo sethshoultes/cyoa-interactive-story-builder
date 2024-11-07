@@ -72,6 +72,25 @@ class IASB_State_Manager {
         return $saved;
     }
 
+    public function get_inventory() {
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        $inventory = array();
+        
+        // Combine inventory from all stories
+        foreach ($user_state as $story_state) {
+            if (isset($story_state['inventory']) && is_array($story_state['inventory'])) {
+                foreach ($story_state['inventory'] as $item => $quantity) {
+                    if (!isset($inventory[$item])) {
+                        $inventory[$item] = 0;
+                    }
+                    $inventory[$item] += $quantity;
+                }
+            }
+        }
+        
+        return $inventory;
+    }
+
     // Condition evaluation methods
     public function evaluate_condition($condition) {
         //error_log('State Manager - Evaluating condition: ' . $condition);
@@ -156,14 +175,15 @@ class IASB_State_Manager {
     }
 
     public function add_to_inventory($item, $quantity = 1) {
-        if (!isset($this->state['inventory'][$item])) {
-            $this->state['inventory'][$item] = 0;
+        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true) ?: array();
+        
+        if (!isset($user_state[$this->story_id]['inventory'][$item])) {
+            $user_state[$this->story_id]['inventory'][$item] = 0;
         }
-        $this->state['inventory'][$item] += intval($quantity);
-        $this->save_state($this->state);
-        //error_log('Inventory after adding item: ' . print_r($this->state['inventory'], true));
+        $user_state[$this->story_id]['inventory'][$item] += intval($quantity);
+        
+        update_user_meta($this->user_id, 'iasb_user_state', $user_state);
     }
-
 
     private function safe_evaluate($condition) {
         $parts = preg_split('/(\&\&|\|\|)/', $condition, -1, PREG_SPLIT_DELIM_CAPTURE);
@@ -297,8 +317,12 @@ class IASB_State_Manager {
     
     // Update inventory
     public function update_inventory($item, $quantity = 1, $operation = 'add') {
-        $inventory = $this->state['inventory'] ?? array();
-        
+        $user_id = get_current_user_id();
+        $inventory = get_user_meta($user_id, 'iasb_inventory', true);
+        if (!is_array($inventory)) {
+            $inventory = array();
+        }
+
         if ($operation === 'add') {
             $inventory[$item] = ($inventory[$item] ?? 0) + $quantity;
         } elseif ($operation === 'remove') {
@@ -307,9 +331,8 @@ class IASB_State_Manager {
                 unset($inventory[$item]);
             }
         }
-        
-        $this->state['inventory'] = $inventory;
-        $this->save_state($this->state);
+
+        update_user_meta($user_id, 'iasb_inventory', $inventory);
     }
 
     // Update flags

@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-    console.log('Fart Story Manager JS Loaded');
+    console.log('Adventure Story Manager JS Loaded');
 
     // Fetch the story structure via AJAX
     $.ajax({

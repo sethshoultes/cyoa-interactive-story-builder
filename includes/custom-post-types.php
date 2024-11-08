@@ -21,7 +21,7 @@ function iasb_register_story_stories_cpt() {
         'public'             => true,
         'has_archive'        => true,
         'rewrite'            => array('slug' => 'story-stories'),
-        'supports'           => array('title', 'editor', 'author', 'thumbnail', 'comments'),
+        'supports'           => array('title', 'editor', 'author', 'thumbnail', 'comments', 'custom-fields'),
         'hierarchical'       => false, // disable parent-child relationships
         'capability_type'    => 'post',
         'menu_position'      => 26,

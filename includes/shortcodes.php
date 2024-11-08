@@ -106,39 +106,6 @@ function iasb_resume_reading_shortcode() {
 }
 add_shortcode('iasb_resume_reading', 'iasb_resume_reading_shortcode');
 
-/* Conditional Content Based on User Progress */
-// Shortcode to display content based on user's current story progress
-function iasb_conditional_content_shortcode($atts, $content = null) {
-    $atts = shortcode_atts([
-        'id' => get_the_ID(),
-        'condition' => '',
-        'content' => '',
-    ], $atts, 'conditional_content');
-
-    if (empty($content) && !empty($atts['content'])) {
-        $content = $atts['content'];
-    }
-
-    if (empty($content) || empty($atts['condition'])) {
-        return '';
-    }
-
-    $user_id = get_current_user_id();
-    $story_id = get_the_ID();
-    $character_id = 'default_character';
-    $state_manager = new CYOA_State_Manager($user_id, $story_id, $character_id);
-    
-    $condition = html_entity_decode(str_replace(array('"', '"'), '"', $atts['condition']), ENT_QUOTES);
-
-    if ($state_manager->evaluate_complex_condition($condition)) {
-        return do_shortcode($content);
-    }
-
-    return '';
-}
-add_shortcode('conditional_content', 'iasb_conditional_content_shortcode');
-
-
 
 /* Dynamic Content Shortcodes */
 // Shortcode to inject dynamic content with parameters
@@ -315,19 +282,6 @@ function iasb_test_shortcode($atts) {
 }
 add_shortcode('test_shortcode', 'iasb_test_shortcode');
 
-function iasb_render_conditional_content_block($attributes, $content) {
-    // error_log('iasb_render_conditional_content_block called with: ' . print_r($attributes, true));
-     $shortcode_str = '[conditional_content';
-     if (isset($attributes['id'])) {
-         $shortcode_str .= ' id="' . esc_attr($attributes['id']) . '"';
-     }
-     if (isset($attributes['condition'])) {
-         $shortcode_str .= ' condition="' . esc_attr($attributes['condition']) . '"';
-     }
-     $shortcode_str .= ']' . ($attributes['content'] ?? '') . '[/conditional_content]';
-     //error_log('Generated shortcode: ' . $shortcode_str);
-     return do_shortcode($shortcode_str);
- }
 
 /* Gutenberg Blocks */
 // Register Gutenberg blocks
@@ -338,10 +292,13 @@ function iasb_register_gutenberg_blocks() {
     }
 
     // Register Resume Reading block
-    register_block_type('iasb/inventory-display', array(
-        'editor_script' => 'iasb-inventory-display-editor',
-        'editor_style' => 'iasb-inventory-display-editor',
-        'render_callback' => 'iasb_render_inventory_block',
+    register_block_type('iasb/resume-reading', array(
+        'attributes' => array(
+            'id' => array('type' => 'number'),
+            'class' => array('type' => 'string'),
+            'link' => array('type' => 'string', 'default' => 'false'),
+        ),
+        'render_callback' => 'iasb_resume_reading_block',  // Callback function to render the block
     ));
     // Register Dynamic Content block
     register_block_type('iasb/dynamic-content', array(
@@ -370,44 +327,7 @@ function iasb_register_gutenberg_blocks() {
         'render_callback' => 'iasb_npc_character_name_shortcode',
     ));
 
-    // Conditional Content block
-    register_block_type('iasb/conditional-content', array(
-        'attributes' => array(
-            //'id' => array('type' => 'number'),
-            'condition' => array('type' => 'string'),
-            'content' => array('type' => 'string'),
-        ),
-        'render_callback' => 'iasb_conditional_content_shortcode',
-    ));
-
-    // State Variable block
-    register_block_type('iasb/state-variable', array(
-        'attributes' => array(
-            'name' => array('type' => 'string'),
-        ),
-        'render_callback' => 'iasb_state_variable_shortcode',
-    ));
-
-    // Update State block
-    register_block_type('iasb/update-state', array(
-        'attributes' => array(
-            'action' => array('type' => 'string'),
-            'value' => array('type' => 'string'),
-        ),
-        'render_callback' => 'iasb_update_state_shortcode',
-    ));
-
-    register_block_type('iasb/add-to-inventory', array(
-        'attributes' => array(
-            'item' => array('type' => 'string'),
-            'quantity' => array('type' => 'number', 'default' => 1),
-        ),
-        'render_callback' => 'iasb_render_add_to_inventory_block',
-    ));
-
-    register_block_type('iasb/inventory-display', array(
-        'render_callback' => 'iasb_render_inventory_block',
-    ));
+   
 }
 add_action('init', 'iasb_register_gutenberg_blocks');
 
@@ -425,17 +345,7 @@ function iasb_block_category($categories, $post) {
 }
 add_filter('block_categories_all', 'iasb_block_category', 10, 2);
 
-function iasb_register_conditional_content_block() {
-    register_block_type('iasb/conditional-content', array(
-        'attributes' => array(
-            'id' => array('type' => 'number'),
-            'condition' => array('type' => 'string'),
-            'content' => array('type' => 'string'),
-        ),
-        'render_callback' => 'iasb_render_conditional_content_block',
-    ));
-}
-add_action('init', 'iasb_register_conditional_content_block');
+
 
 
 

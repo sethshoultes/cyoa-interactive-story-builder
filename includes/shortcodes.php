@@ -126,7 +126,7 @@ function iasb_conditional_content_shortcode($atts, $content = null) {
     $user_id = get_current_user_id();
     $story_id = get_the_ID();
     $character_id = 'default_character';
-    $state_manager = new IASB_State_Manager($user_id, $story_id, $character_id);
+    $state_manager = new CYOA_State_Manager($user_id, $story_id, $character_id);
     
     $condition = html_entity_decode(str_replace(array('"', '"'), '"', $atts['condition']), ENT_QUOTES);
 
@@ -315,6 +315,20 @@ function iasb_test_shortcode($atts) {
 }
 add_shortcode('test_shortcode', 'iasb_test_shortcode');
 
+function iasb_render_conditional_content_block($attributes, $content) {
+    // error_log('iasb_render_conditional_content_block called with: ' . print_r($attributes, true));
+     $shortcode_str = '[conditional_content';
+     if (isset($attributes['id'])) {
+         $shortcode_str .= ' id="' . esc_attr($attributes['id']) . '"';
+     }
+     if (isset($attributes['condition'])) {
+         $shortcode_str .= ' condition="' . esc_attr($attributes['condition']) . '"';
+     }
+     $shortcode_str .= ']' . ($attributes['content'] ?? '') . '[/conditional_content]';
+     //error_log('Generated shortcode: ' . $shortcode_str);
+     return do_shortcode($shortcode_str);
+ }
+
 /* Gutenberg Blocks */
 // Register Gutenberg blocks
 function iasb_register_gutenberg_blocks() {
@@ -423,19 +437,7 @@ function iasb_register_conditional_content_block() {
 }
 add_action('init', 'iasb_register_conditional_content_block');
 
-function iasb_render_conditional_content_block($attributes, $content) {
-   // error_log('iasb_render_conditional_content_block called with: ' . print_r($attributes, true));
-    $shortcode_str = '[conditional_content';
-    if (isset($attributes['id'])) {
-        $shortcode_str .= ' id="' . esc_attr($attributes['id']) . '"';
-    }
-    if (isset($attributes['condition'])) {
-        $shortcode_str .= ' condition="' . esc_attr($attributes['condition']) . '"';
-    }
-    $shortcode_str .= ']' . ($attributes['content'] ?? '') . '[/conditional_content]';
-    //error_log('Generated shortcode: ' . $shortcode_str);
-    return do_shortcode($shortcode_str);
-}
+
 
 
 

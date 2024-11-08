@@ -347,26 +347,7 @@ class IASB_State_Manager {
 
         update_user_meta($user_id, 'iasb_inventory', $inventory);
     }
-    public function add_to_global_inventory($item, $quantity = 1) {
-        $user_state = get_user_meta($this->user_id, 'iasb_user_state', true);
-        
-        if (!is_array($user_state)) {
-            $user_state = array();
-        }
-        
-        if (!isset($user_state['global_inventory'])) {
-            $user_state['global_inventory'] = array();
-        }
-        
-        if (!isset($user_state['global_inventory'][$item])) {
-            $user_state['global_inventory'][$item] = 0;
-        }
-        
-        $user_state['global_inventory'][$item] += $quantity;
-        
-        update_user_meta($this->user_id, 'iasb_user_state', $user_state);
-    }
-
+    
     // Update flags
     public function update_flag($flag, $value) {
         $this->state['flags'][$flag] = $value;

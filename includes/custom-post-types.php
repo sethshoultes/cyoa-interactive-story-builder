@@ -43,7 +43,7 @@ function iasb_register_story_builder_manager_page() {
         'Story Manager',                  // Menu title
         'manage_options',                 // Capability
         'story-story-manager',             // Menu slug
-        'iasb_render_story_manager_page'    // Callback function to render the page
+        'render_story_manager_page'    // Callback function to render the page
     );
 }
 add_action('admin_menu', 'iasb_register_story_builder_manager_page');

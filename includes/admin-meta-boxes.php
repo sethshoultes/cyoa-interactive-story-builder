@@ -561,7 +561,7 @@ function iasb_add_season_episode_columns($columns) {
         'episode_number' => __('Episode', 'story-builder'),
         'child_episodes' => __('Child Episodes', 'story-builder'),// Add Child Episodes Column
         'author'         => $columns['author'],
-        'date'           => $columns['date'], // Re-add date column
+        'date'           => isset($columns['date']) ? $columns['date'] : '', // Re-add date column
     );
 
     return $new_columns;

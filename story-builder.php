@@ -57,6 +57,38 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/user-character-manager.php';
 
+function enqueue_story_manager_scripts($hook) {
+    if ('story_builder_page_story-story-manager' !== $hook) {
+        return;
+    }
+
+    wp_enqueue_script('wp-element');
+    wp_enqueue_script('wp-components');
+    wp_enqueue_script('wp-api-fetch');
+    wp_enqueue_script('wp-i18n');
+
+    wp_enqueue_script(
+        'story-manager',
+        plugin_dir_url(__FILE__) . 'build/story-manager.js', // Adjust this path as needed
+        array('wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n'),
+        filemtime(plugin_dir_path(__FILE__) . 'build/story-manager.js'), // Adjust this path as needed
+        true
+    );
+
+    wp_enqueue_style('wp-components');
+}
+add_action('admin_enqueue_scripts', 'enqueue_story_manager_scripts');
+
+function render_story_manager_page() {
+    ?>
+    <div class="wrap">
+        <h1><?php echo esc_html(__('Story Manager', 'story-builder')); ?></h1>
+        <div id="story-manager-root"></div>
+    </div>
+    <?php
+}
+
+
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {
     wp_enqueue_script(
@@ -285,76 +317,6 @@ function iasb_story_builder_law_template($template) {
 }
 add_filter('single_template', 'iasb_story_builder_law_template');
 
-
-
-// Enqueue D3.js library and custom script for the Story Manager page
-function iasb_enqueue_d3_js_library($hook) {
-    // Check if we're on the Story Manager page
-    if ($hook !== 'story_builder_page_story-story-manager') {
-        return;
-    }
-
-    // Enqueue D3.js for the flowchart
-    wp_enqueue_script('d3-js', 'https://d3js.org/d3.v7.min.js', array(), null, true);
-
-    // Enqueue our custom script to handle the D3.js flowchart logic
-    wp_enqueue_script('story-story-manager-js', plugin_dir_url(__FILE__) . 'js/story-story-manager.js', array('d3-js'), null, true);
-
-    // Localize script to pass AJAX URL and nonce
-    wp_localize_script('story-story-manager-js', 'iasb_ajax_object', array(
-        'ajaxurl' => admin_url('admin-ajax.php'),
-        'nonce'   => wp_create_nonce('iasb_story_builder_manager_nonce')
-    ));
-
-    // Enqueue CSS for styling the tree
-    wp_enqueue_style('story-story-manager-css', plugin_dir_url(__FILE__) . 'css/story-story-manager.css');
-}
-add_action('admin_enqueue_scripts', 'iasb_enqueue_d3_js_library');
-// Function to render the Story Manager page
-function iasb_render_story_manager_page() {
-    ?>
-    <div class="wrap">
-        <h1><?php _e('Story Manager', 'story-builder'); ?></h1>
-        <div id="story-manager-tree"></div> <!-- This is where the D3.js tree will be rendered -->
-    </div>
-    <?php
-}
-// Add the Story Manager page to the admin menu
-function iasb_get_story_structure() {
-    // Verify nonce for security
-    check_ajax_referer('iasb_story_builder_manager_nonce', 'nonce');
-
-    // Fetch all story stories
-    $story_stories = get_posts(array(
-        'post_type' => 'story_builder',
-        'posts_per_page' => -1,
-        'post_status' => 'publish'
-    ));
-
-    $story_tree = array();
-
-    // Build the story tree structure
-    foreach ($story_stories as $story) {
-        $universes = wp_get_post_terms($story->ID, 'parallel_universe', array('fields' => 'names'));
-        $branches = wp_get_post_terms($story->ID, 'story_branch', array('fields' => 'names'));
-        $endings = wp_get_post_terms($story->ID, 'alternate_ending', array('fields' => 'names'));
-
-        $story_node = array(
-            'name' => $story->post_title,
-            'universes' => $universes,
-            'branches' => $branches,
-            'endings' => $endings,
-        );
-
-        // Add to the tree
-        $story_tree[] = $story_node;
-    }
-
-    // Return the tree data in a format that D3.js can use
-    wp_send_json_success($story_tree);
-}
-
-add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
 
 
 // Function to render the Child Episode Buttons on the front end

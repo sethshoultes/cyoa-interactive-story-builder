@@ -8,6 +8,7 @@ function enqueue_story_manager_scripts($hook = '') {
     wp_enqueue_script('wp-components');
     wp_enqueue_script('wp-api-fetch');
     wp_enqueue_script('wp-i18n');
+    wp_enqueue_script('jquery-ui-sortable');
 
     wp_enqueue_script(
         'story-manager',
@@ -17,10 +18,8 @@ function enqueue_story_manager_scripts($hook = '') {
         true
     );
 
-    wp_enqueue_style('wp-components');
-
-    // Add these lines
-    wp_enqueue_script('jquery-ui-sortable');
+    wp_enqueue_script('jquery-nested-sortable', plugin_dir_url(__FILE__) . '../js/build/jquery.mjs.nestedSortable.js', array('jquery-ui-sortable'), '2.0', true);
+   
     wp_enqueue_script('story-manager-js', plugin_dir_url(__FILE__) . '../js/story-manager.js', array('jquery', 'jquery-ui-sortable'), '1.0', true);
     wp_localize_script('story-manager-js', 'storyManagerData', array(
         'ajaxurl' => admin_url('admin-ajax.php'),
@@ -116,46 +115,40 @@ function iasb_get_stories_by_storyline() {
 add_action('wp_ajax_get_stories_by_storyline', 'iasb_get_stories_by_storyline');
 
 function iasb_update_story_order() {
-    error_log('iasb_update_story_order function called');
-    error_log('POST data: ' . print_r($_POST, true));
-    
-    if (!check_ajax_referer('story_manager_nonce', 'nonce', false)) {
-        error_log('Nonce check failed');
-        wp_send_json_error('Invalid nonce');
-        return;
-    }
+    check_ajax_referer('story_manager_nonce', 'nonce');
     
     $order = isset($_POST['order']) ? $_POST['order'] : '';
-    $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : 0;
     
-    error_log('Received order: ' . print_r($order, true));
-    error_log('Parent ID: ' . $parent_id);
-
-    // Decode the JSON string if it's a string
-    if (is_string($order)) {
-        $order = json_decode(stripslashes($order), true);
-    }
-
-    // Ensure $order is an array
-    if (!is_array($order)) {
-        wp_send_json_error('Invalid order data');
+    if (empty($order)) {
+        wp_send_json_error('No order data received');
         return;
     }
 
-    $menu_order = 0;
-    foreach ($order as $story_id) {
-        $menu_order++;
-        $story_id = intval($story_id);
-        
-        // Update menu order
+    // Parse the serialized data
+    parse_str($order, $parsed_order);
+
+    // Process the parsed order
+    foreach ($parsed_order['story'] as $menu_order => $id) {
+        $menu_order++; // Increment because array is 0-indexed
+        $parent_id = 0;
+
+        // Find the parent
+        foreach ($parsed_order['story'] as $parent_menu_order => $parent_id) {
+            if (isset($parsed_order['story_'.$parent_id]) && in_array($id, $parsed_order['story_'.$parent_id])) {
+                $parent_id = $parent_id;
+                break;
+            }
+        }
+
+        // Update post
         wp_update_post(array(
-            'ID' => $story_id,
+            'ID' => $id,
             'menu_order' => $menu_order,
             'post_parent' => $parent_id
         ));
-        
-        // Update parent relationship
-        iasb_save_parent_episodes_meta($story_id);
+
+        // Update meta
+        update_post_meta($id, 'iasb_parent_episode', $parent_id);
     }
 
     wp_send_json_success('Story order updated successfully');

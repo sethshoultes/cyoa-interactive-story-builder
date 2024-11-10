@@ -95,3 +95,85 @@
         }
     });
 })();
+
+jQuery(document).ready(function($) {
+    var $storyManagerRoot = $('#story-manager-root');
+
+    $('#storyline-selector').on('change', function() {
+        var storylineId = $(this).val();
+        if (storylineId) {
+            loadStories(storylineId);
+        } else {
+            $storyManagerRoot.empty();
+        }
+    });
+
+    function loadStories(storylineId) {
+        $.ajax({
+            url: storyManagerData.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'get_stories_by_storyline',
+                nonce: storyManagerData.nonce,
+                storyline_id: storylineId
+            },
+            success: function(response) {
+                if (response.success) {
+                    renderStories(response.data);
+                } else {
+                    $storyManagerRoot.html('<p>Error loading stories.</p>');
+                }
+            }
+        });
+    }
+
+    function renderStories(stories) {
+        var $list = $('<ul id="story-list"></ul>');
+        stories.forEach(function(story) {
+            $list.append(renderStoryItem(story));
+        });
+        $storyManagerRoot.html($list);
+        initSortable();
+    }
+
+    function renderStoryItem(story) {
+        var $item = $('<li class="story-item" data-id="' + story.id + '"></li>');
+        $item.append('<span>' + story.title + '</span>');
+        if (story.children.length > 0) {
+            var $childList = $('<ul></ul>');
+            story.children.forEach(function(child) {
+                $childList.append(renderStoryItem(child));
+            });
+            $item.append($childList);
+        }
+        return $item;
+    }
+
+    function initSortable() {
+        $('#story-list, #story-list ul').sortable({
+            connectWith: '#story-list, #story-list ul',
+            update: function(event, ui) {
+                var newOrder = $(this).sortable('toArray', {attribute: 'data-id'});
+                updateStoryOrder(newOrder, ui.item.parent().parent().data('id'));
+            }
+        });
+    }
+
+    function updateStoryOrder(newOrder, parentId) {
+        $.ajax({
+            url: storyManagerData.ajaxurl,
+            type: 'POST',
+            data: {
+                action: 'update_story_order',
+                nonce: storyManagerData.nonce,
+                order: newOrder,
+                parent_id: parentId || 0
+            },
+            success: function(response) {
+                if (!response.success) {
+                    alert('Error updating story order.');
+                }
+            }
+        });
+    }
+});

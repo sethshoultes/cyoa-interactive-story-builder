@@ -1,5 +1,5 @@
 // js/story-stories.js
-
+//Not sure if this is needed
 jQuery(document).ready(function($) {
     $('.branch-link, .ending-link').on('click', function(e) {
         e.preventDefault();

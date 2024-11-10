@@ -56,38 +56,18 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/user-character-manager.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/story-manager.php';
 
-function enqueue_story_manager_scripts($hook) {
-    if ('story_builder_page_story-story-manager' !== $hook) {
-        return;
-    }
-
-    wp_enqueue_script('wp-element');
-    wp_enqueue_script('wp-components');
-    wp_enqueue_script('wp-api-fetch');
-    wp_enqueue_script('wp-i18n');
-
-    wp_enqueue_script(
-        'story-manager',
-        plugin_dir_url(__FILE__) . 'build/story-manager.js', // Adjust this path as needed
-        array('wp-element', 'wp-components', 'wp-api-fetch', 'wp-i18n'),
-        filemtime(plugin_dir_path(__FILE__) . 'build/story-manager.js'), // Adjust this path as needed
-        true
-    );
-
-    wp_enqueue_style('wp-components');
+// Enqueue styles and scripts for the front end
+function iasb_story_stories_enqueue_assets() {
+    wp_enqueue_style('sb-stories-css', plugin_dir_url(__FILE__) . 'css/sb-stories.css', array(), '1.0.0', 'all');
+    wp_enqueue_script('sb-stories-js', plugin_dir_url(__FILE__) . 'js/sb-stories.js', array('jquery'), null, true);
+    wp_localize_script('sb-stories-js', 'iasb_story_stories', array(
+        'ajax_url' => admin_url('admin-ajax.php'),
+        'nonce'    => wp_create_nonce('iasb_update_progress_nonce'),
+    ));
 }
-add_action('admin_enqueue_scripts', 'enqueue_story_manager_scripts');
-
-function render_story_manager_page() {
-    ?>
-    <div class="wrap">
-        <h1><?php echo esc_html(__('Story Manager', 'story-builder')); ?></h1>
-        <div id="story-manager-root"></div>
-    </div>
-    <?php
-}
-
+add_action('wp_enqueue_scripts', 'iasb_story_stories_enqueue_assets');
 
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {
@@ -106,7 +86,7 @@ function iasb_enqueue_block_editor_assets() {
 }
 add_action('enqueue_block_editor_assets', 'iasb_enqueue_block_editor_assets');
 
-// Enqueue plugin styles and scripts
+// Enqueue Select2 styles and scripts
 function iasb_enqueue_admin_assets($hook) {
     if ('post.php' != $hook && 'post-new.php' != $hook) {
         return;
@@ -117,18 +97,6 @@ function iasb_enqueue_admin_assets($hook) {
     wp_enqueue_script('iasb-admin-js', plugin_dir_url(__FILE__) . 'js/iasb-admin.js', array('jquery', 'select2-js'), null, true);
 }
 add_action('admin_enqueue_scripts', 'iasb_enqueue_admin_assets');
-
-
-// Enqueue styles and scripts
-function iasb_story_stories_enqueue_assets() {
-    wp_enqueue_style('sb-stories-css', plugin_dir_url(__FILE__) . 'css/sb-stories.css', array(), '1.0.0', 'all');
-    wp_enqueue_script('sb-stories-js', plugin_dir_url(__FILE__) . 'js/sb-stories.js', array('jquery'), null, true);
-    wp_localize_script('sb-stories-js', 'iasb_story_stories', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce'    => wp_create_nonce('iasb_update_progress_nonce'),
-    ));
-}
-add_action('wp_enqueue_scripts', 'iasb_story_stories_enqueue_assets');
 
 // Enqueue Font Awesome on the template pages
 function iasb_enqueue_font_awesome() {
@@ -646,10 +614,6 @@ function iasb_render_universes($post_id, $user_id) {
         }
     }
 }
-
-
-
-
 
 // Function to display breadcrumb navigation
 function iasb_display_breadcrumbs($post_id) {

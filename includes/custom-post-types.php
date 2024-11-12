@@ -356,6 +356,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'character-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'character-types',
     ));
 
     // Location Type Taxonomy
@@ -378,6 +379,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'location-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'location-types',
     ));
 
     // Vehicle Type Taxonomy
@@ -400,6 +402,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'vehicle-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'vehicle-types',
     ));
 
     // Weapon Type Taxonomy
@@ -422,6 +425,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'weapon-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'weapon-types',
     ));
 
     // Item Type Taxonomy
@@ -444,6 +448,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'item-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'item-types',
     ));
 
     // Lore Type Taxonomy
@@ -466,6 +471,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'lore-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'lore-types',
     ));
 
     // Organization Type Taxonomy
@@ -488,6 +494,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'organization-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'organization-types',
     ));
 
     // Technology Type Taxonomy
@@ -510,6 +517,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'technology-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'technology-types',
     ));
 
     // Law Type Taxonomy
@@ -532,6 +540,7 @@ function iasb_register_persona_taxonomies() {
         'show_admin_column' => true,
         'rewrite'           => array('slug' => 'law-type'),
         'show_in_rest'      => true,
+        'rest_base'         => 'law-types',
     ));
 }
 add_action('init', 'iasb_register_persona_taxonomies');

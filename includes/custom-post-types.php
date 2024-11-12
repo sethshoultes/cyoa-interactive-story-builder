@@ -290,7 +290,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Technology', 'story-builder'),
         'view_item'          => __('View Technology', 'story-builder'),
         'all_items'          => __('All Technologies', 'story-builder'),
-        'search_items'       => __('Search Technologies', 'story-builder'
+        'search_items'       => __('Search Technologies', 'story-builder'),
     );
 
     $args = array(

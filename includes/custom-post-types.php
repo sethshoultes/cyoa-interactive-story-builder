@@ -107,6 +107,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Character', 'story-builder'),
         'view_item'          => __('View Character', 'story-builder'),
         'all_items'          => __('All Characters', 'story-builder'),
+        'search_items'       => __('Search Characters', 'story-builder'),
     );
 
     $args = array(
@@ -118,6 +119,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 27,
         'menu_icon'          => 'dashicons-groups',
         'show_in_rest'       => true,
+        'rest_base'          => 'characters', // Sets the endpoint URL
     );
     register_post_type('iasb_character', $args);
 
@@ -132,6 +134,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Location', 'story-builder'),
         'view_item'          => __('View Location', 'story-builder'),
         'all_items'          => __('All Locations', 'story-builder'),
+        'search_items'       => __('Search Locations', 'story-builder'),
     );
 
     $args = array(
@@ -143,6 +146,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 28,
         'menu_icon'          => 'dashicons-location',
         'show_in_rest'       => true,
+        'rest_base'          => 'locations', // Sets the endpoint URL
     );
     register_post_type('iasb_location', $args);
 
@@ -156,6 +160,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Vehicle', 'story-builder'),
         'view_item'          => __('View Vehicle', 'story-builder'),
         'all_items'          => __('All Vehicles', 'story-builder'),
+        'search_items'       => __('Search Vehicles', 'story-builder'),
     );
 
     $args = array(
@@ -167,6 +172,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 29,
         'menu_icon'          => 'dashicons-car',
         'show_in_rest'       => true,
+        'rest_base'          => 'vehicles', // Sets the endpoint URL
     );
     register_post_type('iasb_vehicle', $args);
 
@@ -180,6 +186,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Weapon', 'story-builder'),
         'view_item'          => __('View Weapon', 'story-builder'),
         'all_items'          => __('All Weapons', 'story-builder'),
+        'search_items'       => __('Search Weapons', 'story-builder'),
     );
 
     $args = array(
@@ -191,6 +198,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 30,
         'menu_icon'          => 'dashicons-hammer',
         'show_in_rest'       => true,
+        'rest_base'          => 'weapons', // Sets the endpoint URL
     );
     register_post_type('iasb_weapon', $args);
 
@@ -204,6 +212,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Item', 'story-builder'),
         'view_item'          => __('View Item', 'story-builder'),
         'all_items'          => __('All Items', 'story-builder'),
+        'search_items'       => __('Search Items', 'story-builder'),
     );
 
     $args = array(
@@ -215,6 +224,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 31,
         'menu_icon'          => 'dashicons-archive',
         'show_in_rest'       => true,
+        'rest_base'          => 'items', // Sets the endpoint URL
     );
     register_post_type('iasb_item', $args);
 
@@ -228,6 +238,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Lore', 'story-builder'),
         'view_item'          => __('View Lore', 'story-builder'),
         'all_items'          => __('All Lore', 'story-builder'),
+        'search_items'       => __('Search Lore', 'story-builder'),
     );
 
     $args = array(
@@ -239,6 +250,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 32,
         'menu_icon'          => 'dashicons-book',
         'show_in_rest'       => true,
+        'rest_base'          => 'lore', // Sets the endpoint URL
     );
     register_post_type('iasb_lore', $args);
 

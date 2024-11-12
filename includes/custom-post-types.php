@@ -264,6 +264,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Organization', 'story-builder'),
         'view_item'          => __('View Organization', 'story-builder'),
         'all_items'          => __('All Organizations', 'story-builder'),
+        'search_items'       => __('Search Organizations', 'story-builder'),
     );
 
     $args = array(
@@ -275,6 +276,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 33,
         'menu_icon'          => 'dashicons-building',
         'show_in_rest'       => true,
+        'rest_base'          => 'organizations', // Sets the endpoint URL
     );
     register_post_type('iasb_organization', $args);
 
@@ -288,6 +290,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Technology', 'story-builder'),
         'view_item'          => __('View Technology', 'story-builder'),
         'all_items'          => __('All Technologies', 'story-builder'),
+        'search_items'       => __('Search Technologies', 'story-builder'
     );
 
     $args = array(
@@ -299,6 +302,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 34,
         'menu_icon'          => 'dashicons-lightbulb',
         'show_in_rest'       => true,
+        'rest_base'          => 'technologies', // Sets the endpoint URL
     );
     register_post_type('iasb_technology', $args);
 
@@ -312,6 +316,7 @@ function iasb_register_persona_cpts() {
         'new_item'           => __('New Law', 'story-builder'),
         'view_item'          => __('View Law', 'story-builder'),
         'all_items'          => __('All Laws', 'story-builder'),
+        'search_items'       => __('Search Laws', 'story-builder'),
     );
 
     $args = array(
@@ -323,6 +328,7 @@ function iasb_register_persona_cpts() {
         'menu_position'      => 35,
         'menu_icon'          => 'dashicons-shield',
         'show_in_rest'       => true,
+        'rest_base'          => 'laws', // Sets the endpoint URL
     );
     register_post_type('iasb_law', $args);
 }

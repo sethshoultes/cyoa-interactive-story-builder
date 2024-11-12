@@ -1,10 +1,27 @@
 # AdventureBuilder
 
-AdventureBuildr is an online platform powered by WordPress and an the CYOA Interactive Story Builder plugin, which allows website users to easily create, share, and play text-based adventure games. It provides a user-friendly interface where you can design your own interactive stories, complete with characters, items, and various outcomes based on the choices made by the players. It's a great tool for creative individuals who want to engage their audience with fun and interactive storytelling.
+[AdventureBuildr](https://adventurebuildr.com/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki) is an online platform powered by [WordPress](https://wordpress.org/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki) and the CYOA Interactive Story Builder plugin. The AdventureBuildr website was created to showcase the power of CYOA Interactive Story Builder, which allows website users to easily create, share, and play text-based adventure games. It provides a user-friendly interface where you can design your own [interactive stories](https://adventurebuildr.com/creating-a-branching-storyline/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki), complete with characters, items, and various outcomes based on the choices made by the players. It's a great tool for creative individuals who want to engage their audience with fun and interactive storytelling.
+
+AdventureBuildr can be used in a variety of ways! Here are some more examples:
+
+1. Creative Writing: If you're a writer, you can use AdventureBuildr to draft an interactive version of your story, allowing your readers to make choices and explore different paths within your narrative.
+
+2. Game Development: If you're a game developer, you can use AdventureBuildr to prototype and test the narrative structure of your game before investing time and resources into full-scale development.
+
+3. Interactive Fiction: If you're a fan of choose-your-own-adventure books or interactive fiction, you can use AdventureBuildr to create your own stories and share them with the community.
+
+4. Training and Simulations: AdventureBuildr can be used to create interactive training modules for businesses or organizations. For example, a customer service training game where employees navigate through different scenarios and learn how to handle various customer interactions.
+
+5. Personal Projects: You can also use AdventureBuildr for personal projects, like creating an interactive birthday card or a fun adventure for your friends to play at a party. The possibilities are endless!
 
 ## CYOA Interactive Story Builder
 
 A WordPress plugin that allows you to create interactive, [choose-your-own-adventure-style stories](https://adventurebuildr.com/choose-an-adventure-stories/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki) directly on your WordPress site. Engage your readers by letting them decide the course of the story, making for a unique and personalized reading experience.
+
+Let's say you're a teacher and you want to create an engaging learning experience for your students. You can use AdventureBuildr to develop an educational text-based adventure game where students must solve puzzles related to your subject matter, like history or science, in order to progress through the story.
+
+
+You can design a historical adventure where students take on the role of a detective solving mysteries in different time periods. They would need to make choices that impact the storyline, gather clues, and interact with historical figures. Correct decisions will help them unlock new levels and learn more about the era they're exploring. You can then share the game with your students, who can play it on their own devices and enjoy learning in a fun, interactive way.
 
 ## Features
 
@@ -35,9 +52,6 @@ A WordPress plugin that allows you to create interactive, [choose-your-own-adven
 - **Save Progress**: Users can save their progress per universe.
 - **Resume Reading Shortcode**: `[iasb_resume_reading]` allows users to resume where they left off.
 
-### Story Manager
-
-- **D3.js Visualization**: Visualize your story structure in the admin area using D3.js.
 
 ### Breadcrumb Navigation
 

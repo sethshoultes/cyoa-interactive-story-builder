@@ -1,6 +1,6 @@
 === AdventureBuildr - Interactive Story & Content Creator ===
-Contributors: Seth Shoultes
-Tags: interactive content, storytelling, choose your own adventure, branching content, training, education, interactive learning, story builder, content creator
+Contributors: sethshoultes
+Tags: interactive content, storytelling, choose your own adventure, branching content, story builder
 Requires at least: 5.0
 Tested up to: 6.3
 Requires PHP: 7.0

@@ -18,8 +18,6 @@ function adventurebuildr_render_support_page() {
     ?>
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
-        
-        
         <h2>Available Shortcodes</h2>
         <table class="widefat">
             <thead>
@@ -87,7 +85,8 @@ function adventurebuildr_render_support_page() {
         </ul>
 
         <h2>Need More Help?</h2>
-        <p>For more detailed information, please refer to our <a href="https://adventurebuildr.com/documentation" target="_blank">online documentation</a> or contact our support team at <a href="mailto:support@adventurebuildr.com">support@adventurebuildr.com</a>.</p>
+        <p>For more detailed information, please refer to our <a href="https://github.com/sethshoultes/cyoa-interactive-story-builder/wiki" target="_blank">online documentation</a> or contact our support team at <a href="mailto:support@adventurebuildr.com">support@adventurebuildr.com</a>.</p>
+        <p>Bugs and feature requests should be added to our <a href="https://github.com/sethshoultes/cyoa-interactive-story-builder/issues" target="_blank">Github Issue Tracker</a></p>
     </div>
     <?php
 }

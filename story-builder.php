@@ -2,7 +2,7 @@
 /**
  * Plugin Name: CYOA Interactive Adventure Story Builder
  * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story. Shortcodes are available to embed stories in posts and pages: [user_story_name].
- * Version: 1.1.9
+ * Version: 1.1.10
  * Author: Seth Shoultes
  * License: GPL2
  */

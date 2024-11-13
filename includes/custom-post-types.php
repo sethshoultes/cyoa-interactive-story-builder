@@ -60,12 +60,17 @@ function iasb_register_story_builder_taxonomies() {
             'singular_name' => 'Parallel Universe',
             'add_new_item' => 'Add New Universe',
             'edit_item' => 'Edit Universe',
+            'update_item' => 'Update Universe',
+            'new_item_name' => 'New Universe Name',
+            
         ),
         'show_ui' => true,
         'show_admin_column' => true,
         'query_var' => true,
         'rewrite' => array('slug' => 'parallel-universe'),
         'hide_empty' => true,
+        'show_in_rest' => true,
+
     ));
 
     // Register the 'Storyline' taxonomy

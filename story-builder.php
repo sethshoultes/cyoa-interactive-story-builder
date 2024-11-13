@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: CYOA Interactive Adventure Story Builder
- * Description: A storytelling platform for choose your own adventure style stories. Users can choose their own path through the story. Shortcodes are available to embed stories in posts and pages: [user_story_name].
+ * Plugin Name: AdventureBuildr - Interactive Story & Content Creator
+ * Description: A storytelling platform for choose your own adventure style stories. Create engaging, choice-driven content in WordPress. Build interactive stories, training materials, and customer journeys with our intuitive visual builder. Users can choose their own path through the story.
  * Version: 1.1.10
  * Author: Seth Shoultes
  * License: GPL2
@@ -55,6 +55,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/shortcodes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/admin-support.php';
 
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {

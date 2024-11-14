@@ -7,17 +7,32 @@ class IASB_State_Manager {
     //private $character_id;
     
 
-    public function __construct($user_id, $story_id) {
+    public function __construct($user_id, $story_id, $character_id) {
         $this->user_id = $user_id;
         $this->story_id = $story_id;
+        // Add debug output
+        error_log("State loaded in constructor: " . print_r($this->state, true));
     }
 
 
     // Check path availability
     public function check_path_availability($path_id) {
-        // Implement logic to check if a path is available based on state
-        // This is a placeholder and should be customized based on your requirements
-        return true;
+        // Retrieve the state variables from post meta
+        $state_variables = get_post_meta($path_id, '_iasb_state_variables', true);
+
+        // Default to true
+        $is_available = true;
+
+        // Check if we have valid state variables
+        if (!empty($state_variables)) {
+            if (isset($state_variables[0]['name']) && isset($state_variables[0]['default'])) {
+                if ($state_variables[0]['name'] === 'locked' && $state_variables[0]['default'] === 'true') {
+                    $is_available = false;
+                }
+            }
+        }
+
+        return $is_available;
     }
 
     // Apply choice consequences

@@ -245,10 +245,13 @@ function iasb_render_child_episodes($post_id) {
             $child_episodes->the_post();
             $episode_id = get_the_ID();
             $episode_title = get_the_title();
-            
+
             // Check if this path is available based on the current state
             if ($state_manager->check_path_availability($episode_id)) {
                 echo '<li class="choice-item"><a href="' . get_permalink() . '" data-story-id="' . esc_attr($episode_id) . '" class="choice-link">' . esc_html($episode_title) . '</a></li>';
+            } else {
+                // Optionally, display a locked message
+                 echo '<li class="choice-item not-available">' . esc_html($episode_title) . ' (Locked)</li>';
             }
         }
         echo '</ul>';

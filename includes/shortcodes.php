@@ -10,25 +10,6 @@
  * Usage: [iasb_resume_reading]
  * Parameters: None
  *
- * [conditional_content]
- * Description: Displays content based on user's current story progress.
- * Usage: [conditional_content condition="state_variable('example') > 5"]Content to show[/conditional_content]
- * Parameters:
- *   - condition: The condition to evaluate (required)
- *   - id: The post ID to check against (optional, defaults to current post)
- *
- * [state_variable]
- * Description: Displays the value of a state variable.
- * Usage: [state_variable name="example"]
- * Parameters:
- *   - name: The name of the state variable (required)
- *
- * [character_attribute]
- * Description: Displays the value of a character attribute.
- * Usage: [character_attribute name="strength"]
- * Parameters:
- *   - name: The name of the character attribute (required)
- *
  * [dynamic_content]
  * Description: Injects dynamic content based on the specified type and ID.
  * Usage: [dynamic_content type="text" id="123"]

@@ -359,3 +359,130 @@ function iasb_render_universes($post_id) {
     }
 }
 add_action('HOOK_ACTION__iasb_render_universes', 'iasb_render_universes', 10, 2);
+
+// Entities Hooks
+// Function to display the characters in a story
+function iasb_display_story_characters($post_id) {
+    $characters = get_post_meta($post_id, 'iasb_story_characters', true);
+    if (!empty($characters)) {
+        echo '<h3>' . __('Characters in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($characters as $character_id) {
+            echo '<li><a href="' . get_permalink($character_id) . '">' . get_the_title($character_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_characters', 'iasb_display_story_characters', 10, 1);
+
+// Function to display the locations in a story
+function iasb_display_story_locations($post_id) {
+    $locations = get_post_meta($post_id, 'iasb_story_locations', true);
+    if (!empty($locations)) {
+        echo '<h3>' . __('Locations in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($locations as $location_id) {
+            echo '<li><a href="' . get_permalink($location_id) . '">' . get_the_title($location_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_locations', 'iasb_display_story_locations', 10, 1);
+
+// Function to display the vehicles in a story
+function iasb_display_story_vehicles($post_id) {
+    $vehicles = get_post_meta($post_id, 'iasb_story_vehicles', true);
+    if (!empty($vehicles)) {
+        echo '<h3>' . __('Vehicles in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($vehicles as $vehicle_id) {
+            echo '<li><a href="' . get_permalink($vehicle_id) . '">' . get_the_title($vehicle_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_vehicles', 'iasb_display_story_vehicles', 10, 1);
+
+// Function to display the weapons in a story
+function iasb_display_story_weapons($post_id) {
+    $weapons = get_post_meta($post_id, 'iasb_story_weapons', true);
+    if (!empty($weapons)) {
+        echo '<h3>' . __('Weapons in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($weapons as $weapon_id) {
+            echo '<li><a href="' . get_permalink($weapon_id) . '">' . get_the_title($weapon_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_weapons', 'iasb_display_story_weapons', 10, 1);
+
+// Function to display the items in a story
+function iasb_display_story_items($post_id) {
+    $items = get_post_meta($post_id, 'iasb_story_items', true);
+    if (!empty($items)) {
+        echo '<h3>' . __('Items in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($items as $item_id) {
+            echo '<li><a href="' . get_permalink($item_id) . '">' . get_the_title($item_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_items', 'iasb_display_story_items', 10, 1);
+
+// Function to display the organizations in a story
+function iasb_display_story_organizations($post_id) {
+    $organizations = get_post_meta($post_id, 'iasb_story_organizations', true);
+    if (!empty($organizations)) {
+        echo '<h3>' . __('Organizations in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($organizations as $organization_id) {
+            echo '<li><a href="' . get_permalink($organization_id) . '">' . get_the_title($organization_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_organizations', 'iasb_display_story_organizations', 10, 1);
+
+// Function to display the technology in a story
+function iasb_display_story_technology($post_id) {
+    $technology = get_post_meta($post_id, 'iasb_story_technology', true);
+    if (!empty($technology)) {
+        echo '<h3>' . __('Technology in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($technology as $technology_id) {
+            echo '<li><a href="' . get_permalink($technology_id) . '">' . get_the_title($technology_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_technology', 'iasb_display_story_technology', 10, 1);
+
+// Function to display the laws in a story
+function iasb_display_story_laws($post_id) {
+    $laws = get_post_meta($post_id, 'iasb_story_laws', true);
+    if (!empty($laws)) {
+        echo '<h3>' . __('Laws in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($laws as $law_id) {
+            echo '<li><a href="' . get_permalink($law_id) . '">' . get_the_title($law_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_laws', 'iasb_display_story_laws', 10, 1);
+
+// Function to display the lore in a story
+function iasb_display_story_lore($post_id) {
+    $lore = get_post_meta($post_id, 'iasb_story_lore', true);
+    if (!empty($lore)) {
+        echo '<h3>' . __('Lore in this story:', 'story-builder') . '</h3>';
+        echo '<ul>';
+        foreach ($lore as $lore_id) {
+            echo '<li><a href="' . get_permalink($lore_id) . '">' . get_the_title($lore_id) . '</a></li>';
+        }
+        echo '</ul>';
+    }
+}
+add_action('HOOK_ACTION__iasb_display_story_lore', 'iasb_display_story_lore', 10, 1);

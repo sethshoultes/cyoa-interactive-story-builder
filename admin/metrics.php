@@ -79,7 +79,6 @@ function iasb_save_metric($user_id, $metric_key, $metric_value) {
     );
 }
 
-
 // Track completion rate
 function iasb_check_for_completion($post_id) {
     if ( ! is_user_logged_in() ) {

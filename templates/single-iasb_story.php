@@ -104,10 +104,6 @@ if (have_posts()) :
 
             // Display the user's progress
             do_action('HOOK_ACTION__iasb_display_user_progress', $user_id);
-            
-             // Display Next Episode Link
-             //iasb_render_next_episode_link(get_the_ID());
-
             ?>
             <div class="story-story-meta">
                 <?php // Display breadcrumb navigation
@@ -117,103 +113,31 @@ if (have_posts()) :
             <div class="story-entities">
                 <?php
                 // Display Characters
-                $characters = get_post_meta($post_id, 'iasb_story_characters', true);
-                if (!empty($characters)) {
-                    echo '<h3>' . __('Characters in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($characters as $character_id) {
-                        echo '<li><a href="' . get_permalink($character_id) . '">' . get_the_title($character_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_characters', $post_id);
 
                 // Display Locations
-                $locations = get_post_meta($post_id, 'iasb_story_locations', true);
-                if (!empty($locations)) {
-                    echo '<h3>' . __('Locations in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($locations as $location_id) {
-                        echo '<li><a href="' . get_permalink($location_id) . '">' . get_the_title($location_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_locations', $post_id);
 
                 // Display Vehicles
-                $vehicles = get_post_meta($post_id, 'iasb_story_vehicles', true);
-                if (!empty($vehicles)) {
-                    echo '<h3>' . __('Vehicles in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($vehicles as $vehicle_id) {
-                        echo '<li><a href="' . get_permalink($vehicle_id) . '">' . get_the_title($vehicle_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_vehicles', $post_id);
 
                 // Display Weapons
-                $weapons = get_post_meta($post_id, 'iasb_story_weapons', true);
-                if (!empty($weapons)) {
-                    echo '<h3>' . __('Weapons in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($weapons as $weapon_id) {
-                        echo '<li><a href="' . get_permalink($weapon_id) . '">' . get_the_title($weapon_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_weapons', $post_id);
 
                 // Display Items
-                $items = get_post_meta($post_id, 'iasb_story_items', true);
-                if (!empty($items)) {
-                    echo '<h3>' . __('Items in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($items as $item_id) {
-                        echo '<li><a href="' . get_permalink($item_id) . '">' . get_the_title($item_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_items', $post_id);
 
                 // Display Lore
-                $lore = get_post_meta($post_id, 'iasb_story_lore', true);
-                if (!empty($lore)) {
-                    echo '<h3>' . __('Lore in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($lore as $lore_id) {
-                        echo '<li><a href="' . get_permalink($lore_id) . '">' . get_the_title($lore_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_lore', $post_id);
 
                 // Display Organizations
-                $organizations = get_post_meta($post_id, 'iasb_story_organizations', true);
-                if (!empty($organizations)) {
-                    echo '<h3>' . __('Organizations in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($organizations as $organization_id) {
-                        echo '<li><a href="' . get_permalink($organization_id) . '">' . get_the_title($organization_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_organizations', $post_id);
 
                 // Display Technology
-                $technology = get_post_meta($post_id, 'iasb_story_technology', true);
-                if (!empty($technology)) {
-                    echo '<h3>' . __('Technology in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($technology as $technology_id) {
-                        echo '<li><a href="' . get_permalink($technology_id) . '">' . get_the_title($technology_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_technology', $post_id);
 
                 // Display Laws
-                $laws = get_post_meta($post_id, 'iasb_story_laws', true);
-                if (!empty($laws)) {
-                    echo '<h3>' . __('Laws in this story:', 'story-builder') . '</h3>';
-                    echo '<ul>';
-                    foreach ($laws as $law_id) {
-                        echo '<li><a href="' . get_permalink($law_id) . '">' . get_the_title($law_id) . '</a></li>';
-                    }
-                    echo '</ul>';
-                }
+                do_action('HOOK_ACTION__iasb_display_story_laws', $post_id);
                 ?>
             </div>
 

@@ -117,7 +117,6 @@ add_action('wp_enqueue_scripts', 'iasb_enqueue_font_awesome');
 
 // Template Redirects
 // Story Template Redirect
-
 function iasb_story_builder_template($template) {
     if (is_singular('story_builder')) {
         // Check if the theme has an override template
@@ -321,6 +320,7 @@ function iasb_render_story_manager_page() {
     </div>
     <?php
 }
+
 // Add the Story Manager page to the admin menu
 function iasb_get_story_structure() {
     // Verify nonce for security
@@ -357,8 +357,6 @@ function iasb_get_story_structure() {
 }
 
 add_action('wp_ajax_iasb_get_story_structure', 'iasb_get_story_structure');
-
-
 
 function iasb_process_choice() {
     if (isset($_POST['choice_id']) && isset($_POST['story_id'])) {

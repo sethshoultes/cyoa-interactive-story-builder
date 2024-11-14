@@ -1,45 +1,6 @@
 <?php
 // templates/single-iasb_story.php
 get_header();
-?>
-<script>
-var ajaxurl = "<?php echo admin_url('admin-ajax.php'); ?>";
-$(document).ready(function() {
-    $('.choice-link').on('click', function(e) {
-        e.preventDefault();
-        var choiceId = $(this).data('story-id');
-        var storyId = <?php echo esc_js(get_the_ID()); ?>;
-        var characterId = <?php echo esc_js(get_post_meta(get_the_ID(), 'iasb_character_id', true)); ?>;
-        var decisionTime = Date.now() - choiceStartTime;
-
-        $.post(iasb_ajax_object.ajax_url, {
-            action: 'iasb_record_metric',
-            metric_key: 'decision_time',
-            metric_value: decisionTime,
-            nonce: iasb_ajax_object.nonce
-        });
-        var choiceStartTime = Date.now();
-        
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'iasb_process_choice',
-                choice_id: choiceId,
-                story_id: storyId
-            },
-            success: function(response) {
-                if (response.success) {
-                    window.location.href = e.target.href;
-                } else {
-                    alert('An error occurred: ' + response.data);
-                }
-            }
-        });
-    });
-});
-</script>
-<?php
 if (have_posts()) :
     while (have_posts()) : the_post();
 
@@ -48,7 +9,6 @@ if (have_posts()) :
         $user_id = get_current_user_id();
         $character_id = get_post_meta($post_id, 'iasb_character_id', true);
         $state_manager = new IASB_State_Manager($user_id, $post_id, $character_id);
-
 
         // Get the universes associated with the current post
         $current_universes = wp_get_post_terms($post_id, 'parallel_universe', array('fields' => 'ids'));
@@ -90,9 +50,6 @@ if (have_posts()) :
             </div>
 
             <?php
-            // Provide a link back to previous universe if available
-            do_action('HOOK_ACTION__iasb_return_to_previous_universe', $post_id);
-            
             // Story completed message
             do_action('HOOK_ACTION_iasb_story_completed_message');
             

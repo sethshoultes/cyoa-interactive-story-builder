@@ -1,5 +1,14 @@
 <?php
 /**
+ * Hooks
+ *
+ * This file contains the hooks used by the plugin.
+ *
+ * @package CYOA Interactive Story Builder
+ * @subpackage Hooks
+ */
+
+/**
  * Filter to modify the message displayed when the user reaches the end of a storyline.
  *
  * @param string $message The default message.
@@ -10,8 +19,11 @@ function iasb_end_of_storyline_message($message) {
 }
 add_filter('HOOK_FILTER__iasb_end_of_storyline_message', 'iasb_end_of_storyline_message');
 
-
-// Function to display breadcrumb navigation
+/**
+ * Function to display breadcrumb navigation.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_breadcrumbs($post_id) {
     $storylines = wp_get_post_terms($post_id, 'storyline');
     $universes = wp_get_post_terms($post_id, 'parallel_universe');
@@ -34,29 +46,11 @@ function iasb_display_breadcrumbs($post_id) {
 }
 add_action('HOOK_ACTION__iasb_breadcrumbs', 'iasb_display_breadcrumbs', 10, 1);
 
-// Function to display a link to return to the previous universe
-function iasb_return_to_previous_universe($post_id) {
-    $current_universe_id = wp_get_post_terms($post_id, 'parallel_universe')[0]->term_id;
-    $user_id = get_current_user_id();
-
-    // Provide a link back to previous universe if available
-    if (isset($_COOKIE['iasb_previous_universe'])) {
-        $previous_universe_id = sanitize_text_field($_COOKIE['iasb_previous_universe']);
-        if ($previous_universe_id !== $current_universe_id) {
-            $progress = get_user_meta($user_id, 'story_builder_progress', true) ?: [];
-            if ($progress && isset($progress[$previous_universe_id])) {
-                $previous_story_id = $progress[$previous_universe_id]['story_id'];
-                $universe_name = ($previous_universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : get_term($previous_universe_id, 'parallel_universe')->name;
-                echo '<div class="return-to-previous-universe">';
-                echo '<a href="' . get_permalink($previous_story_id) . '">' . sprintf(__('Return to your place in %s', 'story-builder'), esc_html($universe_name)) . '</a>';
-                echo '</div>';
-            }
-        }
-    }
-}
-add_action('HOOK_ACTION__iasb_return_to_previous_universe', 'iasb_return_to_previous_universe', 10, 1);
-
-// Function to display the user's progress per universe
+/**
+ * Function to display the user's progress per universe
+ *
+ * @param int $user_id The ID of the user to display progress for.
+ */
 function iasb_display_user_progress($user_id) {
     $progress = get_user_meta($user_id, 'story_builder_progress', true);
     if ($progress && is_array($progress)) {
@@ -87,6 +81,11 @@ add_action('HOOK_ACTION__iasb_display_user_progress', 'iasb_display_user_progres
 
 
 // Function to display the "Next Episode" link considering seasons and next season
+/**
+ * Function to display the "Next Episode" link considering seasons and next season.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_render_next_episode_link($post_id) {
     // Get the current episode number, season, and storyline
     $current_episode = get_post_meta($post_id, '_iasb_story_builder_episode', true);
@@ -210,7 +209,11 @@ function iasb_render_next_episode_link($post_id) {
 }
 add_action('HOOK_ACTION_iasb_render_next_episode_link', 'iasb_render_next_episode_link', 10, 1);
 
-// Function to render the Child Episode Buttons on the front end
+/**
+ * Function to render the Child Episode Buttons on the front end.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_render_child_episodes($post_id) {
     $user_id = get_current_user_id();
     $character_id = get_user_meta($user_id, 'iasb_character_profile_id', true);
@@ -258,8 +261,11 @@ function iasb_render_child_episodes($post_id) {
 add_action('HOOK_ACTION_iasb_render_child_episodes', 'iasb_render_child_episodes', 10, 1);
 
 
-
-// Function to display universes and allow switching if available front end
+/**
+ * Function to display universes and allow switching if available front end.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_render_universes($post_id) {
     // Get all universes
     $all_universes = get_terms('parallel_universe', array('hide_empty' => false));
@@ -360,8 +366,11 @@ function iasb_render_universes($post_id) {
 }
 add_action('HOOK_ACTION__iasb_render_universes', 'iasb_render_universes', 10, 2);
 
-// Entities Hooks
-// Function to display the characters in a story
+/**
+ * Function to display the characters in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_characters($post_id) {
     $characters = get_post_meta($post_id, 'iasb_story_characters', true);
     if (!empty($characters)) {
@@ -375,7 +384,11 @@ function iasb_display_story_characters($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_characters', 'iasb_display_story_characters', 10, 1);
 
-// Function to display the locations in a story
+/**
+ * Function to display the locations in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_locations($post_id) {
     $locations = get_post_meta($post_id, 'iasb_story_locations', true);
     if (!empty($locations)) {
@@ -389,7 +402,11 @@ function iasb_display_story_locations($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_locations', 'iasb_display_story_locations', 10, 1);
 
-// Function to display the vehicles in a story
+/**
+ * Function to display the vehicles in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_vehicles($post_id) {
     $vehicles = get_post_meta($post_id, 'iasb_story_vehicles', true);
     if (!empty($vehicles)) {
@@ -403,7 +420,11 @@ function iasb_display_story_vehicles($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_vehicles', 'iasb_display_story_vehicles', 10, 1);
 
-// Function to display the weapons in a story
+/**
+ * Function to display the weapons in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_weapons($post_id) {
     $weapons = get_post_meta($post_id, 'iasb_story_weapons', true);
     if (!empty($weapons)) {
@@ -431,7 +452,11 @@ function iasb_display_story_items($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_items', 'iasb_display_story_items', 10, 1);
 
-// Function to display the organizations in a story
+/**
+ * Function to display the organizations in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_organizations($post_id) {
     $organizations = get_post_meta($post_id, 'iasb_story_organizations', true);
     if (!empty($organizations)) {
@@ -445,7 +470,11 @@ function iasb_display_story_organizations($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_organizations', 'iasb_display_story_organizations', 10, 1);
 
-// Function to display the technology in a story
+/**
+ * Function to display the technology in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_technology($post_id) {
     $technology = get_post_meta($post_id, 'iasb_story_technology', true);
     if (!empty($technology)) {
@@ -459,7 +488,11 @@ function iasb_display_story_technology($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_technology', 'iasb_display_story_technology', 10, 1);
 
-// Function to display the laws in a story
+/**
+ * Function to display the laws in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_laws($post_id) {
     $laws = get_post_meta($post_id, 'iasb_story_laws', true);
     if (!empty($laws)) {
@@ -473,7 +506,11 @@ function iasb_display_story_laws($post_id) {
 }
 add_action('HOOK_ACTION__iasb_display_story_laws', 'iasb_display_story_laws', 10, 1);
 
-// Function to display the lore in a story
+/**
+ * Function to display the lore in a story.
+ *
+ * @param int $post_id The ID of the current post.
+ */
 function iasb_display_story_lore($post_id) {
     $lore = get_post_meta($post_id, 'iasb_story_lore', true);
     if (!empty($lore)) {

@@ -56,6 +56,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-support.php';
+require_once plugin_dir_path( __FILE__ ) . 'includes/hooks.php';
 require_once plugin_dir_path( __FILE__ ) . 'admin/metrics.php';
 
 // Enqueue block editor assets
@@ -416,6 +417,7 @@ function iasb_process_choice() {
 }
 add_action('wp_ajax_iasb_process_choice', 'iasb_process_choice');
 add_action('wp_ajax_nopriv_iasb_process_choice', 'iasb_process_choice');
+
 // Function to display the "Next Episode" link considering seasons and next season
 function iasb_render_next_episode_link($post_id) {
     // Get the current episode number, season, and storyline
@@ -519,28 +521,20 @@ function iasb_render_next_episode_link($post_id) {
                 } else {
                     // No Episode 1 found in the next season
                     echo '<div class="no-more-episodes">';
-                    echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
-                    echo '</div>';
-                    do_action('iasb_path_popularity', get_the_ID());
-                    do_action('iasb_story_completed', get_the_ID());
+                    echo '<p>' . apply_filters('HOOK_FILTER__iasb_end_of_storyline_message', __('You have reached the end of this season.', 'story-builder')) . '</p>';                    echo '</div>';
                 }
-
                 wp_reset_postdata();
             } else {
                 // No next season found
                 echo '<div class="no-more-episodes">';
-                echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
+                echo '<p>' . apply_filters('HOOK_FILTER__iasb_end_of_storyline_message', __('You have reached the end of this storyline.', 'story-builder')) . '</p>';
                 echo '</div>';
-                do_action('iasb_path_popularity', get_the_ID());
-                do_action('iasb_story_completed', get_the_ID());
             }
         } else {
             // No seasons used, end of storyline
             echo '<div class="no-more-episodes">';
-            echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
+            echo '<p>' . apply_filters('HOOK_FILTER__iasb_end_of_storyline_message',  __('You have reached the end of this path.', 'story-builder') . '</p>');
             echo '</div>';
-            do_action('iasb_path_popularity', get_the_ID());
-            do_action('iasb_story_completed', get_the_ID());
         }
     }
 
@@ -720,68 +714,9 @@ function iasb_save_user_story_progress($user_id, $story_id) {
     }
 }
 
-// Function to display the user's progress per universe
-function iasb_display_user_progress($user_id, $current_universe_id = null) {
-    $progress = get_user_meta($user_id, 'story_builder_progress', true);
-    if ($progress && is_array($progress)) {
-        echo '<div class="user-progress">';
-        if ($current_universe_id !== null && isset($progress[$current_universe_id])) {
-            $story_id = $progress[$current_universe_id]['story_id'];
-            $parent_episode_ids = get_post_meta($story_id, '_iasb_parent_episode', false);
-            $parent_episode = !empty($parent_episode_ids) ? get_post($parent_episode_ids[0]) : null;
-            
-            echo '<p>' . __('Your progress in this universe:', 'story-builder') . ' <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a></p>';
-            
-            if ($parent_episode) {
-                echo '<p>' . __('Parent episode:', 'story-builder') . ' <a href="' . get_permalink($parent_episode->ID) . '">' . get_the_title($parent_episode->ID) . '</a></p>';
-            }
-        } else {
-            echo '<p>' . __('Your progress:', 'story-builder') . '</p>';
-            echo '<ul>';
-            foreach ($progress as $universe_id => $data) {
-                $universe_name = ($universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : (get_term($universe_id, 'parallel_universe') ? get_term($universe_id, 'parallel_universe')->name : __('Unknown Universe', 'story-builder'));
-                if (is_array($data) && isset($data['story_id'])) {
-                    $story_id = $data['story_id'];
-                    $parent_episode_ids = get_post_meta($story_id, '_iasb_parent_episode', false);
-                    $parent_episode = !empty($parent_episode_ids) ? get_post($parent_episode_ids[0]) : null;
-                    
-                    echo '<li>' . esc_html($universe_name) . ': <a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
-                    //echo '<li><a href="' . get_permalink($story_id) . '">' . get_the_title($story_id) . '</a>';
-                    
-                    if ($parent_episode) {
-                        echo ' (Parent: <a href="' . get_permalink($parent_episode->ID) . '">' . get_the_title($parent_episode->ID) . '</a>)';
-                    }
-                    
-                    echo '</li>';
-                }
-            }
-            echo '</ul>';
-        }
-        echo '</div>';
-    }
-}
 
-// Function to display breadcrumb navigation
-function iasb_display_breadcrumbs($post_id) {
-    $storylines = wp_get_post_terms($post_id, 'storyline');
-    $universes = wp_get_post_terms($post_id, 'parallel_universe');
-    $season = get_post_meta($post_id, '_iasb_story_builder_season', true);
-    $episode = get_post_meta($post_id, '_iasb_story_builder_episode', true);
 
-    echo '<nav class="fc-breadcrumbs">';
-    echo 'Current location: <a href="' . get_post_type_archive_link('story_builder') . '">' . __('Stories', 'story-builder') . '</a> &raquo; ';
-    if (!empty($storylines)) {
-        $storyline = $storylines[0];
-        echo '<a href="' . get_term_link($storyline) . '">' . esc_html($storyline->name) . '</a> &raquo; ';
-    }
-    if (!empty($universes)) {
-        $universe = $universes[0];
-        echo esc_html($universe->name) . ' &raquo; ';
-    }
-    echo sprintf(__('Season %s', 'story-builder'), '<a href="' . esc_url(add_query_arg('season', $season, get_post_type_archive_link('story_builder'))) . '">' . esc_html($season) . '</a>') . ' &raquo; ';
-    echo sprintf(__('Episode %s', 'story-builder'),  esc_html($episode) );
-    echo '</nav>';
-}
+
 
 // Function to save the user's story progress
 function iasb_save_story_progress($user_id, $story_id, $season, $episode) {

@@ -31,7 +31,7 @@ function iasb_add_metrics_page() {
 }
 add_action('admin_menu', 'iasb_add_metrics_page');
 
-//
+// Render the Story Metrics page
 function iasb_render_metrics_page() {
     global $wpdb;
     $table_name = $wpdb->prefix . 'iasb_metrics';
@@ -79,72 +79,43 @@ function iasb_save_metric($user_id, $metric_key, $metric_value) {
     );
 }
 
-// Track time spent per path
-function iasb_track_time_spent() {
-    if ( is_singular('story_builder') ) {
-        ?>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var startTime = Date.now();
-            window.addEventListener('beforeunload', function() {
-                var timeSpent = Date.now() - startTime;
-                // Send timeSpent to the server via AJAX
-                jQuery.post('<?php echo admin_url('admin-ajax.php'); ?>', {
-                    action: 'iasb_record_time_spent',
-                    time_spent: timeSpent,
-                    post_id: <?php echo get_the_ID(); ?>,
-                    nonce: '<?php echo wp_create_nonce('iasb_time_nonce'); ?>'
-                });
-            });
-        });
-        </script>
-        <?php
-    }
-}
-add_action('wp_footer', 'iasb_track_time_spent');
-
-function iasb_record_time_spent() {
-    check_ajax_referer('iasb_time_nonce', 'nonce');
-    $user_id = get_current_user_id();
-    $post_id = intval($_POST['post_id']);
-    $time_spent = intval($_POST['time_spent']);
-
-    // Save or update the time spent in user meta or a custom table
-    // ...code to record time_spent...
-
-    wp_send_json_success();
-}
-add_action('wp_ajax_iasb_record_time_spent', 'iasb_record_time_spent');
-add_action('wp_ajax_nopriv_iasb_record_time_spent', 'iasb_record_time_spent');
-
-// Track path popularity
-function iasb_track_path_popularity($post_id) {
-    $count = get_post_meta($post_id, 'iasb_path_count', true);
-    $count = $count ? $count + 1 : 1;
-    update_post_meta($post_id, 'iasb_path_count', $count);
-}
-/*add_action('wp', function() {
-    if ( is_singular('story_builder') ) {
-        iasb_track_path_popularity(get_the_ID());
-    }
-});
-*/
 
 // Track completion rate
 function iasb_check_for_completion($post_id) {
+    if ( ! is_user_logged_in() ) {
+        return;
+    }
+
+    $user_id = get_current_user_id();
+    if ( current_user_can('administrator') ) {
+        return;
+    }
+
     $is_ending = get_post_meta($post_id, '_iasb_is_ending', true);
-    if ( $is_ending == '1' ) {
-        $user_id = get_current_user_id();
-        // Record completion with post ID
-        iasb_save_metric($user_id, 'completion', $post_id);
+
+    if ( $is_ending === '1' ) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'iasb_metrics';
+
+        // Check if the completion has already been logged for this user and post
+        $already_logged = $wpdb->get_var( $wpdb->prepare(
+            "SELECT COUNT(*) FROM $table_name WHERE user_id = %d AND metric_key = 'completion' AND metric_value = %d",
+            $user_id, $post_id
+        ) );
+
+        if ( $already_logged == 0 ) {
+            // Record completion with post ID
+            iasb_save_metric($user_id, 'completion', $post_id);
+        }
     }
 }
 // Hook into the story completion event
-add_action('iasb_story_completed', function() {
+add_action('HOOK_ACTION_iasb_story_completed', function() {
     if ( is_singular('story_builder') ) {
         iasb_check_for_completion(get_the_ID());
     }
 });
+
 
 // Add a meta box to mark an episode as an ending
 function iasb_add_is_ending_meta_box() {
@@ -182,7 +153,7 @@ function iasb_save_is_ending_meta_box($post_id) {
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) {
         return;
     }
-    if ( 'story_builder' != $_POST['post_type'] ) {
+    if ( 'story_builder' !== $_POST['post_type'] ) {
         return;
     }
     if ( ! current_user_can( 'edit_post', $post_id ) ) {
@@ -192,18 +163,3 @@ function iasb_save_is_ending_meta_box($post_id) {
     update_post_meta( $post_id, '_iasb_is_ending', $is_ending );
 }
 add_action( 'save_post', 'iasb_save_is_ending_meta_box' );
-
-// Add Google Analytics
-/*function iasb_add_google_analytics() {
-    ?>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=YOUR_TRACKING_ID"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'YOUR_TRACKING_ID');
-    </script>
-    <?php
-}
-add_action('wp_head', 'iasb_add_google_analytics');*/

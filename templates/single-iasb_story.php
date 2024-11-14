@@ -57,6 +57,7 @@ if (have_posts()) :
         // Save user progress if the user is logged in
         if (is_user_logged_in()) {
             iasb_save_user_story_progress($user_id, $post_id);
+            do_action('HOOK_ACTION_iasb_story_completed', $post_id);
         }
 
         // Check if a universe switch occurred
@@ -72,7 +73,7 @@ if (have_posts()) :
             <h1 class="story-story-title"><?php the_title(); ?></h1>
             <div class="story-story-meta">
                 <?php // Display breadcrumb navigation
-                    iasb_display_breadcrumbs($post_id);
+                    do_action('HOOK_ACTION__iasb_breadcrumbs', $post_id);
                 ?>
             </div>
             <?php if (has_post_thumbnail()) : ?>
@@ -85,32 +86,16 @@ if (have_posts()) :
                 <?php $content = get_the_content();
                         $processed_content = $state_manager->process_conditional_content($content);
                         echo apply_filters('the_content', $processed_content);
- ?>
+                ?>
             </div>
 
             <?php
-            $is_ending = get_post_meta( get_the_ID(), '_iasb_is_ending', true );
-            if ( $is_ending == '1' ) {
-                echo '<div class="ending-message">';
-                _e( 'You have reached the end of this path. Thank you for playing!', 'story-builder' );
-                echo '</div>';
-            }
-
             // Provide a link back to previous universe if available
-            if (isset($_COOKIE['iasb_previous_universe'])) {
-                $previous_universe_id = sanitize_text_field($_COOKIE['iasb_previous_universe']);
-                if ($previous_universe_id !== $current_universe_id) {
-                    $progress = get_user_meta($user_id, 'story_builder_progress', true);
-                    if ($progress && isset($progress[$previous_universe_id])) {
-                        $previous_story_id = $progress[$previous_universe_id]['story_id'];
-                        $universe_name = ($previous_universe_id === 'default_universe') ? __('Default Universe', 'story-builder') : get_term($previous_universe_id, 'parallel_universe')->name;
-                        echo '<div class="return-to-previous-universe">';
-                        echo '<a href="' . get_permalink($previous_story_id) . '">' . sprintf(__('Return to your place in %s', 'story-builder'), esc_html($universe_name)) . '</a>';
-                        echo '</div>';
-                    }
-                }
-            }
-
+            do_action('HOOK_ACTION__iasb_return_to_previous_universe', $post_id);
+            
+            // Story completed message
+            do_action('HOOK_ACTION_iasb_story_completed_message');
+            
             // Render child episodes directly without using get_children()
             iasb_render_child_episodes($post_id);
 
@@ -118,15 +103,15 @@ if (have_posts()) :
             iasb_render_universes($post_id, $user_id);
 
             // Display the user's progress
-            iasb_display_user_progress($user_id);
-
+            do_action('HOOK_ACTION__iasb_display_user_progress', $user_id);
+            
              // Display Next Episode Link
              //iasb_render_next_episode_link(get_the_ID());
 
             ?>
             <div class="story-story-meta">
                 <?php // Display breadcrumb navigation
-                    iasb_display_breadcrumbs($post_id);
+                    do_action('HOOK_ACTION__iasb_breadcrumbs', $post_id);
                 ?>
             </div>
             <div class="story-entities">

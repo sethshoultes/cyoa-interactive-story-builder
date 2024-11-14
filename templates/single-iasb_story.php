@@ -96,11 +96,11 @@ if (have_posts()) :
             // Story completed message
             do_action('HOOK_ACTION_iasb_story_completed_message');
             
-            // Render child episodes directly without using get_children()
-            iasb_render_child_episodes($post_id);
+            // Render child episodes if available
+            do_action('HOOK_ACTION_iasb_render_child_episodes', $post_id);
 
             // Display universes
-            iasb_render_universes($post_id, $user_id);
+            do_action('HOOK_ACTION__iasb_render_universes', $post_id);
 
             // Display the user's progress
             do_action('HOOK_ACTION__iasb_display_user_progress', $user_id);

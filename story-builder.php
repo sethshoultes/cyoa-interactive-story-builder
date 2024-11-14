@@ -56,6 +56,7 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/custom-post-types.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-support.php';
+require_once plugin_dir_path( __FILE__ ) . 'admin/metrics.php';
 
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {
@@ -520,6 +521,8 @@ function iasb_render_next_episode_link($post_id) {
                     echo '<div class="no-more-episodes">';
                     echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
                     echo '</div>';
+                    do_action('iasb_path_popularity', get_the_ID());
+                    do_action('iasb_story_completed', get_the_ID());
                 }
 
                 wp_reset_postdata();
@@ -528,12 +531,16 @@ function iasb_render_next_episode_link($post_id) {
                 echo '<div class="no-more-episodes">';
                 echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
                 echo '</div>';
+                do_action('iasb_path_popularity', get_the_ID());
+                do_action('iasb_story_completed', get_the_ID());
             }
         } else {
             // No seasons used, end of storyline
             echo '<div class="no-more-episodes">';
             echo '<p>' . __('You have reached the end of this storyline.', 'story-builder') . '</p>';
             echo '</div>';
+            do_action('iasb_path_popularity', get_the_ID());
+            do_action('iasb_story_completed', get_the_ID());
         }
     }
 

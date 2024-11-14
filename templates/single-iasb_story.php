@@ -10,6 +10,15 @@ $(document).ready(function() {
         var choiceId = $(this).data('story-id');
         var storyId = <?php echo esc_js(get_the_ID()); ?>;
         var characterId = <?php echo esc_js(get_post_meta(get_the_ID(), 'iasb_character_id', true)); ?>;
+        var decisionTime = Date.now() - choiceStartTime;
+
+        $.post(iasb_ajax_object.ajax_url, {
+            action: 'iasb_record_metric',
+            metric_key: 'decision_time',
+            metric_value: decisionTime,
+            nonce: iasb_ajax_object.nonce
+        });
+        var choiceStartTime = Date.now();
         
         $.ajax({
             url: ajaxurl,
@@ -80,6 +89,12 @@ if (have_posts()) :
             </div>
 
             <?php
+            $is_ending = get_post_meta( get_the_ID(), '_iasb_is_ending', true );
+            if ( $is_ending == '1' ) {
+                echo '<div class="ending-message">';
+                _e( 'You have reached the end of this path. Thank you for playing!', 'story-builder' );
+                echo '</div>';
+            }
 
             // Provide a link back to previous universe if available
             if (isset($_COOKIE['iasb_previous_universe'])) {

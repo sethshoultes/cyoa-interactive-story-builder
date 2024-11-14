@@ -57,7 +57,6 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/admin-meta-boxes.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/state-manager.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/admin-support.php';
 require_once plugin_dir_path( __FILE__ ) . 'includes/hooks.php';
-require_once plugin_dir_path( __FILE__ ) . 'admin/metrics.php';
 
 // Enqueue block editor assets
 function iasb_enqueue_block_editor_assets() {
@@ -285,8 +284,6 @@ function iasb_story_builder_law_template($template) {
     return $template;
 }
 add_filter('single_template', 'iasb_story_builder_law_template');
-
-
 
 // Enqueue D3.js library and custom script for the Story Manager page
 function iasb_enqueue_d3_js_library($hook) {

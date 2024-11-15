@@ -201,12 +201,12 @@ This plugin is licensed under the GPL2 license. See the LICENSE file for details
 
 ## Screenshots
 
-(Screenshots coming soon)
-
 - **Story Editor**: Meta boxes for linking characters, locations, vehicles, and weapons.
-- **Story Manager**: Visual representation of the story structure using D3.js.
-- **Front-end Story Display**: Users making choices in the story.
-- **Resume Reading Button**: Shortcode output for resuming reading.
+![Choose Your Adventure Story Editor]([https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123900/Gutenberg-Blocks.png](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123551/Story-Editor.png))
+- **Gutenberg Blocks**: Visual representation of the story structure using Gutenberg blocks. 
+![Choose Your Adventure Story Gutenberg Blocks](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123900/Gutenberg-Blocks.png)
+- **Front-end Story Display**: Users making choices in the story. 
+![Choose Your Adventure Story Front-end Story Display](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15121729/choose-your-adventure-story-example-1.png)
 
 ## Changelog
 

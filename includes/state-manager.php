@@ -7,7 +7,7 @@ class IASB_State_Manager {
     //private $character_id;
     
 
-    public function __construct($user_id, $story_id, $character_id) {
+    public function __construct($user_id, $story_id) {
         $this->user_id = $user_id;
         $this->story_id = $story_id;
         // Add debug output

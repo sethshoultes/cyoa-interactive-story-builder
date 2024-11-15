@@ -1,4 +1,5 @@
 # AdventureBuilder
+![choose your own adventure](https://github.com/user-attachments/assets/4526945f-8383-48d3-934b-3d3f9c2f3054)
 
 [AdventureBuildr](https://adventurebuildr.com/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki) is an online platform powered by [WordPress](https://wordpress.org/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki) and the CYOA Interactive Story Builder plugin. The AdventureBuildr website was created to showcase the power of CYOA Interactive Story Builder, which allows website users to easily create, share, and play text-based adventure games. It provides a user-friendly interface where you can design your own [interactive stories](https://adventurebuildr.com/creating-a-branching-storyline/?utm_source=github&utm_medium=wiki&utm_campaign=github_wiki_links&utm_id=github_wiki), complete with characters, items, and various outcomes based on the choices made by the players. It's a great tool for creative individuals who want to engage their audience with fun and interactive storytelling.
 

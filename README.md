@@ -202,7 +202,7 @@ This plugin is licensed under the GPL2 license. See the LICENSE file for details
 ## Screenshots
 
 - **Story Editor**: Meta boxes for linking characters, locations, vehicles, and weapons.
-![Choose Your Adventure Story Editor]([https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123900/Gutenberg-Blocks.png](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123551/Story-Editor.png))
+![Choose Your Adventure Story Editor](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123551/Story-Editor.png)
 - **Gutenberg Blocks**: Visual representation of the story structure using Gutenberg blocks. 
 ![Choose Your Adventure Story Gutenberg Blocks](https://adventurebuildrstorage.storage.googleapis.com/wp-content/uploads/2024/11/15123900/Gutenberg-Blocks.png)
 - **Front-end Story Display**: Users making choices in the story. 

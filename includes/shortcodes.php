@@ -332,3 +332,35 @@ add_filter('block_categories_all', 'iasb_block_category', 10, 2);
 
 
 
+// Function to load templates based on the current post type
+function load_template_by_current_post() {
+    // Get the global post object
+    global $post;
+
+    // Check if the post exists
+    if (!$post) {
+        return '<p>No post found.</p>';
+    }
+
+    // Determine the template to load based on post type
+    switch ($post->post_type) {
+        case 'iasb_story':
+            ob_start();
+            include(plugin_dir_path(__FILE__) . '../templates/single-iasb_story.php');
+            return ob_get_clean();
+        case 'iasb_character':
+            ob_start();
+            include(plugin_dir_path(__FILE__) . '../templates/single-iasb_character.php');
+            return ob_get_clean();
+        case 'iasb_organization':
+            ob_start();
+            include(plugin_dir_path(__FILE__) . '../templates/single-iasb_organization.php');
+            return ob_get_clean();
+        // Add more cases for other post types as needed
+        default:
+            return '<p>Unsupported post type.</p>';
+    }
+}
+
+// Register the shortcode
+add_shortcode('load_template', 'load_template_by_current_post');
